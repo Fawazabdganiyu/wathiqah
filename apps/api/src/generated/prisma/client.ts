@@ -58,6 +58,11 @@ export type Contact = Prisma.ContactModel;
  */
 export type Transaction = Prisma.TransactionModel;
 /**
+ * Model TransactionHistory
+ *
+ */
+export type TransactionHistory = Prisma.TransactionHistoryModel;
+/**
  * Model Witness
  *
  */

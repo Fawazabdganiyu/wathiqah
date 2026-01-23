@@ -415,6 +415,7 @@ export const ModelName = {
   User: 'User',
   Contact: 'Contact',
   Transaction: 'Transaction',
+  TransactionHistory: 'TransactionHistory',
   Witness: 'Witness',
 } as const;
 
@@ -437,7 +438,12 @@ export type TypeMap<
     omit: GlobalOmitOptions;
   };
   meta: {
-    modelProps: 'user' | 'contact' | 'transaction' | 'witness';
+    modelProps:
+      | 'user'
+      | 'contact'
+      | 'transaction'
+      | 'transactionHistory'
+      | 'witness';
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -669,6 +675,82 @@ export type TypeMap<
         };
       };
     };
+    TransactionHistory: {
+      payload: Prisma.$TransactionHistoryPayload<ExtArgs>;
+      fields: Prisma.TransactionHistoryFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.TransactionHistoryFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.TransactionHistoryFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>;
+        };
+        findFirst: {
+          args: Prisma.TransactionHistoryFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.TransactionHistoryFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>;
+        };
+        findMany: {
+          args: Prisma.TransactionHistoryFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>[];
+        };
+        create: {
+          args: Prisma.TransactionHistoryCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>;
+        };
+        createMany: {
+          args: Prisma.TransactionHistoryCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.TransactionHistoryCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>[];
+        };
+        delete: {
+          args: Prisma.TransactionHistoryDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>;
+        };
+        update: {
+          args: Prisma.TransactionHistoryUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>;
+        };
+        deleteMany: {
+          args: Prisma.TransactionHistoryDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.TransactionHistoryUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.TransactionHistoryUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>[];
+        };
+        upsert: {
+          args: Prisma.TransactionHistoryUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransactionHistoryPayload>;
+        };
+        aggregate: {
+          args: Prisma.TransactionHistoryAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTransactionHistory>;
+        };
+        groupBy: {
+          args: Prisma.TransactionHistoryGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.TransactionHistoryGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.TransactionHistoryCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.TransactionHistoryCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
     Witness: {
       payload: Prisma.$WitnessPayload<ExtArgs>;
       fields: Prisma.WitnessFieldRefs;
@@ -825,6 +907,19 @@ export const TransactionScalarFieldEnum = {
 export type TransactionScalarFieldEnum =
   (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum];
 
+export const TransactionHistoryScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  userId: 'userId',
+  previousState: 'previousState',
+  newState: 'newState',
+  changeType: 'changeType',
+  createdAt: 'createdAt',
+} as const;
+
+export type TransactionHistoryScalarFieldEnum =
+  (typeof TransactionHistoryScalarFieldEnum)[keyof typeof TransactionHistoryScalarFieldEnum];
+
 export const WitnessScalarFieldEnum = {
   id: 'id',
   status: 'status',
@@ -845,6 +940,13 @@ export const SortOrder = {
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull,
+} as const;
+
+export type JsonNullValueInput =
+  (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive',
@@ -858,6 +960,15 @@ export const NullsOrder = {
 } as const;
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull,
+} as const;
+
+export type JsonNullValueFilter =
+  (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];
 
 /**
  * Field references
@@ -954,6 +1065,22 @@ export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
  */
 export type ListEnumTransactionTypeFieldRefInput<$PrismaModel> =
   FieldRefInputType<$PrismaModel, 'TransactionType[]'>;
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'Json'
+>;
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'QueryMode'
+>;
 
 /**
  * Reference to a field of type 'WitnessStatus'
@@ -1091,6 +1218,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit;
   contact?: Prisma.ContactOmit;
   transaction?: Prisma.TransactionOmit;
+  transactionHistory?: Prisma.TransactionHistoryOmit;
   witness?: Prisma.WitnessOmit;
 };
 

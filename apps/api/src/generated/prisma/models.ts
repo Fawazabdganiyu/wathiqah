@@ -10,5 +10,6 @@
 export type * from './models/User';
 export type * from './models/Contact';
 export type * from './models/Transaction';
+export type * from './models/TransactionHistory';
 export type * from './models/Witness';
 export type * from './commonInputTypes';

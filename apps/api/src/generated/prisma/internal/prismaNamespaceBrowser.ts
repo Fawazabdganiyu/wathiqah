@@ -57,6 +57,7 @@ export const ModelName = {
   User: 'User',
   Contact: 'Contact',
   Transaction: 'Transaction',
+  TransactionHistory: 'TransactionHistory',
   Witness: 'Witness',
 } as const;
 
@@ -117,6 +118,19 @@ export const TransactionScalarFieldEnum = {
 export type TransactionScalarFieldEnum =
   (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum];
 
+export const TransactionHistoryScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  userId: 'userId',
+  previousState: 'previousState',
+  newState: 'newState',
+  changeType: 'changeType',
+  createdAt: 'createdAt',
+} as const;
+
+export type TransactionHistoryScalarFieldEnum =
+  (typeof TransactionHistoryScalarFieldEnum)[keyof typeof TransactionHistoryScalarFieldEnum];
+
 export const WitnessScalarFieldEnum = {
   id: 'id',
   status: 'status',
@@ -137,6 +151,13 @@ export const SortOrder = {
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];
 
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull',
+} as const;
+
+export type JsonNullValueInput =
+  (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput];
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive',
@@ -150,3 +171,12 @@ export const NullsOrder = {
 } as const;
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder];
+
+export const JsonNullValueFilter = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull',
+  AnyNull: 'AnyNull',
+} as const;
+
+export type JsonNullValueFilter =
+  (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter];

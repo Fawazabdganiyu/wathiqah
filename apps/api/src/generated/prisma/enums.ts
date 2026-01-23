@@ -19,6 +19,7 @@ export const WitnessStatus = {
   PENDING: 'PENDING',
   ACKNOWLEDGED: 'ACKNOWLEDGED',
   DECLINED: 'DECLINED',
+  MODIFIED: 'MODIFIED',
 } as const;
 
 export type WitnessStatus = (typeof WitnessStatus)[keyof typeof WitnessStatus];
