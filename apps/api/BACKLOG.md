@@ -33,3 +33,71 @@ When a transaction is updated *after* witnesses have already acknowledged it, th
 
 5.  **Locking Mechanism**:
     - Optional: Prevent updates entirely if a transaction is "Finalized" or "Locked" by all parties.
+
+---
+
+## Shared Transaction, Witness & Promise Viewer Access
+
+**Status:** New
+**Priority:** Medium
+
+### Description
+Implement a system that allows users to grant view-only access to their saved transactions, documented witness information, and promises to a list of specified email addresses.
+
+### Requirements
+1.  **Management Interface**:
+    - Create "Share Access" or "Viewers" section.
+    - Add, edit, and remove email addresses.
+    - Validate email format.
+
+2.  **Access Control**:
+    - Grant read-only access to transactions, witnesses, and promises.
+    - Ensure viewers cannot modify, delete, or download data.
+    - Allow granter to revoke access immediately.
+
+3.  **Notifications**:
+    - Send email to granted address with secure login/viewing instructions.
+
+4.  **Viewer Dashboard**:
+    - Dedicated read-only view for granted users.
+    - Track acceptance status of the access grant.
+
+### Acceptance Criteria
+- [ ] User can add valid emails to viewer list.
+- [ ] Error message for invalid emails.
+- [ ] Notification email sent to new viewers.
+- [ ] Viewer can log in and see read-only data.
+- [ ] Viewer cannot modify data.
+- [ ] Granter can revoke access.
+
+---
+
+## Promise Documentation
+
+**Status:** New
+**Priority:** Medium
+
+### Description
+Implement a feature that allows users to create, track, and manage personal promises made to other individuals.
+
+### Requirements
+1.  **Data Model**:
+    - **Description**: Clear text of what was promised (Mandatory).
+    - **Promise To**: Person/entity the promise was made to (Mandatory).
+    - **Due Date/Time**: Proposed fulfillment time (Mandatory).
+    - **Optional**: Notes, Priority (High/Medium/Low), Category/Tag.
+    - **Status**: Pending, Fulfilled, Overdue (Auto-updates based on due date).
+
+2.  **UI/UX**:
+    - "My Promises" section/module.
+    - Create/Edit Promise Form.
+    - List/Dashboard view with filtering (status, due date).
+    - Actions: View, Edit, Mark as Fulfilled, Delete.
+
+### Acceptance Criteria
+- [ ] User can create a promise with required fields.
+- [ ] Promises appear in list view with correct details.
+- [ ] Status auto-updates to "Overdue" if due date passes.
+- [ ] User can edit existing promises.
+- [ ] User can mark promise as "Fulfilled".
+- [ ] All UI text is in English.
