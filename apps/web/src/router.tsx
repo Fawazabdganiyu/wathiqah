@@ -3,44 +3,45 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";
 
 import {
-  routerWithApolloClient,
-  ApolloClient,
-  InMemoryCache,
+	routerWithApolloClient,
+	ApolloClient,
+	InMemoryCache,
 } from "@apollo/client-integration-tanstack-start";
-import { HttpLink } from "@apollo/client";
+import { HttpLink, ApolloLink } from "@apollo/client";
+import { authLink, errorLink } from "./lib/apollo-links";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
 export const getRouter = () => {
-  // Configure Apollo Client
-  const apolloClient = new ApolloClient({
-    cache: new InMemoryCache(),
-    link: new HttpLink({
-      uri:
-        import.meta.env.VITE_GRAPHQL_ENDPOINT ||
-        "https://countries.trevorblades.com/",
-    }),
-  });
+	const uri =
+		import.meta.env.VITE_GRAPHQL_ENDPOINT ||
+		"https://countries.trevorblades.com/";
 
-  const rqContext = TanstackQuery.getContext();
+	// Configure Apollo Client
+	const apolloClient = new ApolloClient({
+		cache: new InMemoryCache(),
+		link: ApolloLink.from([authLink, errorLink(uri), new HttpLink({ uri })]),
+	});
 
-  const router = createRouter({
-    routeTree,
-    context: {
-      ...routerWithApolloClient.defaultContext,
+	const rqContext = TanstackQuery.getContext();
 
-      ...rqContext,
-    },
+	const router = createRouter({
+		routeTree,
+		context: {
+			...routerWithApolloClient.defaultContext,
 
-    defaultPreload: "intent",
-  });
+			...rqContext,
+		},
 
-  setupRouterSsrQueryIntegration({
-    router,
-    queryClient: rqContext.queryClient,
-  });
+		defaultPreload: "intent",
+	});
 
-  return routerWithApolloClient(router, apolloClient);
+	setupRouterSsrQueryIntegration({
+		router,
+		queryClient: rqContext.queryClient,
+	});
+
+	return routerWithApolloClient(router, apolloClient);
 };

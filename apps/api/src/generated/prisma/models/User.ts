@@ -29,6 +29,7 @@ export type UserMinAggregateOutputType = {
   email: string | null;
   name: string | null;
   passwordHash: string | null;
+  refreshTokenHash: string | null;
   createdAt: Date | null;
 };
 
@@ -37,6 +38,7 @@ export type UserMaxAggregateOutputType = {
   email: string | null;
   name: string | null;
   passwordHash: string | null;
+  refreshTokenHash: string | null;
   createdAt: Date | null;
 };
 
@@ -45,6 +47,7 @@ export type UserCountAggregateOutputType = {
   email: number;
   name: number;
   passwordHash: number;
+  refreshTokenHash: number;
   createdAt: number;
   _all: number;
 };
@@ -54,6 +57,7 @@ export type UserMinAggregateInputType = {
   email?: true;
   name?: true;
   passwordHash?: true;
+  refreshTokenHash?: true;
   createdAt?: true;
 };
 
@@ -62,6 +66,7 @@ export type UserMaxAggregateInputType = {
   email?: true;
   name?: true;
   passwordHash?: true;
+  refreshTokenHash?: true;
   createdAt?: true;
 };
 
@@ -70,6 +75,7 @@ export type UserCountAggregateInputType = {
   email?: true;
   name?: true;
   passwordHash?: true;
+  refreshTokenHash?: true;
   createdAt?: true;
   _all?: true;
 };
@@ -158,6 +164,7 @@ export type UserGroupByOutputType = {
   email: string;
   name: string;
   passwordHash: string | null;
+  refreshTokenHash: string | null;
   createdAt: Date;
   _count: UserCountAggregateOutputType | null;
   _min: UserMinAggregateOutputType | null;
@@ -184,6 +191,7 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<'User'> | string;
   name?: Prisma.StringFilter<'User'> | string;
   passwordHash?: Prisma.StringNullableFilter<'User'> | string | null;
+  refreshTokenHash?: Prisma.StringNullableFilter<'User'> | string | null;
   createdAt?: Prisma.DateTimeFilter<'User'> | Date | string;
   transactions?: Prisma.TransactionListRelationFilter;
   contacts?: Prisma.ContactListRelationFilter;
@@ -195,6 +203,7 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder;
+  refreshTokenHash?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   transactions?: Prisma.TransactionOrderByRelationAggregateInput;
   contacts?: Prisma.ContactOrderByRelationAggregateInput;
@@ -210,6 +219,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
     name?: Prisma.StringFilter<'User'> | string;
     passwordHash?: Prisma.StringNullableFilter<'User'> | string | null;
+    refreshTokenHash?: Prisma.StringNullableFilter<'User'> | string | null;
     createdAt?: Prisma.DateTimeFilter<'User'> | Date | string;
     transactions?: Prisma.TransactionListRelationFilter;
     contacts?: Prisma.ContactListRelationFilter;
@@ -223,6 +233,7 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder;
+  refreshTokenHash?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   _count?: Prisma.UserCountOrderByAggregateInput;
   _max?: Prisma.UserMaxOrderByAggregateInput;
@@ -244,6 +255,10 @@ export type UserScalarWhereWithAggregatesInput = {
     | Prisma.StringNullableWithAggregatesFilter<'User'>
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.StringNullableWithAggregatesFilter<'User'>
+    | string
+    | null;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'User'> | Date | string;
 };
 
@@ -252,6 +267,7 @@ export type UserCreateInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   transactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput;
   contacts?: Prisma.ContactCreateNestedManyWithoutUserInput;
@@ -263,6 +279,7 @@ export type UserUncheckedCreateInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput;
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput;
@@ -274,6 +291,10 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   passwordHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
+  refreshTokenHash?:
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
@@ -291,6 +312,10 @@ export type UserUncheckedUpdateInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput;
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput;
@@ -302,6 +327,7 @@ export type UserCreateManyInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
 };
 
@@ -310,6 +336,10 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   passwordHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
+  refreshTokenHash?:
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
@@ -324,6 +354,10 @@ export type UserUncheckedUpdateManyInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
@@ -332,6 +366,7 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrder;
+  refreshTokenHash?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
@@ -340,6 +375,7 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrder;
+  refreshTokenHash?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
@@ -348,6 +384,7 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrder;
+  refreshTokenHash?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
 };
 
@@ -451,6 +488,7 @@ export type UserCreateWithoutContactsInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   transactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput;
   witnessRecords?: Prisma.WitnessCreateNestedManyWithoutUserInput;
@@ -461,6 +499,7 @@ export type UserUncheckedCreateWithoutContactsInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput;
   witnessRecords?: Prisma.WitnessUncheckedCreateNestedManyWithoutUserInput;
@@ -502,6 +541,10 @@ export type UserUpdateWithoutContactsInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   transactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput;
   witnessRecords?: Prisma.WitnessUpdateManyWithoutUserNestedInput;
@@ -515,6 +558,10 @@ export type UserUncheckedUpdateWithoutContactsInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutCreatedByNestedInput;
   witnessRecords?: Prisma.WitnessUncheckedUpdateManyWithoutUserNestedInput;
@@ -525,6 +572,7 @@ export type UserCreateWithoutTransactionsInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   contacts?: Prisma.ContactCreateNestedManyWithoutUserInput;
   witnessRecords?: Prisma.WitnessCreateNestedManyWithoutUserInput;
@@ -535,6 +583,7 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput;
   witnessRecords?: Prisma.WitnessUncheckedCreateNestedManyWithoutUserInput;
@@ -576,6 +625,10 @@ export type UserUpdateWithoutTransactionsInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   contacts?: Prisma.ContactUpdateManyWithoutUserNestedInput;
   witnessRecords?: Prisma.WitnessUpdateManyWithoutUserNestedInput;
@@ -589,6 +642,10 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   contacts?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput;
   witnessRecords?: Prisma.WitnessUncheckedUpdateManyWithoutUserNestedInput;
@@ -599,6 +656,7 @@ export type UserCreateWithoutWitnessRecordsInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   transactions?: Prisma.TransactionCreateNestedManyWithoutCreatedByInput;
   contacts?: Prisma.ContactCreateNestedManyWithoutUserInput;
@@ -609,6 +667,7 @@ export type UserUncheckedCreateWithoutWitnessRecordsInput = {
   email: string;
   name: string;
   passwordHash?: string | null;
+  refreshTokenHash?: string | null;
   createdAt?: Date | string;
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutCreatedByInput;
   contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput;
@@ -650,6 +709,10 @@ export type UserUpdateWithoutWitnessRecordsInput = {
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
+  refreshTokenHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   transactions?: Prisma.TransactionUpdateManyWithoutCreatedByNestedInput;
   contacts?: Prisma.ContactUpdateManyWithoutUserNestedInput;
@@ -660,6 +723,10 @@ export type UserUncheckedUpdateWithoutWitnessRecordsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   passwordHash?:
+    | Prisma.NullableStringFieldUpdateOperationsInput
+    | string
+    | null;
+  refreshTokenHash?:
     | Prisma.NullableStringFieldUpdateOperationsInput
     | string
     | null;
@@ -739,6 +806,7 @@ export type UserSelect<
     email?: boolean;
     name?: boolean;
     passwordHash?: boolean;
+    refreshTokenHash?: boolean;
     createdAt?: boolean;
     transactions?: boolean | Prisma.User$transactionsArgs<ExtArgs>;
     contacts?: boolean | Prisma.User$contactsArgs<ExtArgs>;
@@ -757,6 +825,7 @@ export type UserSelectCreateManyAndReturn<
     email?: boolean;
     name?: boolean;
     passwordHash?: boolean;
+    refreshTokenHash?: boolean;
     createdAt?: boolean;
   },
   ExtArgs['result']['user']
@@ -771,6 +840,7 @@ export type UserSelectUpdateManyAndReturn<
     email?: boolean;
     name?: boolean;
     passwordHash?: boolean;
+    refreshTokenHash?: boolean;
     createdAt?: boolean;
   },
   ExtArgs['result']['user']
@@ -781,6 +851,7 @@ export type UserSelectScalar = {
   email?: boolean;
   name?: boolean;
   passwordHash?: boolean;
+  refreshTokenHash?: boolean;
   createdAt?: boolean;
 };
 
@@ -788,7 +859,7 @@ export type UserOmit<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetOmit<
-  'id' | 'email' | 'name' | 'passwordHash' | 'createdAt',
+  'id' | 'email' | 'name' | 'passwordHash' | 'refreshTokenHash' | 'createdAt',
   ExtArgs['result']['user']
 >;
 export type UserInclude<
@@ -825,6 +896,7 @@ export type $UserPayload<
       email: string;
       name: string;
       passwordHash: string | null;
+      refreshTokenHash: string | null;
       createdAt: Date;
     },
     ExtArgs['result']['user']
@@ -1455,6 +1527,7 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<'User', 'String'>;
   readonly name: Prisma.FieldRef<'User', 'String'>;
   readonly passwordHash: Prisma.FieldRef<'User', 'String'>;
+  readonly refreshTokenHash: Prisma.FieldRef<'User', 'String'>;
   readonly createdAt: Prisma.FieldRef<'User', 'DateTime'>;
 }
 

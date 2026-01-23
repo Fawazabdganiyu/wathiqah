@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateUserInput } from './dto/create-user.input';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +20,13 @@ export class UsersService {
   findOne(id: string) {
     return this.prisma.user.findUnique({
       where: { id },
+    });
+  }
+
+  updateRefreshToken(userId: string, refreshTokenHash: string | null) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshTokenHash },
     });
   }
 }

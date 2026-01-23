@@ -9,13 +9,46 @@ import { UsersService } from '../users/users.service';
 import { SignupInput } from './dto/signup.input';
 import { LoginInput } from './dto/login.input';
 import { AuthPayload } from './entities/auth-payload.entity';
+import { ConfigService } from '@nestjs/config';
+import { ms, type StringValue } from 'ms';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
+
+  private async generateTokens(userId: string, email: string) {
+    const accessExpiry = ms(
+      this.configService.getOrThrow<string>('JWT_ACCESS_EXPIRY') as StringValue,
+    );
+    const refreshExpiry = ms(
+      this.configService.getOrThrow<string>(
+        'JWT_REFRESH_EXPIRY',
+      ) as StringValue,
+    );
+
+    const accessToken = await this.jwtService.signAsync(
+      { sub: userId, email },
+      {
+        expiresIn: accessExpiry,
+      },
+    );
+
+    const refreshToken = await this.jwtService.signAsync(
+      { sub: userId, email },
+      {
+        expiresIn: refreshExpiry,
+      },
+    );
+
+    const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+    await this.usersService.updateRefreshToken(userId, refreshTokenHash);
+
+    return { accessToken, refreshToken };
+  }
 
   async signup(signupInput: SignupInput): Promise<AuthPayload> {
     const existingUser = await this.usersService.findByEmail(signupInput.email);
@@ -30,13 +63,14 @@ export class AuthService {
       passwordHash,
     });
 
-    const accessToken = this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-    });
+    const { accessToken, refreshToken } = await this.generateTokens(
+      user.id,
+      user.email,
+    );
 
     return {
       accessToken,
+      refreshToken,
       user,
     };
   }
@@ -55,15 +89,51 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const accessToken = this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-    });
+    const { accessToken, refreshToken } = await this.generateTokens(
+      user.id,
+      user.email,
+    );
 
     return {
       accessToken,
+      refreshToken,
       user,
     };
+  }
+
+  async refreshToken(refreshToken: string): Promise<AuthPayload> {
+    try {
+      const payload = await this.jwtService.verifyAsync(refreshToken);
+      const userId = payload.sub;
+
+      const user = await this.usersService.findOne(userId);
+      if (!user || !user.refreshTokenHash) {
+        throw new UnauthorizedException('Access Denied');
+      }
+
+      const refreshTokenMatches = await bcrypt.compare(
+        refreshToken,
+        user.refreshTokenHash,
+      );
+      if (!refreshTokenMatches) {
+        throw new UnauthorizedException('Access Denied');
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } =
+        await this.generateTokens(user.id, user.email);
+
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+        user,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Access Denied');
+    }
+  }
+
+  async logout(userId: string) {
+    await this.usersService.updateRefreshToken(userId, null);
   }
 
   async validateUser(userId: string) {

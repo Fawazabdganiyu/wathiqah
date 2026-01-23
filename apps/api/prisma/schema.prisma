@@ -15,11 +15,12 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  name         String
-  passwordHash String? // Null for invited witnesses who haven't set password
-  createdAt    DateTime @default(now())
+  id               String   @id @default(uuid())
+  email            String   @unique
+  name             String
+  passwordHash     String? // Null for invited witnesses who haven't set password
+  refreshTokenHash String?
+  createdAt        DateTime @default(now())
 
   // Relations
   transactions   Transaction[] @relation("TransactionCreator")

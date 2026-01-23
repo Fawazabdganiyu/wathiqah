@@ -1,0 +1,82 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+enum AssetCategory {
+  FUNDS
+  ITEM
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input CreateTransactionInput {
+  amount: Float
+  category: AssetCategory!
+  contactId: ID!
+  date: DateTime!
+  description: String
+  itemName: String
+  quantity: Int = 1
+  type: TransactionType!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  createTransaction(input: CreateTransactionInput!): Transaction!
+  login(loginInput: LoginInput!): AuthPayload!
+  refreshToken(refreshToken: String!): AuthPayload!
+  signup(signupInput: SignupInput!): AuthPayload!
+}
+
+type Query {
+  me: User!
+  transactions: [Transaction!]!
+  user(id: String!): User
+}
+
+input SignupInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+type Transaction {
+  amount: Float
+  category: AssetCategory!
+  contactId: String!
+  createdAt: DateTime!
+  createdById: String!
+  date: DateTime!
+  description: String
+  id: ID!
+  itemName: String
+  quantity: Int!
+  type: TransactionType!
+}
+
+enum TransactionType {
+  COLLECTED
+  GIVEN
+  RECEIVED
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  name: String!
+  passwordHash: String
+}
