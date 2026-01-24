@@ -1,4 +1,4 @@
-import {
+import type {
   AcceptInvitationMutation,
   AcceptInvitationMutationVariables,
   ChangePasswordMutation,
@@ -13,8 +13,10 @@ import {
   ResetPasswordMutationVariables,
   SignupMutation,
   SignupMutationVariables,
+  VerifyEmailMutation,
+  VerifyEmailMutationVariables,
 } from "@/types/__generated__/graphql";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const ME_QUERY: TypedDocumentNode<MeQuery, MeQueryVariables> = gql`
   query Me {
@@ -101,5 +103,22 @@ export const CHANGE_PASSWORD_MUTATION: TypedDocumentNode<
 > = gql`
   mutation ChangePassword($changePasswordInput: ChangePasswordInput!) {
     changePassword(changePasswordInput: $changePasswordInput)
+  }
+`;
+
+export const VERIFY_EMAIL_MUTATION: TypedDocumentNode<
+  VerifyEmailMutation,
+  VerifyEmailMutationVariables
+> = gql`
+  mutation VerifyEmail($token: String!) {
+    verifyEmail(token: $token) {
+      accessToken
+      refreshToken
+      user {
+        id
+        email
+        name
+      }
+    }
   }
 `;

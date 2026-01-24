@@ -24,6 +24,11 @@ export class AuthResolver {
   }
 
   @Mutation(() => AuthPayload)
+  verifyEmail(@Args('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Mutation(() => AuthPayload)
   login(@Args('loginInput') loginInput: LoginInput) {
     return this.authService.login(loginInput);
   }

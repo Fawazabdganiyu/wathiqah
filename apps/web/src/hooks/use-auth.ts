@@ -16,6 +16,7 @@ import {
   FORGOT_PASSWORD_MUTATION,
   RESET_PASSWORD_MUTATION,
   CHANGE_PASSWORD_MUTATION,
+  VERIFY_EMAIL_MUTATION,
 } from "@/lib/apollo/queries/auth";
 
 export function useAuth() {
@@ -32,6 +33,7 @@ export function useAuth() {
   const [forgotPasswordMutation] = useMutation(FORGOT_PASSWORD_MUTATION);
   const [resetPasswordMutation] = useMutation(RESET_PASSWORD_MUTATION);
   const [changePasswordMutation] = useMutation(CHANGE_PASSWORD_MUTATION);
+  const [verifyEmailMutation] = useMutation(VERIFY_EMAIL_MUTATION);
 
   const login = async (input: LoginInput) => {
     const { data } = await loginMutation({
@@ -100,6 +102,19 @@ export function useAuth() {
     return data?.changePassword;
   };
 
+  const verifyEmail = async (token: string) => {
+    const { data } = await verifyEmailMutation({
+      variables: { token },
+    });
+
+    if (data?.verifyEmail) {
+      localStorage.setItem("accessToken", data.verifyEmail.accessToken);
+      localStorage.setItem("refreshToken", data.verifyEmail.refreshToken);
+      await client.resetStore();
+    }
+    return data?.verifyEmail;
+  };
+
   return {
     user: data?.me,
     loading,
@@ -111,5 +126,6 @@ export function useAuth() {
     forgotPassword,
     resetPassword,
     changePassword,
+    verifyEmail,
   };
 }

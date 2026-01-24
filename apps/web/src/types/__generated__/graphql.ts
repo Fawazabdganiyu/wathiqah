@@ -122,6 +122,7 @@ export type Mutation = {
   signup: AuthPayload;
   updateContact: Contact;
   updateTransaction: Transaction;
+  verifyEmail: AuthPayload;
 };
 
 export type MutationAcceptInvitationArgs = {
@@ -178,6 +179,10 @@ export type MutationUpdateContactArgs = {
 
 export type MutationUpdateTransactionArgs = {
   input: UpdateTransactionInput;
+};
+
+export type MutationVerifyEmailArgs = {
+  token: Scalars["String"]["input"];
 };
 
 export type Query = {
@@ -393,6 +398,19 @@ export type ChangePasswordMutationVariables = Exact<{
 }>;
 
 export type ChangePasswordMutation = { changePassword: boolean };
+
+export type VerifyEmailMutationVariables = Exact<{
+  token: Scalars["String"]["input"];
+}>;
+
+export type VerifyEmailMutation = {
+  verifyEmail: {
+    __typename: "AuthPayload";
+    accessToken: string;
+    refreshToken: string;
+    user: { __typename: "User"; id: string; email: string; name: string };
+  };
+};
 
 export type MyWitnessRequestsQueryVariables = Exact<{
   status?: InputMaybe<WitnessStatus>;

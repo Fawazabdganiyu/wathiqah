@@ -1,9 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useId, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/signup")({
   component: SignupComponent,
@@ -11,23 +12,49 @@ export const Route = createFileRoute("/signup")({
 
 function SignupComponent() {
   const { signup } = useAuth();
-  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signup({ name, email, password });
-      navigate({ to: "/" });
+      setIsSuccess(true);
     } catch (err: any) {
       setError(err.message || "Failed to sign up");
     }
   };
 
   const id = useId();
+
+  if (isSuccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
+        <div className="w-full max-w-md space-y-8 bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 text-center">
+          <div className="mx-auto w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+            Verify your email
+          </h2>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            We've sent a verification link to <strong>{email}</strong>. Please
+            check your inbox to activate your account.
+          </p>
+          <Button
+            asChild
+            className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            <Link to="/login">Go to Login</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
       <div className="w-full max-w-md space-y-8 bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800">

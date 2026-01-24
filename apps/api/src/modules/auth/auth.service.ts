@@ -323,4 +323,35 @@ export class AuthService {
 
     return true;
   }
+
+  async verifyEmail(token: string): Promise<AuthPayload> {
+    const hashedToken = hashToken(token);
+    const redisKey = `verify:${hashedToken}`;
+
+    const userId = await this.cacheManager.get<string>(redisKey);
+
+    if (!userId) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Generate tokens
+    const { accessToken, refreshToken } = await this.generateTokens(
+      user.id,
+      user.email,
+    );
+
+    // Clear verification token
+    await this.cacheManager.del(redisKey);
+
+    return {
+      accessToken,
+      refreshToken,
+      user,
+    };
+  }
 }

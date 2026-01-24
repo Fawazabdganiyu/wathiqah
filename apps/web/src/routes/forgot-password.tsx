@@ -34,8 +34,8 @@ function ForgotPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className="flex h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
-      <div className="w-full max-w-md space-y-8 bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
+        <div className="w-full max-w-md space-y-8 bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 text-center">
           <div className="mx-auto w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-4">
             <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
           </div>
@@ -58,7 +58,7 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
       <div className="w-full max-w-md space-y-8 bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800">
         <div>
           <Link
