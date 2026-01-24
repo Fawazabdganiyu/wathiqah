@@ -23,6 +23,13 @@ export class UsersService {
     });
   }
 
+  updatePassword(userId: string, passwordHash: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+  }
+
   updateRefreshToken(userId: string, refreshTokenHash: string | null) {
     return this.prisma.user.update({
       where: { id: userId },

@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -11,6 +12,9 @@ import { LoginInput } from './dto/login.input';
 import { AuthPayload } from './entities/auth-payload.entity';
 import { ConfigService } from '@nestjs/config';
 import { ms, type StringValue } from 'ms';
+import { PrismaService } from '../../prisma/prisma.service';
+import { AcceptInvitationInput } from './dto/accept-invitation.input';
+import { hashToken } from '../../common/utils/crypto.utils';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +22,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private prisma: PrismaService,
   ) {}
 
   private async generateTokens(userId: string, email: string) {
@@ -136,5 +141,46 @@ export class AuthService {
 
   async validateUser(userId: string) {
     return this.usersService.findOne(userId);
+  }
+
+  async acceptInvitation(
+    acceptInvitationInput: AcceptInvitationInput,
+  ): Promise<AuthPayload> {
+    const { token, password } = acceptInvitationInput;
+
+    const hashedToken = hashToken(token);
+
+    const witness = await this.prisma.witness.findUnique({
+      where: { inviteToken: hashedToken },
+      include: { user: true },
+    });
+
+    if (!witness) {
+      throw new NotFoundException('Invalid or expired invitation token');
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const updatedUser = await this.usersService.updatePassword(
+      witness.userId,
+      passwordHash,
+    );
+
+    // Clear the invite token (Single-Use)
+    await this.prisma.witness.update({
+      where: { id: witness.id },
+      data: { inviteToken: null },
+    });
+
+    const { accessToken, refreshToken } = await this.generateTokens(
+      updatedUser.id,
+      updatedUser.email,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      user: updatedUser,
+    };
   }
 }
