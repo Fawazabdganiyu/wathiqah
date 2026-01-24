@@ -1,0 +1,4 @@
+
+Dear {{name}},
+
+Your transaction has been successfully created.

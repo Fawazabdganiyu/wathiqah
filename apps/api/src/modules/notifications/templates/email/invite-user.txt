@@ -1,0 +1,5 @@
+
+Hi {{name}},
+
+You have been invited to join Wathȋqah. Please click the link below to accept the invitation:
+{{inviteUrl}}
