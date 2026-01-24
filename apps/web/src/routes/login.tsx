@@ -38,7 +38,7 @@ function LoginComponent() {
 						Don't have an account?{" "}
 						<Link
 							to="/signup"
-							className="font-medium text-cyan-600 hover:text-cyan-500 dark:text-cyan-400"
+							className="font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400"
 						>
 							Sign up
 						</Link>

@@ -27,6 +27,24 @@ export type Scalars = {
 	Float: { input: number; output: number };
 	/** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
 	DateTime: { input: unknown; output: unknown };
+	/** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+	JSON: { input: unknown; output: unknown };
+};
+
+export type AcceptInvitationInput = {
+	password: Scalars["String"]["input"];
+	token: Scalars["String"]["input"];
+};
+
+export type AcknowledgeWitnessInput = {
+	status: WitnessStatus;
+	witnessId: Scalars["ID"]["input"];
+};
+
+export type AddWitnessInput = {
+	transactionId: Scalars["ID"]["input"];
+	witnessInvites?: InputMaybe<Array<WitnessInviteInput>>;
+	witnessUserIds?: InputMaybe<Array<Scalars["ID"]["input"]>>;
 };
 
 export enum AssetCategory {
@@ -41,6 +59,30 @@ export type AuthPayload = {
 	user: User;
 };
 
+export type ChangePasswordInput = {
+	currentPassword: Scalars["String"]["input"];
+	newPassword: Scalars["String"]["input"];
+};
+
+export type Contact = {
+	__typename: "Contact";
+	balance: Scalars["Float"]["output"];
+	createdAt: Scalars["DateTime"]["output"];
+	email: Maybe<Scalars["String"]["output"]>;
+	id: Scalars["ID"]["output"];
+	name: Scalars["String"]["output"];
+	phoneNumber: Maybe<Scalars["String"]["output"]>;
+	transactions: Array<Maybe<Transaction>>;
+	user: User;
+	userId: Scalars["String"]["output"];
+};
+
+export type CreateContactInput = {
+	email?: InputMaybe<Scalars["String"]["input"]>;
+	name: Scalars["String"]["input"];
+	phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type CreateTransactionInput = {
 	amount?: InputMaybe<Scalars["Float"]["input"]>;
 	category: AssetCategory;
@@ -50,6 +92,12 @@ export type CreateTransactionInput = {
 	itemName?: InputMaybe<Scalars["String"]["input"]>;
 	quantity?: InputMaybe<Scalars["Int"]["input"]>;
 	type: TransactionType;
+	witnessInvites?: InputMaybe<Array<WitnessInviteInput>>;
+	witnessUserIds?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+};
+
+export type ForgotPasswordInput = {
+	email: Scalars["String"]["input"];
 };
 
 export type LoginInput = {
@@ -59,14 +107,49 @@ export type LoginInput = {
 
 export type Mutation = {
 	__typename: "Mutation";
+	acceptInvitation: AuthPayload;
+	acknowledgeWitness: Witness;
+	addWitness: Transaction;
+	changePassword: Scalars["Boolean"]["output"];
+	createContact: Contact;
 	createTransaction: Transaction;
+	forgotPassword: Scalars["Boolean"]["output"];
 	login: AuthPayload;
+	logout: Scalars["Boolean"]["output"];
 	refreshToken: AuthPayload;
+	removeContact: Contact;
+	resetPassword: Scalars["Boolean"]["output"];
 	signup: AuthPayload;
+	updateContact: Contact;
+	updateTransaction: Transaction;
+};
+
+export type MutationAcceptInvitationArgs = {
+	acceptInvitationInput: AcceptInvitationInput;
+};
+
+export type MutationAcknowledgeWitnessArgs = {
+	input: AcknowledgeWitnessInput;
+};
+
+export type MutationAddWitnessArgs = {
+	input: AddWitnessInput;
+};
+
+export type MutationChangePasswordArgs = {
+	changePasswordInput: ChangePasswordInput;
+};
+
+export type MutationCreateContactArgs = {
+	createContactInput: CreateContactInput;
 };
 
 export type MutationCreateTransactionArgs = {
 	input: CreateTransactionInput;
+};
+
+export type MutationForgotPasswordArgs = {
+	forgotPasswordInput: ForgotPasswordInput;
 };
 
 export type MutationLoginArgs = {
@@ -74,22 +157,68 @@ export type MutationLoginArgs = {
 };
 
 export type MutationRefreshTokenArgs = {
-	refreshToken: Scalars["String"]["input"];
+	refreshTokenInput: RefreshTokenInput;
+};
+
+export type MutationRemoveContactArgs = {
+	id: Scalars["ID"]["input"];
+};
+
+export type MutationResetPasswordArgs = {
+	resetPasswordInput: ResetPasswordInput;
 };
 
 export type MutationSignupArgs = {
 	signupInput: SignupInput;
 };
 
+export type MutationUpdateContactArgs = {
+	updateContactInput: UpdateContactInput;
+};
+
+export type MutationUpdateTransactionArgs = {
+	input: UpdateTransactionInput;
+};
+
 export type Query = {
 	__typename: "Query";
+	contact: Contact;
+	contacts: Array<Contact>;
 	me: User;
+	myWitnessRequests: Array<Witness>;
+	transaction: Transaction;
 	transactions: Array<Transaction>;
 	user: Maybe<User>;
+	witnessInvitation: Witness;
+};
+
+export type QueryContactArgs = {
+	id: Scalars["ID"]["input"];
+};
+
+export type QueryMyWitnessRequestsArgs = {
+	status?: InputMaybe<WitnessStatus>;
+};
+
+export type QueryTransactionArgs = {
+	id: Scalars["ID"]["input"];
 };
 
 export type QueryUserArgs = {
 	id: Scalars["String"]["input"];
+};
+
+export type QueryWitnessInvitationArgs = {
+	token: Scalars["String"]["input"];
+};
+
+export type RefreshTokenInput = {
+	refreshToken: Scalars["String"]["input"];
+};
+
+export type ResetPasswordInput = {
+	newPassword: Scalars["String"]["input"];
+	token: Scalars["String"]["input"];
 };
 
 export type SignupInput = {
@@ -102,15 +231,31 @@ export type Transaction = {
 	__typename: "Transaction";
 	amount: Maybe<Scalars["Float"]["output"]>;
 	category: AssetCategory;
+	contact: Contact;
 	contactId: Scalars["String"]["output"];
 	createdAt: Scalars["DateTime"]["output"];
+	createdBy: User;
 	createdById: Scalars["String"]["output"];
 	date: Scalars["DateTime"]["output"];
 	description: Maybe<Scalars["String"]["output"]>;
+	history: Array<Maybe<TransactionHistory>>;
 	id: Scalars["ID"]["output"];
 	itemName: Maybe<Scalars["String"]["output"]>;
-	quantity: Scalars["Int"]["output"];
+	quantity: Maybe<Scalars["Int"]["output"]>;
 	type: TransactionType;
+	witnesses: Array<Maybe<Witness>>;
+};
+
+export type TransactionHistory = {
+	__typename: "TransactionHistory";
+	changeType: Scalars["String"]["output"];
+	createdAt: Scalars["DateTime"]["output"];
+	id: Scalars["ID"]["output"];
+	newState: Scalars["JSON"]["output"];
+	previousState: Scalars["JSON"]["output"];
+	transactionId: Scalars["String"]["output"];
+	user: User;
+	userId: Scalars["String"]["output"];
 };
 
 export enum TransactionType {
@@ -118,6 +263,27 @@ export enum TransactionType {
 	Given = "GIVEN",
 	Received = "RECEIVED",
 }
+
+export type UpdateContactInput = {
+	email?: InputMaybe<Scalars["String"]["input"]>;
+	id: Scalars["ID"]["input"];
+	name?: InputMaybe<Scalars["String"]["input"]>;
+	phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UpdateTransactionInput = {
+	amount?: InputMaybe<Scalars["Float"]["input"]>;
+	category?: InputMaybe<AssetCategory>;
+	contactId?: InputMaybe<Scalars["ID"]["input"]>;
+	date?: InputMaybe<Scalars["DateTime"]["input"]>;
+	description?: InputMaybe<Scalars["String"]["input"]>;
+	id: Scalars["ID"]["input"];
+	itemName?: InputMaybe<Scalars["String"]["input"]>;
+	quantity?: InputMaybe<Scalars["Int"]["input"]>;
+	type?: InputMaybe<TransactionType>;
+	witnessInvites?: InputMaybe<Array<WitnessInviteInput>>;
+	witnessUserIds?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+};
 
 export type User = {
 	__typename: "User";
@@ -127,6 +293,30 @@ export type User = {
 	name: Scalars["String"]["output"];
 	passwordHash: Maybe<Scalars["String"]["output"]>;
 };
+
+export type Witness = {
+	__typename: "Witness";
+	acknowledgedAt: Maybe<Scalars["DateTime"]["output"]>;
+	id: Scalars["ID"]["output"];
+	invitedAt: Scalars["DateTime"]["output"];
+	status: WitnessStatus;
+	transaction: Transaction;
+	transactionId: Scalars["String"]["output"];
+	user: User;
+	userId: Scalars["String"]["output"];
+};
+
+export type WitnessInviteInput = {
+	email: Scalars["String"]["input"];
+	name: Scalars["String"]["input"];
+};
+
+export enum WitnessStatus {
+	Acknowledged = "ACKNOWLEDGED",
+	Declined = "DECLINED",
+	Modified = "MODIFIED",
+	Pending = "PENDING",
+}
 
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -157,5 +347,72 @@ export type SignupMutation = {
 		accessToken: string;
 		refreshToken: string;
 		user: { __typename: "User"; id: string; email: string; name: string };
+	};
+};
+
+export type AcceptInvitationMutationVariables = Exact<{
+	acceptInvitationInput: AcceptInvitationInput;
+}>;
+
+export type AcceptInvitationMutation = {
+	acceptInvitation: {
+		__typename: "AuthPayload";
+		accessToken: string;
+		refreshToken: string;
+		user: { __typename: "User"; id: string; email: string; name: string };
+	};
+};
+
+export type RefreshTokenMutationVariables = Exact<{
+	refreshTokenInput: RefreshTokenInput;
+}>;
+
+export type RefreshTokenMutation = {
+	refreshToken: {
+		__typename: "AuthPayload";
+		accessToken: string;
+		refreshToken: string;
+		user: { __typename: "User"; id: string; email: string; name: string };
+	};
+};
+
+export type GetWitnessInvitationQueryVariables = Exact<{
+	token: Scalars["String"]["input"];
+}>;
+
+export type GetWitnessInvitationQuery = {
+	witnessInvitation: {
+		__typename: "Witness";
+		id: string;
+		status: WitnessStatus;
+		transaction: {
+			__typename: "Transaction";
+			id: string;
+			amount: number | null;
+			type: TransactionType;
+			description: string | null;
+			date: unknown;
+			createdBy: { __typename: "User"; name: string };
+		};
+		user: {
+			__typename: "User";
+			id: string;
+			email: string;
+			name: string;
+			passwordHash: string | null;
+		};
+	};
+};
+
+export type AcknowledgeWitnessMutationVariables = Exact<{
+	input: AcknowledgeWitnessInput;
+}>;
+
+export type AcknowledgeWitnessMutation = {
+	acknowledgeWitness: {
+		__typename: "Witness";
+		id: string;
+		status: WitnessStatus;
+		acknowledgedAt: unknown | null;
 	};
 };

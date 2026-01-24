@@ -27,4 +27,7 @@ export class Contact {
 
   @Field(() => [Transaction], { nullable: 'items' })
   transactions: Transaction[];
+
+  @Field(() => Number)
+  balance: number;
 }

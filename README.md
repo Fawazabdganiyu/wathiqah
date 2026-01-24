@@ -19,26 +19,26 @@ Financial exchanges between people are often undocumented, leading to confusion 
 
 ## ✨ Features (MVP)
 
-- Record funds (given, received, or collected) or physical items (lent, borrowed, or returned)
-- Track balances per contact (both financial and item counts)
-- Transaction history with timestamps for all asset types
-- **Witness System**: Add witnesses to transactions for accountability
-  - Add existing users or invite new users as witnesses
-  - Witnesses receive notifications to acknowledge transactions
-  - Easy onboarding for new witnesses via invitation link
-  - Track witness acknowledgment status (Pending, Acknowledged, Declined)
-  - View all witnessed transactions
-- Authentication & authorization (JWT)
-- GraphQL API for flexible queries and mutations
+- **Transaction Management**: Record funds (given, received, collected) or physical items (lent, borrowed, returned).
+- **Contact Balances**: Track balances per contact (both financial and item counts).
+- **Audit Logs**: Full transaction history with timestamps and "Before/After" diffs for every update.
+- **Witness System**: Add witnesses to transactions for accountability.
+  - Add existing users or invite new users via email.
+  - Witnesses receive notifications to acknowledge transactions.
+  - Easy onboarding for new witnesses via invitation link.
+  - Track witness acknowledgment status (Pending, Acknowledged, Declined, Modified).
+  - View all witnessed transactions.
+- **Authentication**: Secure JWT-based authentication.
+- **API**: Flexible GraphQL API.
 
-**Future Enhancements:**
+**Planned Features & Enhancements:**
 
-- Multi-currency support
-- Exportable reports (CSV, PDF)
-- Asset and item tracking
-- Real-time updates (GraphQL subscriptions)
-- Email/SMS notifications for witnesses
-- Mobile app
+- **Shared Access**: Grant read-only access to specific transactions or witness records to external parties.
+- **Promise Tracker**: Dedicated module for documenting and tracking personal promises with due dates.
+- **Multi-currency support**.
+- **Exportable reports** (CSV, PDF).
+- **Real-time updates** (GraphQL subscriptions).
+- **Mobile app**.
 
 ---
 
@@ -350,10 +350,17 @@ Feed API specs (via GraphQL schema), database schemas, and file diffs into AI wo
 - [ ] Implement Contacts management
 - [ ] **Implement Witness System**
   - [x] Database schema for witnesses
-  - [ ] GraphQL mutations for adding witnesses
-  - [ ] Witness invitation flow (email/link)
-  - [ ] Witness acknowledgment UI (Frontend)
-  - [ ] Witness status tracking
+  - [x] GraphQL mutations for adding witnesses (via Create Transaction)
+  - [x] Backend logic for witness invitation (Tokens/Redis)
+  - [ ] Email notifications for invitations
+  - [ ] Frontend: Witness invitation landing page
+  - [ ] Frontend: Witness acknowledgment UI
+  - [ ] Frontend: Witness status tracking
+- [ ] **Transaction History & Audit**
+  - [x] Backend implementation (Audit logs, history table)
+  - [ ] Frontend history viewer
+- [ ] **Shared Access System** (Planned)
+- [ ] **Promise Tracker** (Planned)
 - [ ] Build contacts management UI (Frontend)
 - [ ] Build transaction management UI (Frontend)
 - [ ] Integrate Apollo Client with backend

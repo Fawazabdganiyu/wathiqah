@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 import { Contact } from './entities/contact.entity';
@@ -32,6 +40,11 @@ export class ContactsResolver {
     @CurrentUser() user: User,
   ) {
     return this.contactsService.findOne(id, user.id);
+  }
+
+  @ResolveField(() => Number)
+  async balance(@Parent() contact: Contact) {
+    return this.contactsService.getBalance(contact.id);
   }
 
   @Mutation(() => Contact)

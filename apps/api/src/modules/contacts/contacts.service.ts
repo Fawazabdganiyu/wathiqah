@@ -68,4 +68,29 @@ export class ContactsService {
       where: { id },
     });
   }
+
+  async getBalance(contactId: string): Promise<number> {
+    const aggregations = await this.prisma.transaction.groupBy({
+      by: ['type'],
+      where: {
+        contactId,
+        category: 'FUNDS',
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    let balance = 0;
+    for (const agg of aggregations) {
+      const amount = agg._sum.amount ? Number(agg._sum.amount) : 0;
+      if (agg.type === 'GIVEN') {
+        balance += amount;
+      } else if (agg.type === 'RECEIVED' || agg.type === 'COLLECTED') {
+        balance -= amount;
+      }
+    }
+
+    return balance;
+  }
 }

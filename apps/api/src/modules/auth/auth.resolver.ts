@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { AuthPayload } from './entities/auth-payload.entity';
 import { SignupInput } from './dto/signup.input';
@@ -12,6 +12,7 @@ import { AcceptInvitationInput } from './dto/accept-invitation.input';
 import { ForgotPasswordInput } from './dto/forgot-password.input';
 import { ResetPasswordInput } from './dto/reset-password.input';
 import { ChangePasswordInput } from './dto/change-password.input';
+import { Witness } from '../witnesses/entities/witness.entity';
 
 @Resolver(() => AuthPayload)
 export class AuthResolver {
@@ -46,6 +47,11 @@ export class AuthResolver {
     @Args('acceptInvitationInput') acceptInvitationInput: AcceptInvitationInput,
   ) {
     return this.authService.acceptInvitation(acceptInvitationInput);
+  }
+
+  @Query(() => Witness)
+  witnessInvitation(@Args('token') token: string) {
+    return this.authService.getWitnessInvitation(token);
   }
 
   @Mutation(() => Boolean)

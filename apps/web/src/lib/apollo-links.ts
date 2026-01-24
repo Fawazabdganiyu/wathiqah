@@ -6,8 +6,8 @@ import { gql } from "@apollo/client";
 import { print } from "graphql";
 
 const REFRESH_TOKEN_MUTATION = gql`
-  mutation RefreshToken($refreshToken: String!) {
-    refreshToken(refreshToken: $refreshToken) {
+  mutation RefreshToken($refreshTokenInput: RefreshTokenInput!) {
+    refreshToken(refreshTokenInput: $refreshTokenInput) {
       accessToken
       refreshToken
       user {

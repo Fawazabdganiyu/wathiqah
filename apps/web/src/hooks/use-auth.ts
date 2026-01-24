@@ -7,6 +7,9 @@ import type {
 	SignupInput,
 	SignupMutation,
 	SignupMutationVariables,
+	AcceptInvitationInput,
+	AcceptInvitationMutation,
+	AcceptInvitationMutationVariables,
 } from "@/types/__generated__/graphql";
 import { gql, type TypedDocumentNode } from "@apollo/client";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client/react";
@@ -58,6 +61,23 @@ const SIGNUP_MUTATION: TypedDocumentNode<
   }
 `;
 
+const ACCEPT_INVITATION_MUTATION: TypedDocumentNode<
+	AcceptInvitationMutation,
+	AcceptInvitationMutationVariables
+> = gql`
+  mutation AcceptInvitation($acceptInvitationInput: AcceptInvitationInput!) {
+    acceptInvitation(acceptInvitationInput: $acceptInvitationInput) {
+      accessToken
+      refreshToken
+      user {
+        id
+        email
+        name
+      }
+    }
+  }
+`;
+
 // --- Hook ---
 
 export function useAuth() {
@@ -70,6 +90,7 @@ export function useAuth() {
 
 	const [loginMutation] = useMutation(LOGIN_MUTATION);
 	const [signupMutation] = useMutation(SIGNUP_MUTATION);
+	const [acceptInvitationMutation] = useMutation(ACCEPT_INVITATION_MUTATION);
 
 	const login = async (input: LoginInput) => {
 		const { data } = await loginMutation({
@@ -104,6 +125,19 @@ export function useAuth() {
 		navigate({ to: "/" });
 	};
 
+	const acceptInvitation = async (input: AcceptInvitationInput) => {
+		const { data } = await acceptInvitationMutation({
+			variables: { acceptInvitationInput: input },
+		});
+
+		if (data?.acceptInvitation) {
+			localStorage.setItem("accessToken", data.acceptInvitation.accessToken);
+			localStorage.setItem("refreshToken", data.acceptInvitation.refreshToken);
+			await client.resetStore();
+		}
+		return data?.acceptInvitation;
+	};
+
 	return {
 		user: data?.me,
 		loading,
@@ -111,5 +145,6 @@ export function useAuth() {
 		login,
 		signup,
 		logout,
+		acceptInvitation,
 	};
 }

@@ -156,6 +156,35 @@ export class AuthService {
     return this.usersService.findOne(userId);
   }
 
+  async getWitnessInvitation(token: string) {
+    const hashedToken = hashToken(token);
+    const redisKey = `invite:${hashedToken}`;
+
+    const witnessId = await this.cacheManager.get<string>(redisKey);
+
+    if (!witnessId) {
+      throw new NotFoundException('Invalid or expired invitation token');
+    }
+
+    const witness = await this.prisma.witness.findUnique({
+      where: { id: witnessId },
+      include: {
+        user: true,
+        transaction: {
+          include: {
+            createdBy: true,
+          },
+        },
+      },
+    });
+
+    if (!witness) {
+      throw new NotFoundException('Witness record not found');
+    }
+
+    return witness;
+  }
+
   async acceptInvitation(
     acceptInvitationInput: AcceptInvitationInput,
   ): Promise<AuthPayload> {
@@ -181,6 +210,15 @@ export class AuthService {
     if (!witness) {
       throw new NotFoundException('Witness record not found');
     }
+
+    // Update Witness Status to ACKNOWLEDGED
+    await this.prisma.witness.update({
+      where: { id: witnessId },
+      data: {
+        status: 'ACKNOWLEDGED',
+        acknowledgedAt: new Date(),
+      },
+    });
 
     // 3. Hash the new password
     const passwordHash = await bcrypt.hash(password, 10);
