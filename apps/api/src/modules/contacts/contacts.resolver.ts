@@ -42,6 +42,11 @@ export class ContactsResolver {
     return this.contactsService.findOne(id, user.id);
   }
 
+  @ResolveField(() => String)
+  name(@Parent() contact: Contact): string {
+    return `${contact.firstName} ${contact.lastName}`.trim();
+  }
+
   @ResolveField(() => Number)
   async balance(@Parent() contact: Contact) {
     return this.contactsService.getBalance(contact.id);

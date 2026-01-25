@@ -1,16 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateContactInput } from './dto/create-contact.input';
 import { UpdateContactInput } from './dto/update-contact.input';
+import { splitName } from '../../common/utils/string.utils';
 
 @Injectable()
 export class ContactsService {
   constructor(private prisma: PrismaService) {}
 
   create(createContactInput: CreateContactInput, userId: string) {
+    const { name, ...rest } = createContactInput;
+    const { firstName, lastName } = splitName(name);
+
     return this.prisma.contact.create({
       data: {
-        ...createContactInput,
+        ...rest,
+        firstName,
+        lastName,
         userId,
       },
     });
@@ -27,8 +37,8 @@ export class ContactsService {
   }
 
   async findOne(id: string, userId: string) {
-    const contact = await this.prisma.contact.findFirst({
-      where: { id, userId },
+    const contact = await this.prisma.contact.findUnique({
+      where: { id },
       include: {
         transactions: true,
       },
@@ -36,6 +46,12 @@ export class ContactsService {
 
     if (!contact) {
       throw new NotFoundException(`Contact with ID ${id} not found`);
+    }
+
+    if (contact.userId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to access this contact',
+      );
     }
 
     return contact;
@@ -49,13 +65,19 @@ export class ContactsService {
     // Check existence and ownership
     await this.findOne(id, userId);
 
+    const { name, email, phoneNumber } = updateContactInput;
+    let nameData = {};
+    if (name) {
+      const { firstName, lastName } = splitName(name);
+      nameData = { firstName, lastName };
+    }
+
     return this.prisma.contact.update({
       where: { id },
       data: {
-        // Exclude ID from update data
-        name: updateContactInput.name,
-        email: updateContactInput.email,
-        phoneNumber: updateContactInput.phoneNumber,
+        ...nameData,
+        ...(email !== undefined && { email }),
+        ...(phoneNumber !== undefined && { phoneNumber }),
       },
     });
   }

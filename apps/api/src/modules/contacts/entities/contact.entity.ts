@@ -8,6 +8,12 @@ export class Contact {
   id: string;
 
   @Field()
+  firstName: string;
+
+  @Field()
+  lastName: string;
+
+  @Field()
   name: string;
 
   @Field({ nullable: true })

@@ -38,7 +38,9 @@ type Contact {
   balance: Float!
   createdAt: DateTime!
   email: String
+  firstName: String!
   id: ID!
+  lastName: String!
   name: String!
   phoneNumber: String
   transactions: [Transaction]!
