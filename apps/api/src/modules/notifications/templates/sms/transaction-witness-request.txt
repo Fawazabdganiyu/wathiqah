@@ -1,0 +1,2 @@
+
+Hello {{name}}, you have been requested to witness a transaction on Wathȋqah. Verify here: {{inviteUrl}}

@@ -1,6 +1,6 @@
 
-Hello,
+Hello {{name}},
 
-You have been added as a witness to a transaction on Wathȋqah.
+You have been requested to witness a transaction on Wathȋqah.
 Please click the link below to review and acknowledge the transaction:
 {{inviteUrl}}

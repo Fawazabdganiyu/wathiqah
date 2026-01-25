@@ -1,6 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { EmailProvider } from './providers/email-provider.interface';
 import { SmsProvider } from './providers/sms-provider.interface';
+import { TemplateService } from './template.service';
 import {
   EmailNotificationOptions,
   MultiChannelNotificationOptions,
@@ -14,27 +16,233 @@ export class NotificationService {
   constructor(
     private readonly emailProvider: EmailProvider,
     private readonly smsProvider: SmsProvider,
+    private readonly templateService: TemplateService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async sendEmail(options: EmailNotificationOptions): Promise<void> {
+  /**
+   * Sends an email verification link to a user.
+   *
+   * @param email - The recipient's email address.
+   * @param name - The recipient's name.
+   * @param token - The verification token.
+   * @throws BadRequestException if any parameter is missing or empty.
+   */
+  async sendVerificationEmail(
+    email: string,
+    name: string,
+    token: string,
+  ): Promise<void> {
+    this.validateParams({ email, name, token });
+
+    const verificationUrl = `${this.configService.get('app.url')}/verify-email?token=${token}`;
+
+    await this.sendEmailWithTemplate(
+      email,
+      'Verify your email address',
+      'verify-email',
+      {
+        name,
+        verificationUrl,
+        subject: 'Verify your email address',
+      },
+    );
+  }
+
+  /**
+   * Sends a password reset link to a user.
+   *
+   * @param email - The recipient's email address.
+   * @param name - The recipient's name.
+   * @param token - The password reset token.
+   * @throws BadRequestException if any parameter is missing or empty.
+   */
+  async sendPasswordResetEmail(
+    email: string,
+    name: string,
+    token: string,
+  ): Promise<void> {
+    this.validateParams({ email, name, token });
+
+    const resetUrl = `${this.configService.get('app.url')}/reset-password?token=${token}`;
+
+    await this.sendEmailWithTemplate(
+      email,
+      'Reset your password',
+      'reset-password',
+      {
+        name,
+        resetUrl,
+        subject: 'Reset your password',
+      },
+    );
+  }
+
+  /**
+   * Sends an invitation to a new user to join the platform.
+   *
+   * @param email - The recipient's email address.
+   * @param name - The recipient's name.
+   * @param token - The invitation token.
+   * @throws BadRequestException if any parameter is missing or empty.
+   */
+  async sendUserInviteEmail(
+    email: string,
+    name: string,
+    token: string,
+  ): Promise<void> {
+    this.validateParams({ email, name, token });
+
+    const inviteUrl = `${this.configService.get('app.url')}/accept-invitation?token=${token}`;
+
+    await this.sendEmailWithTemplate(
+      email,
+      'Invitation to Wathȋqah',
+      'invite-user',
+      {
+        name,
+        inviteUrl,
+        subject: 'Invitation to Wathȋqah',
+      },
+    );
+  }
+
+  /**
+   * Sends an invitation to a witness to verify a transaction.
+   *
+   * @param email - The witness's email address.
+   * @param name - The witness's name.
+   * @param token - The invitation token.
+   * @param phoneNumber - Optional phone number for SMS notification.
+   * @throws BadRequestException if any parameter is missing or empty.
+   */
+  async sendTransactionWitnessInvite(
+    email: string,
+    name: string,
+    token: string,
+    phoneNumber?: string,
+  ): Promise<void> {
+    this.validateParams({ email, name, token });
+
+    const inviteUrl = `${this.configService.get('app.url')}/witnesses/invite/${token}`;
+    const subject =
+      'Witness Request: You have been requested to verify a transaction on Wathȋqah';
+
+    const emailOptions = {
+      to: email,
+      subject,
+      html: this.templateService.render(
+        'transaction-witness-invite',
+        'email',
+        { name, inviteUrl, subject },
+        'html',
+      ),
+      text: this.templateService.render(
+        'transaction-witness-invite',
+        'email',
+        { name, inviteUrl, subject },
+        'txt',
+      ),
+    };
+
+    let smsOptions;
+    if (phoneNumber) {
+      const smsBody = this.templateService.render(
+        'transaction-witness-invite',
+        'sms',
+        { name, inviteUrl },
+        'txt',
+      );
+      smsOptions = {
+        to: phoneNumber,
+        body: smsBody,
+      };
+    }
+
+    await this.sendMultiChannel({
+      email: emailOptions,
+      sms: smsOptions,
+    });
+  }
+
+  /**
+   * Notifies a user that their transaction has been created.
+   *
+   * @param email - The user's email address.
+   * @param name - The user's name.
+   * @throws BadRequestException if any parameter is missing or empty.
+   */
+  async sendTransactionCreatedEmail(
+    email: string,
+    name: string,
+  ): Promise<void> {
+    this.validateParams({ email, name });
+
+    await this.sendEmailWithTemplate(
+      email,
+      'Transaction Created',
+      'transaction-created',
+      {
+        name,
+        subject: 'Transaction Created',
+      },
+    );
+  }
+
+  private validateParams(params: Record<string, string>): void {
+    for (const [key, value] of Object.entries(params)) {
+      if (!value || typeof value !== 'string' || value.trim() === '') {
+        throw new BadRequestException(`${key} must be a non-empty string`);
+      }
+    }
+  }
+
+  private async sendEmail(options: EmailNotificationOptions): Promise<void> {
     await this.emailProvider.sendEmail(options);
   }
 
-  async sendSms(options: SmsNotificationOptions): Promise<void> {
+  private async sendEmailWithTemplate(
+    to: string,
+    subject: string,
+    templateName: string,
+    data: Record<string, any>,
+  ): Promise<void> {
+    const html = this.templateService.render(
+      templateName,
+      'email',
+      data,
+      'html',
+    );
+    const text = this.templateService.render(
+      templateName,
+      'email',
+      data,
+      'txt',
+    );
+
+    await this.sendEmail({
+      to,
+      subject,
+      html,
+      text,
+    });
+  }
+
+  private async sendSms(options: SmsNotificationOptions): Promise<void> {
     await this.smsProvider.sendSms(options);
   }
 
-  async sendMultiChannel(
+  private async sendMultiChannel(
     options: MultiChannelNotificationOptions,
   ): Promise<void> {
     const promises: Promise<void>[] = [];
 
     if (options.email) {
-      promises.push(this.emailProvider.sendEmail(options.email));
+      promises.push(this.sendEmail(options.email));
     }
 
     if (options.sms) {
-      promises.push(this.smsProvider.sendSms(options.sms));
+      promises.push(this.sendSms(options.sms));
     }
 
     if (promises.length === 0) {

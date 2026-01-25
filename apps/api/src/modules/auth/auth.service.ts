@@ -23,6 +23,9 @@ import { ChangePasswordInput } from './dto/change-password.input';
 import { v4 as uuidv4 } from 'uuid';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { NotificationService } from '../notifications/notification.service';
+import { splitName } from '../../common/utils/string.utils';
+import { User } from 'src/generated/prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +35,7 @@ export class AuthService {
     private configService: ConfigService,
     private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly notificationService: NotificationService,
   ) {}
 
   private async generateTokens(userId: string, email: string) {
@@ -66,29 +70,47 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signup(signupInput: SignupInput): Promise<AuthPayload> {
+  async signup(signupInput: SignupInput): Promise<User> {
     const existingUser = await this.usersService.findByEmail(signupInput.email);
     if (existingUser) {
       throw new ConflictException('Email already in use');
     }
 
     const passwordHash = await bcrypt.hash(signupInput.password, 10);
+    const { firstName, lastName } = splitName(signupInput.name);
+    if (!firstName || !lastName) {
+      throw new BadRequestException('First name and last name are required');
+    }
+
     const user = await this.usersService.create({
       email: signupInput.email,
-      name: signupInput.name,
+      firstName,
+      lastName,
       passwordHash,
     });
 
-    const { accessToken, refreshToken } = await this.generateTokens(
+    // Generate verification token
+    const verificationToken = uuidv4();
+    const verificationTokenHash = hashToken(verificationToken);
+
+    // Store in Redis with expiration
+    await this.cacheManager.set(
+      `verify:${verificationTokenHash}`,
       user.id,
-      user.email,
+      ms(
+        this.configService.getOrThrow<string>(
+          'auth.inviteTokenExpiry', // Reusing this config or define new one
+        ) as StringValue,
+      ),
     );
 
-    return {
-      accessToken,
-      refreshToken,
-      user,
-    };
+    // Send verification email
+    await this.notificationService.sendVerificationEmail(
+      user.email,
+      user.firstName,
+      verificationToken,
+    );
+    return user;
   }
 
   async login(loginInput: LoginInput): Promise<AuthPayload> {
@@ -270,6 +292,11 @@ export class AuthService {
 
     // TODO: Send email with resetToken
     // console.log(`Reset Token for ${user.email}: ${resetToken}`);
+    await this.notificationService.sendPasswordResetEmail(
+      user.email,
+      user.firstName,
+      resetToken,
+    );
 
     return true;
   }
@@ -348,10 +375,16 @@ export class AuthService {
     // Clear verification token
     await this.cacheManager.del(redisKey);
 
+    // Update user status
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { isEmailVerified: true },
+    });
+
     return {
       accessToken,
       refreshToken,
-      user,
+      user: { ...user, isEmailVerified: true },
     };
   }
 }
