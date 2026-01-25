@@ -8,11 +8,23 @@ export class User {
   @Field()
   email: string;
 
+  @Field({ nullable: true })
+  phoneNumber?: string;
+
   @Field()
-  name: string;
+  firstName: string;
+
+  @Field()
+  lastName: string;
+
+  @Field()
+  name?: string;
 
   @Field({ nullable: true })
   passwordHash?: string;
+
+  @Field()
+  isEmailVerified: boolean;
 
   @Field()
   createdAt: Date;

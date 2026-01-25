@@ -110,6 +110,7 @@ type Query {
   contacts: [Contact!]!
   me: User!
   myWitnessRequests(status: WitnessStatus): [Witness!]!
+  searchWitness(input: SearchWitnessInput!): WitnessCandidate
   transaction(id: ID!): Transaction!
   transactions: [Transaction!]!
   user(id: String!): User
@@ -123,6 +124,16 @@ input RefreshTokenInput {
 input ResetPasswordInput {
   newPassword: String!
   token: String!
+}
+
+enum SearchType {
+  EMAIL
+  PHONE
+}
+
+input SearchWitnessInput {
+  query: String!
+  type: SearchType!
 }
 
 input SignupInput {
@@ -190,9 +201,13 @@ input UpdateTransactionInput {
 type User {
   createdAt: DateTime!
   email: String!
+  firstName: String!
   id: ID!
+  isEmailVerified: Boolean!
+  lastName: String!
   name: String!
   passwordHash: String
+  phoneNumber: String
 }
 
 type Witness {
@@ -206,9 +221,16 @@ type Witness {
   userId: String!
 }
 
+type WitnessCandidate {
+  firstName: String!
+  id: ID!
+  lastName: String!
+}
+
 input WitnessInviteInput {
   email: String!
   name: String!
+  phoneNumber: String
 }
 
 enum WitnessStatus {

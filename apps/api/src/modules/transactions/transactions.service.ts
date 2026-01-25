@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
   Inject,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -12,6 +13,7 @@ import {
   AssetCategory,
   WitnessStatus,
   Prisma,
+  Witness,
 } from '../../generated/prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { hashToken } from '../../common/utils/crypto.utils';
@@ -21,6 +23,7 @@ import { ConfigService } from '@nestjs/config';
 import ms, { type StringValue } from 'ms';
 import { WitnessInviteInput } from '../witnesses/dto/witness-invite.input';
 import { NotificationService } from '../notifications/notification.service';
+import { splitName } from '../../common/utils/string.utils';
 
 @Injectable()
 export class TransactionsService {
@@ -39,14 +42,46 @@ export class TransactionsService {
   ) {
     // Handle existing users as witnesses
     if (witnessUserIds && witnessUserIds.length > 0) {
-      await prisma.witness.createMany({
+      const witnesses = await prisma.witness.createManyAndReturn({
         data: witnessUserIds.map((witnessUserId) => ({
           transactionId,
           userId: witnessUserId,
           status: WitnessStatus.PENDING,
         })),
-        skipDuplicates: true, // In case of duplicate IDs in input
+        skipDuplicates: true,
+        include: {
+          user: {
+            select: {
+              email: true,
+              firstName: true,
+              lastName: true,
+              phoneNumber: true,
+            },
+          },
+        },
       });
+
+      for (const witness of witnesses) {
+        const rawToken = uuidv4();
+        const hashedToken = hashToken(rawToken);
+
+        await this.cacheManager.set(
+          `invite:${hashedToken}`,
+          witness.id,
+          ms(
+            this.configService.getOrThrow<string>(
+              'auth.inviteTokenExpiry',
+            ) as StringValue,
+          ),
+        );
+
+        await this.notificationService.sendTransactionWitnessInvite(
+          witness.user.email,
+          witness.user.firstName,
+          rawToken,
+          witness.user.phoneNumber,
+        );
+      }
     }
 
     // Handle new user invites
@@ -59,10 +94,13 @@ export class TransactionsService {
 
         // If not, create a placeholder user
         if (!user) {
+          const { firstName, lastName } = splitName(invite.name);
           user = await prisma.user.create({
             data: {
               email: invite.email,
-              name: invite.name,
+              firstName,
+              lastName,
+              phoneNumber: invite.phoneNumber,
               passwordHash: null, // Indicates invited user
             },
           });
@@ -78,35 +116,59 @@ export class TransactionsService {
           },
         });
 
+        let witness: Witness = undefined;
         if (!existingWitness) {
           // Create witness record WITHOUT invite token first (we'll store it in Redis)
-          const witness = await prisma.witness.create({
+          witness = await prisma.witness.create({
             data: {
               transactionId,
               userId: user.id,
               status: WitnessStatus.PENDING,
             },
           });
-
-          // Generate secure token and hash it
-          const rawToken = uuidv4();
-          const hashedToken = hashToken(rawToken);
-
-          // Store in Redis: `invite:{hashedToken}` -> `witnessId`
-          // TTL: 7 days (604800000 ms) by default
-          await this.cacheManager.set(
-            `invite:${hashedToken}`,
-            witness.id,
-            ms(
-              this.configService.getOrThrow<string>(
-                'auth.inviteTokenExpiry',
-              ) as StringValue,
-            ),
-          );
-
-          // TODO: Send invitation email here with `rawToken` (future enhancement)
-          // Example: await this.emailService.sendInvite(invite.email, rawToken);
+        } else if (
+          existingWitness &&
+          existingWitness.status === WitnessStatus.PENDING
+        ) {
+          // Check if we have a valid phone number from the User record if not in invite
+          // We need to retrieve the existing token or create a new one if it expired.
+          // Since we don't easily have the token if it's hashed in Redis,
+          // simplest for re-invite is to generate a new token.
         }
+        // Generate secure token and hash it
+        const rawToken = uuidv4();
+        const hashedToken = hashToken(rawToken);
+
+        // Store in Redis: `invite:{hashedToken}` -> `witnessId`
+        // TTL: 7 days (604800000 ms) by default
+        await this.cacheManager.set(
+          `invite:${hashedToken}`,
+          witness.id || existingWitness.id,
+          ms(
+            this.configService.getOrThrow<string>(
+              'auth.inviteTokenExpiry',
+            ) as StringValue,
+          ),
+        );
+
+        const targetPhoneNumber = invite.phoneNumber || user.phoneNumber;
+        const targetEmail = invite.email || user.email;
+        const { firstName } = splitName(invite.name);
+        const targetName = firstName || user.firstName;
+
+        await this.notificationService.sendTransactionWitnessInvite(
+          targetEmail,
+          targetName,
+          rawToken,
+          targetPhoneNumber,
+        );
+
+        await this.notificationService.sendTransactionWitnessInvite(
+          targetEmail,
+          targetName,
+          rawToken,
+          targetPhoneNumber,
+        );
       }
     }
   }
@@ -160,15 +222,10 @@ export class TransactionsService {
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user) {
-      await this.notificationService.sendMultiChannel({
-        email: {
-          to: user.email,
-          subject: 'Transaction Created',
-          text: `Dear ${user.name}, your transaction has been successfully created.`,
-          html: `<p>Dear ${user.name},</p><p>Your transaction has been successfully created.</p>`,
-        },
-        // SMS omitted as User entity currently lacks phoneNumber
-      });
+      await this.notificationService.sendTransactionCreatedEmail(
+        user.email,
+        user.firstName,
+      );
     }
 
     return transaction;
@@ -224,8 +281,8 @@ export class TransactionsService {
   }
 
   async findOne(id: string, userId: string) {
-    const transaction = await this.prisma.transaction.findFirst({
-      where: { id, createdById: userId },
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id },
       include: {
         witnesses: true,
         history: {
@@ -241,6 +298,12 @@ export class TransactionsService {
 
     if (!transaction) {
       throw new NotFoundException(`Transaction with ID ${id} not found`);
+    }
+
+    if (transaction.createdById !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to access this transaction',
+      );
     }
 
     return transaction;
