@@ -1,16 +1,16 @@
 import type {
-  AcknowledgeWitnessRequestMutation,
-  AcknowledgeWitnessRequestMutationVariables,
-  GetWitnessInvitationQuery,
-  GetWitnessInvitationQueryVariables,
-  MyWitnessRequestsQuery,
+	AcknowledgeWitnessRequestMutation,
+	AcknowledgeWitnessRequestMutationVariables,
+	GetWitnessInvitationQuery,
+	GetWitnessInvitationQueryVariables,
+	MyWitnessRequestsQuery,
 } from "@/types/__generated__/graphql";
 import type { MyWitnessRequestsQueryVariables } from "@/types/__generated__/graphql";
 import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const MY_WITNESS_REQUESTS: TypedDocumentNode<
-  MyWitnessRequestsQuery,
-  MyWitnessRequestsQueryVariables
+	MyWitnessRequestsQuery,
+	MyWitnessRequestsQueryVariables
 > = gql`
   query MyWitnessRequests($status: WitnessStatus) {
     myWitnessRequests(status: $status) {
@@ -34,8 +34,8 @@ export const MY_WITNESS_REQUESTS: TypedDocumentNode<
 `;
 
 export const ACKNOWLEDGE_WITNESS: TypedDocumentNode<
-  AcknowledgeWitnessRequestMutation,
-  AcknowledgeWitnessRequestMutationVariables
+	AcknowledgeWitnessRequestMutation,
+	AcknowledgeWitnessRequestMutationVariables
 > = gql`
   mutation AcknowledgeWitnessRequest($input: AcknowledgeWitnessInput!) {
     acknowledgeWitness(input: $input) {
@@ -47,8 +47,8 @@ export const ACKNOWLEDGE_WITNESS: TypedDocumentNode<
 `;
 
 export const GET_WITNESS_INVITATION: TypedDocumentNode<
-  GetWitnessInvitationQuery,
-  GetWitnessInvitationQueryVariables
+	GetWitnessInvitationQuery,
+	GetWitnessInvitationQueryVariables
 > = gql`
   query GetWitnessInvitation($token: String!) {
     witnessInvitation(token: $token) {

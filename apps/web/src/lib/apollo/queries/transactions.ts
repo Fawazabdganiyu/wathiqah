@@ -1,12 +1,12 @@
-import {
-  TransactionQuery,
-  TransactionQueryVariables,
+import type {
+	TransactionQuery,
+	TransactionQueryVariables,
 } from "@/types/__generated__/graphql";
-import { gql, TypedDocumentNode } from "@apollo/client";
+import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const GET_TRANSACTION: TypedDocumentNode<
-  TransactionQuery,
-  TransactionQueryVariables
+	TransactionQuery,
+	TransactionQueryVariables
 > = gql`
   query Transaction($id: ID!) {
     transaction(id: $id) {
@@ -40,6 +40,24 @@ export const GET_TRANSACTION: TypedDocumentNode<
         previousState
         newState
         createdAt
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  }
+`;
+
+export const ADD_WITNESS = gql`
+  mutation AddWitness($input: AddWitnessInput!) {
+    addWitness(input: $input) {
+      id
+      witnesses {
+        id
+        status
+        invitedAt
         user {
           id
           name
