@@ -28,6 +28,8 @@ Financial exchanges between people are often undocumented, leading to confusion 
   - Easy onboarding for new witnesses via invitation link.
   - Track witness acknowledgment status (Pending, Acknowledged, Declined, Modified).
   - View all witnessed transactions.
+- **Privacy-Preserving Witness Search**: Search existing users by exact email or phone and only receive the user ID with masked names (no email/phone exposure).
+- **Flexible Contacts**: Contacts can exist independently without linking to an app user; linking (userId) is optional.
 - **Authentication**: Secure JWT-based authentication.
 - **API**: Flexible GraphQL API.
 
@@ -59,6 +61,7 @@ Financial exchanges between people are often undocumented, leading to confusion 
 - **Styling:** Tailwind CSS
 - **Linting:** Biome
 - **Deployment:** Nitro (platform-agnostic)
+- **Hooks:** Feature/page logic extracted into reusable hooks under `apps/web/src/hooks` (e.g., `useContacts`, `useTransaction`).
 
 ### Backend (`apps/api`)
 
@@ -84,6 +87,7 @@ wathiqah/                          # Monorepo root
 ├── apps/
 │   ├── api/                      # NestJS GraphQL Backend
 │   └── web/                      # TanStack Start Frontend
+│       └── src/hooks/            # Reusable hooks (useContacts, useTransaction)
 ├── packages/
 │   └── types/                    # Shared TypeScript types (future)
 ├── .gitignore
@@ -117,6 +121,25 @@ wathiqah/                          # Monorepo root
 ```bash
 git clone https://github.com/fawazabdganiyu/wathiqah.git
 cd wathiqah
+```
+
+```graphql
+# Privacy-Preserving Witness Search (exact match only)
+query SearchWitnessByEmail {
+  searchWitness(input: { query: "john.doe@example.com", type: EMAIL }) {
+    id
+    firstName # masked, e.g., "J***"
+    lastName # masked, e.g., "D***"
+  }
+}
+
+query SearchWitnessByPhone {
+  searchWitness(input: { query: "+1234567890", type: PHONE }) {
+    id
+    firstName
+    lastName
+  }
+}
 ```
 
 ### Install Dependencies
@@ -301,6 +324,15 @@ cd apps/web
 pnpm test
 ```
 
+## 🔒 Security & Privacy
+
+- **Witness Search**: Blind verification using exact-match email/phone; returns only `id` and masked names to prevent enumeration and PII leakage.
+- **Access Control**: All search endpoints use GraphQL auth guards; only authenticated users can query.
+- **Data Minimization**: Queries select minimal fields; phone lookups indexed for performance.
+- **Auditability**: Transaction history tracks updates and witness status transitions.
+
+See [WITNESS_SEARCH_IMPLEMENTATION.md](./WITNESS_SEARCH_IMPLEMENTATION.md) for details.
+
 ---
 
 ## 🏗️ Build for Production
@@ -318,23 +350,31 @@ cd apps/web && pnpm build
 
 ## 🧠 AI Integration Strategy
 
-Wathȋqah leverages AI tools throughout development to boost productivity and ensure maintainability.
+Wathȋqah leverages cutting-edge AI tools to boost productivity, ensure maintainability, and accelerate development cycles.
 
-### Code Generation
+### Development Environment
 
-Use AI-powered IDE tools (e.g., Zed with GitHub Copilot, Gemini AI, CodeRabbit) to scaffold React components, backend endpoints, and database models.
+- **Primary IDE:** **Trae**, an AI-first IDE powered by **Google Gemini AI**.
+- **Agentic Workflow:** Utilizing **Antigravity** for autonomous coding tasks, context-aware code generation, and project-wide refactoring.
+- **Version Control:** **GitLens** for tracking version changes, visualizing code authorship, and comprehensive commit history exploration.
 
-### Testing
+### Code Generation & Assistance
 
-Employ AI to draft unit and integration tests for key functions.
+- Leverage Trae's integrated AI to scaffold React components, backend NestJS modules, and GraphQL resolvers.
+- Use predictive code completion and smart refactoring driven by Gemini models.
+
+### Testing & Quality Assurance
+
+- Employ AI agents to draft unit and integration tests for key business logic.
+- Automated code reviews and optimization suggestions during the development process.
 
 ### Documentation
 
-Use AI to create docstrings, inline comments, and maintain up-to-date documentation.
+- Auto-generate docstrings, inline comments, and maintain up-to-date documentation (like this README) using context-aware AI.
 
 ### Context-aware Techniques
 
-Feed API specs (via GraphQL schema), database schemas, and file diffs into AI workflows for more accurate code and doc generation.
+- Feed API specs (via GraphQL schema), database schemas, and file diffs into Trae's context engine for highly accurate, project-specific code generation.
 
 ---
 
@@ -347,23 +387,32 @@ Feed API specs (via GraphQL schema), database schemas, and file diffs into AI wo
 - [x] Configure Prisma 7 with PostgreSQL adapter
 - [x] Implement Transactions module (GraphQL API)
 - [x] Implement authentication flow (JWT)
-- [ ] Implement Contacts management
-- [ ] **Implement Witness System**
+- [x] Implement Contacts management
+- [x] **Implement Witness System**
   - [x] Database schema for witnesses
   - [x] GraphQL mutations for adding witnesses (via Create Transaction)
   - [x] Backend logic for witness invitation (Tokens/Redis)
-  - [ ] Email notifications for invitations
-  - [ ] Frontend: Witness invitation landing page
-  - [ ] Frontend: Witness acknowledgment UI
-  - [ ] Frontend: Witness status tracking
-- [ ] **Transaction History & Audit**
+  - [x] Email notifications for invitations
+  - [x] Frontend: Witness invitation landing page
+  - [x] Frontend: Witness acknowledgment UI
+  - [x] Frontend: Witness status tracking
+- [x] **Notification System**
+  - [x] Email Provider (SendGrid)
+  - [x] SMS Provider (Twilio)
+  - [x] Notification Service (Multi-channel support)
+- [x] **Transaction History & Audit**
   - [x] Backend implementation (Audit logs, history table)
-  - [ ] Frontend history viewer
+  - [x] Frontend history viewer
+- [x] **Authentication & Security**
+  - [x] Signup/Login (JWT)
+  - [x] Change Password
+  - [x] Forgot/Reset Password
+  - [x] Email Verification
 - [ ] **Shared Access System** (Planned)
 - [ ] **Promise Tracker** (Planned)
-- [ ] Build contacts management UI (Frontend)
-- [ ] Build transaction management UI (Frontend)
-- [ ] Integrate Apollo Client with backend
+- [x] Build contacts management UI (Frontend)
+- [x] Build transaction management UI (Frontend)
+- [x] Integrate Apollo Client with backend
 - [ ] Add unit and E2E tests
 - [ ] Setup CI/CD pipeline
 - [ ] Deployment
