@@ -27,7 +27,7 @@ function LandingPage() {
 							<span className="text-primary">Digitally Verified.</span>
 						</h1>
 						<p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-							Wathiqah bridges the gap between informal agreements and legal
+							Wathȋqah bridges the gap between informal agreements and legal
 							contracts. Document loans, shared expenses, and payments with
 							verified witnesses for peace of mind.
 						</p>
@@ -180,12 +180,14 @@ function LandingPage() {
 
 			{/* Footer */}
 			<footer className="bg-muted/30 py-12 border-t border-border">
-				<div className="container mx-auto px-4">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="flex flex-col md:flex-row justify-between items-center">
-						<div className="flex items-center gap-2 mb-4 md:mb-0">
-							<Lock className="w-5 h-5 text-primary" />
-							<span className="font-bold text-lg text-foreground">
-								Wathiqah
+						<div className="flex items-center gap-2.5 mb-4 md:mb-0">
+							<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+								<ShieldCheck className="h-5 w-5" strokeWidth={2.5} />
+							</div>
+							<span className="font-bold text-xl leading-none tracking-tight text-primary">
+								Wathȋqah
 							</span>
 						</div>
 						<div className="flex gap-8 text-sm text-muted-foreground">
@@ -201,7 +203,7 @@ function LandingPage() {
 						</div>
 					</div>
 					<div className="mt-8 text-center text-xs text-muted-foreground">
-						&copy; {new Date().getFullYear()} Wathiqah. All rights reserved.
+						&copy; {new Date().getFullYear()} Wathȋqah. All rights reserved.
 					</div>
 				</div>
 			</footer>
