@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Transaction Update Notification</h2>
+<p>Hello {{ name }},</p>
+<p>A transaction you previously witnessed on Wathȋqah has been modified by {{ updatedBy }}.</p>
+<p><strong>What changed:</strong></p>
+<ul>
+  {% for change in changes %}
+  <li>{{ change }}</li>
+  {% endfor %}
+</ul>
+<p>Please review the updated transaction and re-acknowledge it to confirm the new details.</p>
+<p>
+  <a href="{{ actionUrl }}" class="button">Review Transaction</a>
+</p>
+<p>If you did not expect this change, please contact the transaction creator.</p>
+{% endblock %}

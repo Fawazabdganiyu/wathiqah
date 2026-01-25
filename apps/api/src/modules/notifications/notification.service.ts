@@ -189,6 +189,41 @@ export class NotificationService {
     );
   }
 
+  /**
+   * Notifies a witness that a transaction they witnessed has been updated.
+   *
+   * @param email - The witness's email address.
+   * @param name - The witness's name.
+   * @param updatedBy - The name of the user who updated the transaction.
+   * @param changes - A list of descriptions of what changed.
+   * @param transactionId - The ID of the transaction.
+   */
+  async sendWitnessUpdateNotification(
+    email: string,
+    name: string,
+    updatedBy: string,
+    changes: string[],
+    transactionId: string,
+  ): Promise<void> {
+    this.validateParams({ email, name, updatedBy, transactionId });
+
+    const actionUrl = `${this.configService.get('app.url')}/transactions/${transactionId}`;
+    const subject = 'Action Required: Witnessed Transaction Updated';
+
+    await this.sendEmailWithTemplate(
+      email,
+      subject,
+      'transaction-witness-update',
+      {
+        name,
+        updatedBy,
+        changes,
+        actionUrl,
+        subject,
+      },
+    );
+  }
+
   private validateParams(params: Record<string, string>): void {
     for (const [key, value] of Object.entries(params)) {
       if (!value || typeof value !== 'string' || value.trim() === '') {

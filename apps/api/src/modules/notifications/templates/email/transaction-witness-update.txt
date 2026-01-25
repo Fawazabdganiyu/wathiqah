@@ -1,0 +1,13 @@
+Hello {{ name }},
+
+A transaction you previously witnessed on Wathȋqah has been modified by {{ updatedBy }}.
+
+What changed:
+{% for change in changes %}
+- {{ change }}
+{% endfor %}
+
+Please review the updated transaction and re-acknowledge it to confirm the new details:
+{{ actionUrl }}
+
+If you did not expect this change, please contact the transaction creator.

@@ -20,7 +20,7 @@ import { hashToken } from '../../common/utils/crypto.utils';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
-import ms, { type StringValue } from 'ms';
+import * as ms from 'ms';
 import { WitnessInviteInput } from '../witnesses/dto/witness-invite.input';
 import { NotificationService } from '../notifications/notification.service';
 import { splitName } from '../../common/utils/string.utils';
@@ -71,7 +71,7 @@ export class TransactionsService {
           ms(
             this.configService.getOrThrow<string>(
               'auth.inviteTokenExpiry',
-            ) as StringValue,
+            ) as ms.StringValue,
           ),
         );
 
@@ -147,7 +147,7 @@ export class TransactionsService {
           ms(
             this.configService.getOrThrow<string>(
               'auth.inviteTokenExpiry',
-            ) as StringValue,
+            ) as ms.StringValue,
           ),
         );
 
@@ -284,7 +284,11 @@ export class TransactionsService {
     const transaction = await this.prisma.transaction.findUnique({
       where: { id },
       include: {
-        witnesses: true,
+        witnesses: {
+          include: {
+            user: true,
+          },
+        },
         history: {
           include: {
             user: true,
@@ -328,23 +332,6 @@ export class TransactionsService {
       contactId: transaction.contactId,
     };
 
-    // Business Rule: Check if any witness has acknowledged
-    const hasAcknowledgedWitness = transaction.witnesses.some(
-      (w) => w.status === WitnessStatus.ACKNOWLEDGED,
-    );
-
-    if (hasAcknowledgedWitness) {
-      // Logic for post-acknowledgement update:
-      // Mark witnesses as MODIFIED instead of PENDING to indicate an update occurred
-      await this.prisma.witness.updateMany({
-        where: { transactionId: id },
-        data: {
-          status: WitnessStatus.MODIFIED,
-          acknowledgedAt: null,
-        },
-      });
-    }
-
     const {
       category,
       amount,
@@ -363,24 +350,93 @@ export class TransactionsService {
 
     // Determine what actually changed for the history log
     const changes: any = {};
-    if (category && category !== transaction.category)
+    const changeDescriptions: string[] = [];
+
+    if (category && category !== transaction.category) {
       changes.category = category;
-    if (amount && Number(amount) !== Number(transaction.amount))
+      changeDescriptions.push(`Category changed to ${category}`);
+    }
+    if (amount && Number(amount) !== Number(transaction.amount)) {
       changes.amount = amount;
-    if (itemName && itemName !== transaction.itemName)
+      changeDescriptions.push(`Amount changed to ${amount}`);
+    }
+    if (itemName && itemName !== transaction.itemName) {
       changes.itemName = itemName;
-    if (quantity && quantity !== transaction.quantity)
+      changeDescriptions.push(`Item Name changed to ${itemName}`);
+    }
+    if (quantity && quantity !== transaction.quantity) {
       changes.quantity = quantity;
-    if (rest.description && rest.description !== transaction.description)
+      changeDescriptions.push(`Quantity changed to ${quantity}`);
+    }
+    if (rest.description && rest.description !== transaction.description) {
       changes.description = rest.description;
+      changeDescriptions.push('Description updated');
+    }
     if (
       rest.date &&
       new Date(rest.date).getTime() !== new Date(transaction.date).getTime()
-    )
+    ) {
       changes.date = rest.date;
-    if (rest.type && rest.type !== transaction.type) changes.type = rest.type;
-    if (rest.contactId && rest.contactId !== transaction.contactId)
+      changeDescriptions.push(
+        `Date changed to ${new Date(rest.date).toLocaleDateString()}`,
+      );
+    }
+    if (rest.type && rest.type !== transaction.type) {
+      changes.type = rest.type;
+      changeDescriptions.push(`Type changed to ${rest.type}`);
+    }
+    if (rest.contactId && rest.contactId !== transaction.contactId) {
       changes.contactId = rest.contactId;
+      changeDescriptions.push('Contact updated');
+    }
+
+    const hasChanges = Object.keys(changes).length > 0;
+
+    // Business Rule: Check if any witness has acknowledged
+    const acknowledgedWitnesses = transaction.witnesses.filter(
+      (w) => w.status === WitnessStatus.ACKNOWLEDGED,
+    );
+    const hasAcknowledgedWitness = acknowledgedWitnesses.length > 0;
+
+    if (hasChanges && hasAcknowledgedWitness) {
+      // Logic for post-acknowledgement update:
+      // Mark witnesses as MODIFIED instead of PENDING to indicate an update occurred
+      await this.prisma.witness.updateMany({
+        where: { transactionId: id, status: WitnessStatus.ACKNOWLEDGED },
+        data: {
+          status: WitnessStatus.MODIFIED,
+          acknowledgedAt: null,
+        },
+      });
+
+      // Notify witnesses
+      const updater = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+      const updaterName = updater
+        ? `${updater.firstName} ${updater.lastName}`
+        : 'Transaction Owner';
+
+      for (const witness of acknowledgedWitnesses) {
+        if (witness.user && witness.user.email) {
+          // Fire and forget notification
+          this.notificationService
+            .sendWitnessUpdateNotification(
+              witness.user.email,
+              witness.user.firstName || 'Witness',
+              updaterName,
+              changeDescriptions,
+              id,
+            )
+            .catch((err) =>
+              console.error(
+                `Failed to send witness update notification to ${witness.user.email}`,
+                err,
+              ),
+            );
+        }
+      }
+    }
 
     // Perform update and create history record in a transaction
     const [updatedTransaction] = await this.prisma.$transaction([

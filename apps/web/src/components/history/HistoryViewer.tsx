@@ -28,19 +28,50 @@ interface HistoryEntry {
 		name: string;
 		email: string;
 	};
-	previousState: Record<string, unknown> | null;
-	newState: Record<string, unknown> | null;
+	previousState: Record<string, any> | null;
+	newState: Record<string, any> | null;
 }
 
 interface HistoryViewerProps {
 	history: HistoryEntry[];
 }
 
+// Helper to format values for display
+const formatValue = (key: string, value: any): string => {
+	if (value === null || value === undefined) return "—";
+	if (key === "date") {
+		return format(new Date(value), "MMM d, yyyy");
+	}
+	if (key === "amount") {
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "SAR",
+		}).format(Number(value));
+	}
+	if (typeof value === "object") return JSON.stringify(value);
+	return String(value);
+};
+
 export function HistoryViewer({ history }: HistoryViewerProps) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterType, setFilterType] = useState<string>("ALL");
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 	const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+	// Calculate changes for a history item
+	const getChanges = (item: HistoryEntry) => {
+		if (!item.newState) return [];
+
+		return Object.keys(item.newState).map((key) => {
+			const prev = item.previousState ? item.previousState[key] : undefined;
+			const current = item.newState![key];
+			return {
+				field: key,
+				oldValue: prev,
+				newValue: current,
+			};
+		});
+	};
 
 	// Filter and sort history
 	const filteredHistory = useMemo(() => {
@@ -206,31 +237,59 @@ export function HistoryViewer({ history }: HistoryViewerProps) {
 								{/* Expanded Details */}
 								{expandedItems.has(item.id) && (
 									<div className="mt-3 p-4 bg-muted/50 rounded-lg text-sm border border-border animate-in fade-in slide-in-from-top-2">
-										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-											{item.previousState &&
-												Object.keys(item.previousState).length > 0 && (
-													<div>
-														<h4 className="font-semibold text-muted-foreground mb-2 text-xs uppercase tracking-wider">
-															Previous State
-														</h4>
-														<pre className="bg-background p-3 rounded border border-border overflow-x-auto text-xs font-mono">
-															{JSON.stringify(item.previousState, null, 2)}
-														</pre>
-													</div>
-												)}
+										{item.changeType === "UPDATE_POST_ACK" && (
+											<div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-800 flex items-center gap-2">
+												<History className="w-4 h-4" />
+												<p className="text-xs font-medium">
+													This update occurred after witness acknowledgement.
+													Witnesses have been notified to re-verify.
+												</p>
+											</div>
+										)}
 
-											{item.newState &&
-												Object.keys(item.newState).length > 0 && (
-													<div>
-														<h4 className="font-semibold text-primary mb-2 text-xs uppercase tracking-wider">
-															New State
-														</h4>
-														<pre className="bg-background p-3 rounded border border-border overflow-x-auto text-xs font-mono">
-															{JSON.stringify(item.newState, null, 2)}
-														</pre>
-													</div>
-												)}
-										</div>
+										{item.newState && Object.keys(item.newState).length > 0 ? (
+											<div className="rounded-md border border-border bg-background overflow-hidden">
+												<table className="w-full text-left text-sm">
+													<thead className="bg-muted text-muted-foreground">
+														<tr>
+															<th className="p-2 font-medium text-xs uppercase tracking-wider w-1/3">
+																Field
+															</th>
+															<th className="p-2 font-medium text-xs uppercase tracking-wider w-1/3">
+																Previous
+															</th>
+															<th className="p-2 font-medium text-xs uppercase tracking-wider w-1/3">
+																New
+															</th>
+														</tr>
+													</thead>
+													<tbody className="divide-y divide-border">
+														{getChanges(item).map((change) => (
+															<tr
+																key={change.field}
+																className="group hover:bg-muted/30 transition-colors"
+															>
+																<td className="p-2 font-medium text-foreground capitalize">
+																	{change.field
+																		.replace(/([A-Z])/g, " $1")
+																		.trim()}
+																</td>
+																<td className="p-2 text-muted-foreground font-mono text-xs">
+																	{formatValue(change.field, change.oldValue)}
+																</td>
+																<td className="p-2 text-primary font-semibold font-mono text-xs">
+																	{formatValue(change.field, change.newValue)}
+																</td>
+															</tr>
+														))}
+													</tbody>
+												</table>
+											</div>
+										) : (
+											<div className="text-muted-foreground text-xs italic">
+												No specific field changes recorded.
+											</div>
+										)}
 									</div>
 								)}
 							</div>

@@ -13,7 +13,7 @@ import { SignupInput } from './dto/signup.input';
 import { LoginInput } from './dto/login.input';
 import { AuthPayload } from './entities/auth-payload.entity';
 import { ConfigService } from '@nestjs/config';
-import ms, { type StringValue } from 'ms';
+import * as ms from 'ms';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AcceptInvitationInput } from './dto/accept-invitation.input';
 import { hashToken } from '../../common/utils/crypto.utils';
@@ -42,12 +42,12 @@ export class AuthService {
     const accessExpiry = ms(
       this.configService.getOrThrow<string>(
         'auth.jwt.expiration',
-      ) as StringValue,
+      ) as ms.StringValue,
     );
     const refreshExpiry = ms(
       this.configService.getOrThrow<string>(
         'auth.jwt.refreshExpiration',
-      ) as StringValue,
+      ) as ms.StringValue,
     );
 
     const accessToken = await this.jwtService.signAsync(
@@ -99,8 +99,8 @@ export class AuthService {
       user.id,
       ms(
         this.configService.getOrThrow<string>(
-          'auth.inviteTokenExpiry', // Reusing this config or define new one
-        ) as StringValue,
+          'auth.inviteTokenExpiry',
+        ) as ms.StringValue,
       ),
     );
 
@@ -286,7 +286,7 @@ export class AuthService {
       ms(
         this.configService.getOrThrow<string>(
           'auth.resetPasswordTokenExpiry',
-        ) as StringValue,
+        ) as ms.StringValue,
       ),
     );
 
