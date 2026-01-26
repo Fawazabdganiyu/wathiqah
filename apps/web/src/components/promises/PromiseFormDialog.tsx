@@ -125,7 +125,7 @@ export function PromiseFormDialog({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Pay back John" {...field} />
+                    <Input placeholder="e.g. Pay back Ahmad Sulaiman" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,7 +138,7 @@ export function PromiseFormDialog({
                 <FormItem>
                   <FormLabel>Promise To</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name of person/entity" {...field} />
+                    <Input placeholder="Ahmad Sulaiman" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

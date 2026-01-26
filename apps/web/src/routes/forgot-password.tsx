@@ -89,7 +89,7 @@ function ForgotPasswordPage() {
             <Input
               id={`${id}-email`}
               type="email"
-              placeholder="name@example.com"
+              placeholder="ahmad.sulaiman@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

@@ -1,13 +1,32 @@
 import { Loader2, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface BrandLoaderProps {
+  className?: string;
+  size?: "sm" | "md" | "lg";
+}
+
+export function BrandLoader({ className, size = "lg" }: BrandLoaderProps) {
+  const sizeConfig = {
+    sm: { outer: "h-6 w-6", inner: "h-2.5 w-2.5" }, // 24px
+    md: { outer: "h-8 w-8", inner: "h-3.5 w-3.5" }, // 32px
+    lg: { outer: "h-16 w-16", inner: "h-6 w-6" }, // 64px
+  };
+
+  const { outer, inner } = sizeConfig[size];
+
+  return (
+    <div className={cn("relative flex items-center justify-center", className)}>
+      <Loader2 className={cn("animate-spin text-primary/50", outer)} />
+      <ShieldCheck className={cn("absolute text-primary animate-pulse", inner)} strokeWidth={2.5} />
+    </div>
+  );
+}
+
 export function PageLoader({ className }: { className?: string }) {
   return (
     <div className={cn("flex h-[50vh] w-full items-center justify-center", className)}>
-      <div className="relative flex items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary/50" />
-        <ShieldCheck className="absolute h-6 w-6 text-primary animate-pulse" strokeWidth={2.5} />
-      </div>
+      <BrandLoader size="lg" />
     </div>
   );
 }

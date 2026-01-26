@@ -32,6 +32,7 @@ import {
   Plus,
   ArrowRightLeft,
 } from "lucide-react";
+import { BrandLoader } from "@/components/ui/page-loader";
 
 export const Route = createFileRoute("/transactions/")({
   component: TransactionsPage,
@@ -188,7 +189,9 @@ function TransactionsPage() {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-10">
-                    Loading transactions...
+                    <div className="flex justify-center">
+                      <BrandLoader size="sm" />
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : filteredTransactions.length === 0 ? (

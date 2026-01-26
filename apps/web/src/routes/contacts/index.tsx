@@ -15,6 +15,7 @@ import {
   Mail,
   Wallet,
 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils/formatters";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -105,7 +106,7 @@ function ContactsPage() {
       <div className="mb-6 relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by name, email, or phone..."
+          placeholder="Search by name (e.g. Ahmad Sulaiman), email, or phone..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10 h-10 bg-background"
@@ -165,8 +166,8 @@ function ContactsPage() {
                       {contact.balance === 0
                         ? "Settled"
                         : contact.balance > 0
-                          ? `Owes you SAR ${contact.balance}`
-                          : `You owe SAR ${Math.abs(contact.balance)}`}
+                          ? `Owes you ${formatCurrency(contact.balance)}`
+                          : `You owe ${formatCurrency(Math.abs(contact.balance))}`}
                     </span>
                   </div>
                 </div>
@@ -219,7 +220,7 @@ function ContactsPage() {
                 )}
                 <div className="flex items-center gap-2">
                   <Wallet className="w-4 h-4 text-muted-foreground" />
-                  <span>Balance: SAR {Math.abs(contact.balance).toFixed(2)}</span>
+                  <span>Balance: {formatCurrency(Math.abs(contact.balance))}</span>
                 </div>
               </div>
             </div>

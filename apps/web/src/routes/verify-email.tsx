@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PageLoader } from "@/components/ui/page-loader";
+import { BrandLoader } from "@/components/ui/page-loader";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { z } from "zod";
 
@@ -82,14 +82,8 @@ function VerifyEmailPage() {
     <div className="flex flex-1 items-center justify-center bg-neutral-50 dark:bg-neutral-950 p-4">
       <div className="w-full max-w-md bg-white dark:bg-neutral-900 p-8 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-800 text-center">
         {status === "verifying" && (
-          <div className="space-y-4">
-            <PageLoader className="h-32" />
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-white">
-              Verifying your email...
-            </h2>
-            <p className="text-neutral-600 dark:text-neutral-400">
-              Please wait while we verify your account.
-            </p>
+          <div className="space-y-4 flex justify-center h-32 items-center">
+            <BrandLoader size="lg" />
           </div>
         )}
 
@@ -134,7 +128,7 @@ function VerifyEmailPage() {
                     <Input
                       id={resendEmailId}
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="ahmad.sulaiman@example.com"
                       value={resendEmail}
                       onChange={(e) => setResendEmail(e.target.value)}
                       required
@@ -142,7 +136,7 @@ function VerifyEmailPage() {
                     />
                   </div>
                   <Button type="submit" className="w-full" isLoading={resendStatus === "loading"}>
-                    {resendStatus === "loading" ? "Sending..." : "Resend Verification Email"}
+                    Resend Verification Email
                   </Button>
                   {resendStatus === "error" && (
                     <p className="text-xs text-red-500">Failed to send email. Please try again.</p>

@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { PageLoader, BrandLoader } from "@/components/ui/page-loader";
 
 export const Route = createFileRoute("/contacts/$contactId")({
   component: ContactDetailsPage,
@@ -38,7 +39,7 @@ function ContactDetailsPage() {
     variables: { filter: { contactId } },
   });
 
-  if (contactLoading) return <div className="p-8 text-center">Loading contact details...</div>;
+  if (contactLoading) return <PageLoader />;
   if (contactError)
     return <div className="p-8 text-center text-red-500">Error: {contactError.message}</div>;
   if (!contactData?.contact) return <div className="p-8 text-center">Contact not found</div>;
@@ -136,7 +137,9 @@ function ContactDetailsPage() {
               {txLoading ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-10">
-                    Loading transactions...
+                    <div className="flex justify-center">
+                      <BrandLoader size="sm" />
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : transactions.length === 0 ? (

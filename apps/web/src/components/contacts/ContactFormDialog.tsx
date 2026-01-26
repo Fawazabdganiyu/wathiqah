@@ -124,7 +124,7 @@ export function ContactFormDialog({ isOpen, onClose, contact }: ContactFormDialo
               id={nameId}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
+              placeholder="Ahmad Sulaiman"
               required
             />
             <p className="text-[0.8rem] text-muted-foreground">First name first, last name last.</p>
@@ -137,7 +137,7 @@ export function ContactFormDialog({ isOpen, onClose, contact }: ContactFormDialo
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="john@example.com"
+              placeholder="ahmad.sulaiman@example.com"
             />
           </div>
 

@@ -7,6 +7,7 @@ import { useContacts } from "@/hooks/useContacts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { BrandLoader } from "@/components/ui/page-loader";
 import {
   Form,
   FormControl,
@@ -135,7 +136,9 @@ function NewTransactionPage() {
                         <SelectItem value="none">Personal (No Contact)</SelectItem>
                         {loadingContacts ? (
                           <SelectItem value="loading" disabled>
-                            Loading contacts...
+                            <div className="flex items-center justify-center gap-2">
+                              <BrandLoader size="sm" />
+                            </div>
                           </SelectItem>
                         ) : contacts.length === 0 ? (
                           <SelectItem value="none" disabled>

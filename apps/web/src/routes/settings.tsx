@@ -4,7 +4,7 @@ import { useSharedAccess } from "@/hooks/useSharedAccess";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PageLoader } from "@/components/ui/page-loader";
+import { PageLoader, BrandLoader } from "@/components/ui/page-loader";
 import { useState, useId } from "react";
 import { Trash2, Plus, UserPlus, Key } from "lucide-react";
 import { Eye, ExternalLink } from "lucide-react";
@@ -118,7 +118,9 @@ function SharedAccessSection() {
         </div>
 
         {loadingReceived ? (
-          <PageLoader className="h-24" />
+          <div className="h-24 flex items-center justify-center">
+            <BrandLoader size="md" />
+          </div>
         ) : (
           <div className="space-y-4">
             {receivedGrants.length === 0 ? (
@@ -202,7 +204,7 @@ function SharedAccessSection() {
             <Input
               id={grantEmailId}
               type="email"
-              placeholder="friend@example.com"
+              placeholder="ahmad.sulaiman@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -215,7 +217,9 @@ function SharedAccessSection() {
         </form>
 
         {loading ? (
-          <PageLoader className="h-32" />
+          <div className="h-32 flex items-center justify-center">
+            <BrandLoader size="lg" />
+          </div>
         ) : error ? (
           <div className="text-destructive">Error loading viewers</div>
         ) : (

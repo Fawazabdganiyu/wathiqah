@@ -88,7 +88,7 @@ export function CreatePromiseDialog() {
             <Label htmlFor={promiseToId}>To whom?</Label>
             <Input
               id={promiseToId}
-              placeholder="John Doe"
+              placeholder="Ahmad Sulaiman"
               value={promiseTo}
               onChange={(e) => setPromiseTo(e.target.value)}
               required

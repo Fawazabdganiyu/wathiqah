@@ -92,7 +92,7 @@ export function AddWitnessDialog({ isOpen, onClose, transactionId }: AddWitnessD
               id={nameId}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Jane Doe"
+              placeholder="Ahmad Sulaiman"
               required
             />
             <p className="text-[0.8rem] text-muted-foreground">First name first, last name last.</p>
@@ -107,7 +107,7 @@ export function AddWitnessDialog({ isOpen, onClose, transactionId }: AddWitnessD
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="jane@example.com"
+              placeholder="ahmad.sulaiman@example.com"
               required
             />
           </div>

@@ -97,6 +97,7 @@ function SignupComponent() {
               <Input
                 id={`${id}-email`}
                 type="email"
+                placeholder="ahmad.sulaiman@example.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
