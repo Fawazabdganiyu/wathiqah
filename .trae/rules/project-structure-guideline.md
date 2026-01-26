@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+alwaysApply: false
+description: When generating code or making code changes
 ---
 
 # Wathȋqah Rules
