@@ -1,9 +1,9 @@
-import { useQuery, useMutation } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
-  GET_PROMISES,
   CREATE_PROMISE,
-  UPDATE_PROMISE,
   DELETE_PROMISE,
+  GET_PROMISES,
+  UPDATE_PROMISE,
 } from "@/lib/apollo/queries/promises";
 import type { CreatePromiseInput, UpdatePromiseInput } from "@/types/__generated__/graphql";
 

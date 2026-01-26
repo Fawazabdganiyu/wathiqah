@@ -1,6 +1,11 @@
 import { useMemo } from "react";
+import {
+  AssetCategory,
+  ReturnDirection,
+  type Transaction,
+  TransactionType,
+} from "@/types/__generated__/graphql";
 import { useTransactions } from "./useTransactions";
-import { AssetCategory, TransactionType, type Transaction } from "@/types/__generated__/graphql";
 
 export interface AggregatedItem {
   id: string; // Composite ID or ID of the latest transaction
@@ -57,6 +62,13 @@ export function useItems() {
           item.quantity += qty;
         } else if (tx.type === TransactionType.Received) {
           item.quantity -= qty;
+        } else if (tx.type === TransactionType.Returned || tx.type === TransactionType.Gift) {
+          const dir = tx.returnDirection;
+          if (dir === ReturnDirection.ToMe) {
+            item.quantity -= qty;
+          } else if (dir === ReturnDirection.ToContact) {
+            item.quantity += qty;
+          }
         }
       });
 

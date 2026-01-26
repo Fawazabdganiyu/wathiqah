@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from "@apollo/client/react";
-import { GET_CONTACTS, DELETE_CONTACT } from "@/lib/apollo/queries/contacts";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { DELETE_CONTACT, GET_CONTACTS } from "@/lib/apollo/queries/contacts";
 
 export function useContacts() {
   const { data, loading, error } = useQuery(GET_CONTACTS);

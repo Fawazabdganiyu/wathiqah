@@ -1,10 +1,10 @@
-import { useQuery, useMutation } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
-  MY_ACCESS_GRANTS_QUERY,
-  GRANT_ACCESS_MUTATION,
-  REVOKE_ACCESS_MUTATION,
-  RECEIVED_ACCESS_GRANTS_QUERY,
   ACCEPT_ACCESS_MUTATION,
+  GRANT_ACCESS_MUTATION,
+  MY_ACCESS_GRANTS_QUERY,
+  RECEIVED_ACCESS_GRANTS_QUERY,
+  REVOKE_ACCESS_MUTATION,
 } from "@/lib/apollo/queries/shared-access";
 import type { GrantAccessInput } from "@/types/__generated__/graphql";
 

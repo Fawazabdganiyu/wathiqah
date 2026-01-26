@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from "@apollo/client/react";
-import { GET_TRANSACTIONS, CREATE_TRANSACTION } from "@/lib/apollo/queries/transactions";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { CREATE_TRANSACTION, GET_TRANSACTIONS } from "@/lib/apollo/queries/transactions";
 import type { CreateTransactionInput, FilterTransactionInput } from "@/types/__generated__/graphql";
 
 export function useTransactions(filter?: FilterTransactionInput) {

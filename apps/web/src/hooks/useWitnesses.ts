@@ -1,10 +1,10 @@
-import { useQuery, useMutation } from "@apollo/client/react";
-import type { WitnessStatus } from "@/types/__generated__/graphql";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
-  MY_WITNESS_REQUESTS,
   ACKNOWLEDGE_WITNESS,
   GET_WITNESS_INVITATION,
+  MY_WITNESS_REQUESTS,
 } from "@/lib/apollo/queries/witnesses";
+import type { WitnessStatus } from "@/types/__generated__/graphql";
 
 export function useMyWitnessRequests(status?: WitnessStatus) {
   const { data, loading, error, refetch } = useQuery(MY_WITNESS_REQUESTS, {
