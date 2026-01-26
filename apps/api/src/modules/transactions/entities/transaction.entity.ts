@@ -83,8 +83,8 @@ export class Transaction {
   @Field()
   createdById: string;
 
-  @Field(() => User)
-  createdBy: User;
+  @Field(() => User, { nullable: true })
+  createdBy?: User;
 
   @Field(() => [Witness], { nullable: true })
   witnesses?: Witness[];

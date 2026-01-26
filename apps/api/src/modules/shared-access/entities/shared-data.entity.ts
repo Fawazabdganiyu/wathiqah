@@ -5,12 +5,12 @@ import { Promise } from '../../promises/entities/promise.entity';
 
 @ObjectType()
 export class SharedDataEntity {
-  @Field(() => User)
-  user: User;
+  @Field(() => User, { nullable: true })
+  user?: User;
 
-  @Field(() => [Transaction])
-  transactions: Transaction[];
+  @Field(() => [Transaction], { nullable: true })
+  transactions?: Transaction[];
 
-  @Field(() => [Promise])
-  promises: Promise[];
+  @Field(() => [Promise], { nullable: true })
+  promises?: Promise[];
 }
