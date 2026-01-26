@@ -1,17 +1,17 @@
-import { useState, useId } from "react";
 import { useMutation } from "@apollo/client/react";
-import { ADD_WITNESS, GET_TRANSACTION } from "@/lib/apollo/queries/transactions";
+import { useId, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ADD_WITNESS, GET_TRANSACTION } from "@/lib/apollo/queries/transactions";
 
 interface AddWitnessDialogProps {
   isOpen: boolean;

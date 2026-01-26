@@ -1,5 +1,5 @@
-import { WitnessStatus } from "@/types/__generated__/graphql";
 import { cn } from "@/lib/utils";
+import { WitnessStatus } from "@/types/__generated__/graphql";
 
 interface WitnessStatusBadgeProps {
   status: WitnessStatus;

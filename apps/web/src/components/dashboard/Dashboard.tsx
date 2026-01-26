@@ -1,22 +1,25 @@
-import {
-  Users,
-  FileCheck,
-  CalendarClock,
-  ArrowUpRight,
-  ArrowDownLeft,
-  CreditCard,
-} from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useTransactions } from "@/hooks/useTransactions";
-import { useContacts } from "@/hooks/useContacts";
-import { useMyWitnessRequests } from "@/hooks/useWitnesses";
-import { usePromises } from "@/hooks/usePromises";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { formatCurrency } from "@/lib/utils/formatters";
 import { format } from "date-fns";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CalendarClock,
+  CreditCard,
+  FileCheck,
+  Package,
+  Users,
+} from "lucide-react";
 import { BalanceIndicator } from "@/components/ui/balance-indicator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useContacts } from "@/hooks/useContacts";
+import { usePromises } from "@/hooks/usePromises";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useMyWitnessRequests } from "@/hooks/useWitnesses";
+import { formatCurrency } from "@/lib/utils/formatters";
+import { AssetCategory } from "@/types/__generated__/graphql";
+import { LedgerPhilosophy } from "./LedgerPhilosophy";
 
 export function Dashboard() {
   const { transactions, loading: loadingTx, summary } = useTransactions();
@@ -28,6 +31,11 @@ export function Dashboard() {
 
   // Calculate Stats
   const totalBalance = summary?.netBalance || 0;
+  const totalGiven = summary?.totalGiven || 0;
+  const totalReceived = summary?.totalReceived || 0;
+  const totalIncome = summary?.totalIncome || 0;
+  const totalExpense = summary?.totalExpense || 0;
+  const isDebtByRule = totalReceived > totalGiven + totalIncome - totalExpense;
   const activePromises = promises.filter((p) => p.status === "PENDING").length;
   const pendingWitnessRequests = witnessRequests.length;
   const totalContacts = contacts.length;
@@ -68,6 +76,7 @@ export function Dashboard() {
           value={
             <BalanceIndicator
               amount={totalBalance}
+              overrideColor={isDebtByRule ? "red" : "green"}
               className="text-2xl h-auto px-2 py-0 border-0 bg-transparent"
             />
           }
@@ -97,59 +106,13 @@ export function Dashboard() {
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Recent Transactions */}
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-8">
-              {recentTransactions.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-sm text-muted-foreground mb-4">
-                    No transactions yet. Start by recording a loan or expense.
-                  </p>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/transactions/new" search={{ contactId: undefined }}>
-                      Record Transaction
-                    </Link>
-                  </Button>
-                </div>
-              ) : (
-                recentTransactions.map((tx) => (
-                  <div key={tx.id} className="flex items-center">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-background">
-                      {tx.type === "GIVEN" ? (
-                        <ArrowUpRight className="h-4 w-4 text-red-500" />
-                      ) : (
-                        <ArrowDownLeft className="h-4 w-4 text-green-500" />
-                      )}
-                    </div>
-                    <div className="ml-4 space-y-1">
-                      <p className="text-sm font-medium leading-none">{tx.contact?.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(tx.date as string), "MMM d, yyyy")} •{" "}
-                        {tx.description || "No description"}
-                      </p>
-                    </div>
-                    <div
-                      className={`ml-auto font-medium ${
-                        tx.type === "GIVEN" ? "text-red-500" : "text-green-500"
-                      }`}
-                    >
-                      {tx.type === "GIVEN" ? "-" : "+"}
-                      {formatCurrency(tx.amount)}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <div className="lg:col-span-4">
+          <LedgerPhilosophy />
+        </div>
 
         {/* Quick Actions / Recent Promises */}
-        <Card className="col-span-3">
+        <Card className="lg:col-span-3 h-full">
           <CardHeader>
             <CardTitle>Your Promises</CardTitle>
           </CardHeader>
@@ -193,6 +156,110 @@ export function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Activity - Full Width at Bottom */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Recent Activity</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Your latest financial interactions across the platform.
+            </p>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/transactions" search={{ tab: "funds" }}>
+              View All History
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {recentTransactions.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-sm text-muted-foreground mb-4">
+                  No transactions yet. Start by recording a loan or expense.
+                </p>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/transactions/new" search={{ contactId: undefined }}>
+                    Record Transaction
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {recentTransactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="flex items-center justify-between p-4 rounded-xl border bg-card/50 hover:bg-card transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`flex h-10 w-10 items-center justify-center rounded-full border ${
+                          tx.type === "GIVEN"
+                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                            : "bg-red-500/10 border-red-500/20 text-red-500"
+                        }`}
+                      >
+                        {tx.type === "GIVEN" ? (
+                          <ArrowUpRight className="h-5 w-5" />
+                        ) : (
+                          <ArrowDownLeft className="h-5 w-5" />
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold leading-none">{tx.contact?.name}</p>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted font-medium uppercase tracking-wider text-muted-foreground">
+                            {tx.type}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(tx.date as string), "MMMM d, yyyy")} •{" "}
+                          {tx.category === AssetCategory.Item ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Package className="h-3 w-3" />
+                              {tx.quantity}x {tx.itemName}
+                            </span>
+                          ) : (
+                            tx.description || "No description"
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div
+                        className={`text-sm font-bold ${
+                          tx.category === AssetCategory.Item
+                            ? "text-muted-foreground"
+                            : tx.type === "GIVEN"
+                              ? "text-emerald-500"
+                              : "text-red-500"
+                        }`}
+                      >
+                        {tx.category === AssetCategory.Item ? (
+                          <span className="text-xs italic font-normal">Physical Item</span>
+                        ) : (
+                          <>
+                            {tx.type === "GIVEN" ? "+" : "-"}
+                            {formatCurrency(tx.amount)}
+                          </>
+                        )}
+                      </div>
+                      <Link
+                        to="/transactions"
+                        search={{ tab: tx.category === AssetCategory.Item ? "items" : "funds" }}
+                        className="text-[10px] text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+                      >
+                        Details
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

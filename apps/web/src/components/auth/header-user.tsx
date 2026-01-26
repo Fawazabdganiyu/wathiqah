@@ -1,7 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
+import {
+  Check,
+  ChevronDown,
+  FileSignature,
+  Laptop,
+  LogOut,
+  Moon,
+  Settings,
+  Sun,
+  User,
+} from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,18 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  Check,
-  ChevronDown,
-  FileSignature,
-  Laptop,
-  LogOut,
-  Moon,
-  Settings,
-  Sun,
-  User,
-} from "lucide-react";
-import { useTheme } from "@/components/theme-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function HeaderUser() {
   const { user, loading, logout } = useAuth();

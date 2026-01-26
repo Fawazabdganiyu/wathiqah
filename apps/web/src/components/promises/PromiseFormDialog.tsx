@@ -1,7 +1,9 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -29,9 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { usePromises } from "@/hooks/usePromises";
 import { Priority, type Promise as PromiseType } from "@/types/__generated__/graphql";
-import { Plus } from "lucide-react";
 
 const promiseSchema = z.object({
   description: z.string().min(3, "Description is required"),

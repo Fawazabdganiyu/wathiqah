@@ -1,18 +1,8 @@
-import { useState } from "react";
 import { format } from "date-fns";
-import { Package, ArrowUpRight, ArrowDownLeft, CheckCircle2 } from "lucide-react";
-import type { AggregatedItem } from "@/hooks/useItems";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Package } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ItemReturnModal } from "./ItemReturnModal";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -21,6 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { AggregatedItem } from "@/hooks/useItems";
+import { ItemReturnModal } from "./ItemReturnModal";
 
 interface ItemsListProps {
   items: AggregatedItem[];

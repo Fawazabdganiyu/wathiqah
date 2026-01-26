@@ -1,6 +1,6 @@
-import type { Witness } from "@/types/__generated__/graphql";
 import { format } from "date-fns";
-import { User, Mail, Calendar, Users } from "lucide-react";
+import { Calendar, Mail, User, Users } from "lucide-react";
+import type { Witness } from "@/types/__generated__/graphql";
 import { WitnessStatusBadge } from "../witnesses/WitnessStatusBadge";
 
 export function TransactionWitnessList({ witnesses }: { witnesses: Witness[] }) {

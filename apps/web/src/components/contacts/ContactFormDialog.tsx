@@ -1,17 +1,17 @@
-import { useState, useEffect, useId } from "react";
 import { useMutation } from "@apollo/client/react";
-import { CREATE_CONTACT, UPDATE_CONTACT, GET_CONTACTS } from "@/lib/apollo/queries/contacts";
+import { useEffect, useId, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CREATE_CONTACT, GET_CONTACTS, UPDATE_CONTACT } from "@/lib/apollo/queries/contacts";
 import type { Contact } from "@/types/__generated__/graphql";
 
 type ContactMinimal = Pick<Contact, "id" | "name" | "email" | "phoneNumber">;

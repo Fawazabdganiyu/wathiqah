@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { NotFound } from "./NotFound";
-import { describe, it, expect, vi } from "vitest";
 
 // Mock the Link component from @tanstack/react-router
 vi.mock("@tanstack/react-router", () => ({

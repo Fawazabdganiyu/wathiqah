@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import type { ReactNode } from "react";
-import Header from "./Header";
-import { useAuthContext } from "@/context/AuthContext";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { ThemeProvider } from "@/components/theme-provider";
+import { useAuthContext } from "@/context/AuthContext";
+import Header from "./Header";
 
 // Mock router
 vi.mock("@tanstack/react-router", () => ({

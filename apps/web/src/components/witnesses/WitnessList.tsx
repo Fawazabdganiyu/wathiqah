@@ -1,5 +1,5 @@
-import { WitnessCard } from "./WitnessCard";
 import { type MyWitnessRequestsQuery, WitnessStatus } from "@/types/__generated__/graphql";
+import { WitnessCard } from "./WitnessCard";
 
 interface WitnessListProps {
   requests: MyWitnessRequestsQuery["myWitnessRequests"];

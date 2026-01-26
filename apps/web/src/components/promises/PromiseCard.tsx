@@ -1,29 +1,29 @@
 import { format } from "date-fns";
 import {
-  CalendarClock,
-  MoreVertical,
-  CheckCircle2,
   AlertCircle,
+  CalendarClock,
+  CheckCircle2,
   Clock,
-  Trash2,
   Edit,
+  MoreVertical,
+  Trash2,
 } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { usePromises } from "@/hooks/usePromises";
 import {
-  PromiseStatus,
   Priority,
+  PromiseStatus,
   type Promise as PromiseType,
 } from "@/types/__generated__/graphql";
-import { usePromises } from "@/hooks/usePromises";
-import { useState } from "react";
 import { PromiseFormDialog } from "./PromiseFormDialog";
 
 interface PromiseCardProps {
