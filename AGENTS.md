@@ -39,7 +39,7 @@
 
 ### Backend Rules (NestJS)
 
-1.  **Structure**: Modular architecture (`src/modules/`). Each feature (Auth, Users, Transactions) has its own module.
+1.  **Structure**: Modular architecture (`src/modules/`). Each feature (Auth, Users, Transactions, Witnesses, Promises, SharedAccess) has its own module.
 2.  **GraphQL**:
 		- **Code First**: Define schemas using TypeScript classes with `@ObjectType()`, `@InputType()`, and `@Args()`.
 		- **Resolvers**: Handle GraphQL operations.

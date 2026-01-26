@@ -30,13 +30,13 @@ Financial exchanges between people are often undocumented, leading to confusion 
   - View all witnessed transactions.
 - **Privacy-Preserving Witness Search**: Search existing users by exact email or phone and only receive the user ID with masked names (no email/phone exposure).
 - **Flexible Contacts**: Contacts can exist independently without linking to an app user; linking (userId) is optional.
+- **Shared Access**: Grant read-only access to specific transactions or witness records to external parties.
+- **Promise Tracker**: Dedicated module for documenting and tracking personal promises with due dates.
 - **Authentication**: Secure JWT-based authentication.
 - **API**: Flexible GraphQL API.
 
 **Planned Features & Enhancements:**
 
-- **Shared Access**: Grant read-only access to specific transactions or witness records to external parties.
-- **Promise Tracker**: Dedicated module for documenting and tracking personal promises with due dates.
 - **Multi-currency support**.
 - **Exportable reports** (CSV, PDF).
 - **Real-time updates** (GraphQL subscriptions).
@@ -408,8 +408,14 @@ Wathȋqah leverages cutting-edge AI tools to boost productivity, ensure maintain
   - [x] Change Password
   - [x] Forgot/Reset Password
   - [x] Email Verification
-- [ ] **Shared Access System** (Planned)
-- [ ] **Promise Tracker** (Planned)
+- [x] **Shared Access System**
+  - [x] Database schema for access grants
+  - [x] GraphQL resolvers for granting/revoking access
+  - [x] Read-only public views for shared data
+- [x] **Promise Tracker**
+  - [x] Database schema for promises
+  - [x] CRUD operations for promises
+  - [x] Frontend UI for tracking commitments
 - [x] Build contacts management UI (Frontend)
 - [x] Build transaction management UI (Frontend)
 - [x] Integrate Apollo Client with backend

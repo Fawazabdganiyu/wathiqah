@@ -40,14 +40,14 @@ When a transaction is updated _after_ witnesses have already acknowledged it, th
 
 ## Shared Transaction, Witness & Promise Viewer Access
 
-**Status:** New
+**Status:** Completed ✅
 **Priority:** Medium
 
 ### Description
 
 Implement a system that allows users to grant view-only access to their saved transactions, documented witness information, and promises to a list of specified email addresses.
 
-### Requirements
+### Requirements (Implemented)
 
 1.  **Management Interface**:
     - Create "Share Access" or "Viewers" section.
@@ -66,27 +66,18 @@ Implement a system that allows users to grant view-only access to their saved tr
     - Dedicated read-only view for granted users.
     - Track acceptance status of the access grant.
 
-### Acceptance Criteria
-
-- [ ] User can add valid emails to viewer list.
-- [ ] Error message for invalid emails.
-- [ ] Notification email sent to new viewers.
-- [ ] Viewer can log in and see read-only data.
-- [ ] Viewer cannot modify data.
-- [ ] Granter can revoke access.
-
 ---
 
 ## Promise Documentation
 
-**Status:** New
+**Status:** Completed ✅
 **Priority:** Medium
 
 ### Description
 
 Implement a feature that allows users to create, track, and manage personal promises made to other individuals.
 
-### Requirements
+### Requirements (Implemented)
 
 1.  **Data Model**:
     - **Description**: Clear text of what was promised (Mandatory).
@@ -100,12 +91,3 @@ Implement a feature that allows users to create, track, and manage personal prom
     - Create/Edit Promise Form.
     - List/Dashboard view with filtering (status, due date).
     - Actions: View, Edit, Mark as Fulfilled, Delete.
-
-### Acceptance Criteria
-
-- [ ] User can create a promise with required fields.
-- [ ] Promises appear in list view with correct details.
-- [ ] Status auto-updates to "Overdue" if due date passes.
-- [ ] User can edit existing promises.
-- [ ] User can mark promise as "Fulfilled".
-- [ ] All UI text is in English.

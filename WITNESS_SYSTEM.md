@@ -115,13 +115,13 @@ PENDING → User creates transaction with witnesses
 
 ## 📈 Future Enhancements
 
-### Phase 2
+### Phase 2 (Completed ✅)
 
-- Email notifications for witness invitations
-- SMS notifications (optional)
-- Witness invitation expiration (7 days)
+- Email notifications for witness invitations (via Mailtrap/SendGrid)
+- SMS notifications (via Twilio)
+- Witness invitation expiration
 
-### Phase 3
+### Phase 3 (Planned)
 
 - Real-time notifications (GraphQL subscriptions)
 - Witness activity timeline
