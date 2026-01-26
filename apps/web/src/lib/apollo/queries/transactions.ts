@@ -1,14 +1,16 @@
+import { gql, type TypedDocumentNode } from "@apollo/client";
 import type {
+  AddWitnessMutation,
+  AddWitnessMutationVariables,
+  CreateTransactionMutation,
+  CreateTransactionMutationVariables,
+  MyContactTransactionsQuery,
+  MyContactTransactionsQueryVariables,
   TransactionQuery,
   TransactionQueryVariables,
   TransactionsQuery,
   TransactionsQueryVariables,
-  CreateTransactionMutation,
-  CreateTransactionMutationVariables,
-  AddWitnessMutation,
-  AddWitnessMutationVariables,
 } from "@/types/__generated__/graphql";
-import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const GET_TRANSACTION: TypedDocumentNode<TransactionQuery, TransactionQueryVariables> = gql`
   query Transaction($id: ID!) {
@@ -21,7 +23,15 @@ export const GET_TRANSACTION: TypedDocumentNode<TransactionQuery, TransactionQue
       description
       itemName
       quantity
+      returnDirection
       createdAt
+      parentId
+      conversions {
+        id
+        amount
+        type
+        date
+      }
       contact {
         id
         name
@@ -66,6 +76,7 @@ export const GET_TRANSACTIONS: TypedDocumentNode<TransactionsQuery, Transactions
         description
         itemName
         quantity
+        returnDirection
         createdAt
         contact {
           id
@@ -79,8 +90,52 @@ export const GET_TRANSACTIONS: TypedDocumentNode<TransactionsQuery, Transactions
       summary {
         totalGiven
         totalReceived
-        totalCollected
+        totalReturned
+        totalIncome
+        totalExpense
+        totalGiftGiven
+        totalGiftReceived
         netBalance
+      }
+    }
+  }
+`;
+
+export const GET_MY_CONTACT_TRANSACTIONS: TypedDocumentNode<
+  MyContactTransactionsQuery,
+  MyContactTransactionsQueryVariables
+> = gql`
+  query MyContactTransactions {
+    myContactTransactions {
+      id
+      amount
+      category
+      type
+      date
+      description
+      itemName
+      quantity
+      returnDirection
+      createdAt
+      createdBy {
+        id
+        name
+        email
+      }
+      contact {
+        id
+        name
+      }
+      witnesses {
+        id
+        status
+        invitedAt
+        acknowledgedAt
+        user {
+          id
+          name
+          email
+        }
       }
     }
   }
@@ -97,6 +152,7 @@ export const CREATE_TRANSACTION: TypedDocumentNode<
       type
       description
       date
+      parentId
     }
   }
 `;

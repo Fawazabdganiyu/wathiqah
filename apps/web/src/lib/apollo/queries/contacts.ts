@@ -1,16 +1,18 @@
+import { gql, type TypedDocumentNode } from "@apollo/client";
 import type {
   CreateContactMutation,
   CreateContactMutationVariables,
   DeleteContactMutation,
   DeleteContactMutationVariables,
-  GetContactsQuery,
-  GetContactsQueryVariables,
   GetContactQuery,
   GetContactQueryVariables,
+  GetContactsQuery,
+  GetContactsQueryVariables,
+  InviteContactMutation,
+  InviteContactMutationVariables,
   UpdateContactMutation,
   UpdateContactMutationVariables,
 } from "@/types/__generated__/graphql";
-import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const GET_CONTACTS: TypedDocumentNode<GetContactsQuery, GetContactsQueryVariables> = gql`
   query GetContacts {
@@ -20,6 +22,8 @@ export const GET_CONTACTS: TypedDocumentNode<GetContactsQuery, GetContactsQueryV
       email
       phoneNumber
       balance
+      isOnPlatform
+      hasPendingInvitation
       createdAt
     }
   }
@@ -33,7 +37,21 @@ export const GET_CONTACT: TypedDocumentNode<GetContactQuery, GetContactQueryVari
       email
       phoneNumber
       balance
+      isOnPlatform
+      hasPendingInvitation
       createdAt
+    }
+  }
+`;
+
+export const INVITE_CONTACT: TypedDocumentNode<
+  InviteContactMutation,
+  InviteContactMutationVariables
+> = gql`
+  mutation InviteContact($contactId: ID!) {
+    inviteContactToPlatform(contactId: $contactId) {
+      success
+      message
     }
   }
 `;

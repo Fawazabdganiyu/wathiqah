@@ -1,3 +1,4 @@
+import { gql, type TypedDocumentNode } from "@apollo/client";
 import type {
   AcceptAccessMutation,
   AcceptAccessMutationVariables,
@@ -12,7 +13,6 @@ import type {
   SharedDataQuery,
   SharedDataQueryVariables,
 } from "@/types/__generated__/graphql";
-import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const MY_ACCESS_GRANTS_QUERY: TypedDocumentNode<
   MyAccessGrantsQuery,

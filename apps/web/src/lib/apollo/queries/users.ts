@@ -1,8 +1,8 @@
-import type {
-  UpdateUserMutationVariables,
-  UpdateUserMutation,
-} from "@/types/__generated__/graphql";
 import { gql, type TypedDocumentNode } from "@apollo/client";
+import type {
+  UpdateUserMutation,
+  UpdateUserMutationVariables,
+} from "@/types/__generated__/graphql";
 
 export const UPDATE_USER_MUTATION: TypedDocumentNode<
   UpdateUserMutation,

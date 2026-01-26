@@ -1,3 +1,4 @@
+import { gql, type TypedDocumentNode } from "@apollo/client";
 import type {
   AcceptInvitationMutation,
   AcceptInvitationMutationVariables,
@@ -9,16 +10,15 @@ import type {
   LoginMutationVariables,
   MeQuery,
   MeQueryVariables,
+  ResendVerificationEmailMutation,
+  ResendVerificationEmailMutationVariables,
   ResetPasswordMutation,
   ResetPasswordMutationVariables,
   SignupMutation,
   SignupMutationVariables,
   VerifyEmailMutation,
   VerifyEmailMutationVariables,
-  ResendVerificationEmailMutation,
-  ResendVerificationEmailMutationVariables,
 } from "@/types/__generated__/graphql";
-import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const ME_QUERY: TypedDocumentNode<MeQuery, MeQueryVariables> = gql`
   query Me {

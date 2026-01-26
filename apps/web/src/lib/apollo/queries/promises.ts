@@ -1,3 +1,4 @@
+import { gql, type TypedDocumentNode } from "@apollo/client";
 import type {
   CreatePromiseMutation,
   CreatePromiseMutationVariables,
@@ -8,7 +9,6 @@ import type {
   UpdatePromiseMutation,
   UpdatePromiseMutationVariables,
 } from "@/types/__generated__/graphql";
-import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const GET_PROMISES: TypedDocumentNode<MyPromisesQuery, MyPromisesQueryVariables> = gql`
   query MyPromises {

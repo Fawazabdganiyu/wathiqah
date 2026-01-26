@@ -1,12 +1,12 @@
+import { gql, type TypedDocumentNode } from "@apollo/client";
 import type {
   AcknowledgeWitnessRequestMutation,
   AcknowledgeWitnessRequestMutationVariables,
   GetWitnessInvitationQuery,
   GetWitnessInvitationQueryVariables,
   MyWitnessRequestsQuery,
+  MyWitnessRequestsQueryVariables,
 } from "@/types/__generated__/graphql";
-import type { MyWitnessRequestsQueryVariables } from "@/types/__generated__/graphql";
-import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export const MY_WITNESS_REQUESTS: TypedDocumentNode<
   MyWitnessRequestsQuery,
