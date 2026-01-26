@@ -30,6 +30,7 @@ description: When generating code or making code changes
 - **UI**: Shadcn + Tailwind. Colocate feature components.
 - **Data**: Apollo Client + TanStack Query.
 - **Pages color**: Professional and friendly green and white colors with equivalent dark mode colors.
+- **Loading**: Use either `PageLoader` or `BrandLoader` component appropriately. No loading text.
 
 ## Witness System
 
