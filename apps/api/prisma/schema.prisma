@@ -33,6 +33,9 @@ model User {
   promises            Promise[]
   accessGrants        AccessGrant[]
   projects            Project[]
+  contactInvitationsSent ContactInvitation[] @relation("InviterUser")
+  contactInvitationsReceived ContactInvitation[] @relation("InvitedUser")
+  linkedContact       Contact?             @relation("ContactLinkedUser")
 
   @@map("users")
   @@index([phoneNumber])
@@ -46,10 +49,15 @@ model Contact {
   phoneNumber String?
   createdAt   DateTime @default(now())
 
+  // Link to registered user if they join the platform
+  linkedUserId String? @unique
+  linkedUser   User?   @relation("ContactLinkedUser", fields: [linkedUserId], references: [id])
+
   // Relations
   userId       String
   user         User          @relation(fields: [userId], references: [id])
   transactions Transaction[]
+  invitations  ContactInvitation[]
 
   @@map("contacts")
 }
@@ -61,12 +69,16 @@ model Transaction {
   itemName    String?
   quantity    Int?              @default(1)
   type        TransactionType
+  returnDirection ReturnDirection?
   status      TransactionStatus @default(COMPLETED)
   date        DateTime
   description String?
   createdAt   DateTime          @default(now())
 
   // Relations
+  parentId    String?
+  parent      Transaction?         @relation("TransactionConversion", fields: [parentId], references: [id])
+  conversions Transaction[]       @relation("TransactionConversion")
   contactId   String?
   contact     Contact?             @relation(fields: [contactId], references: [id])
   createdById String
@@ -77,6 +89,10 @@ model Transaction {
   @@map("transactions")
 }
 
+enum ReturnDirection {
+  TO_ME
+  TO_CONTACT
+}
 model TransactionHistory {
   id            String      @id @default(uuid())
   transactionId String
@@ -180,6 +196,27 @@ model AccessGrant {
   @@map("access_grants")
 }
 
+model ContactInvitation {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  acceptedAt DateTime?
+
+  // Relations
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  inviterId String
+  inviter   User   @relation("InviterUser", fields: [inviterId], references: [id])
+
+  invitedUserId String?
+  invitedUser   User?   @relation("InvitedUser", fields: [invitedUserId], references: [id])
+
+  @@map("contact_invitations")
+}
+
 enum AssetCategory {
   FUNDS
   ITEM
@@ -188,7 +225,8 @@ enum AssetCategory {
 enum TransactionType {
   GIVEN
   RECEIVED
-  COLLECTED
+  RETURNED
+  GIFT
   EXPENSE
   INCOME
 }
@@ -227,4 +265,11 @@ enum AccessStatus {
   PENDING
   ACCEPTED
   REVOKED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
 }
