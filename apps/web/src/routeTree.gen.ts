@@ -22,9 +22,11 @@ import { Route as WitnessesIndexRouteImport } from './routes/witnesses/index'
 import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
 import { Route as SharedAccessIndexRouteImport } from './routes/shared-access/index'
 import { Route as PromisesIndexRouteImport } from './routes/promises/index'
+import { Route as ItemsIndexRouteImport } from './routes/items/index'
 import { Route as ContactsIndexRouteImport } from './routes/contacts/index'
 import { Route as TransactionsNewRouteImport } from './routes/transactions/new'
 import { Route as TransactionsIdRouteImport } from './routes/transactions/$id'
+import { Route as ItemsNewRouteImport } from './routes/items/new'
 import { Route as ContactsContactIdRouteImport } from './routes/contacts/$contactId'
 import { Route as WitnessesInviteTokenRouteImport } from './routes/witnesses/invite.$token'
 import { Route as SharedAccessViewGrantIdRouteImport } from './routes/shared-access/view.$grantId'
@@ -94,6 +96,11 @@ const PromisesIndexRoute = PromisesIndexRouteImport.update({
   path: '/promises/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ItemsIndexRoute = ItemsIndexRouteImport.update({
+  id: '/items/',
+  path: '/items/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactsIndexRoute = ContactsIndexRouteImport.update({
   id: '/contacts/',
   path: '/contacts/',
@@ -107,6 +114,11 @@ const TransactionsNewRoute = TransactionsNewRouteImport.update({
 const TransactionsIdRoute = TransactionsIdRouteImport.update({
   id: '/transactions/$id',
   path: '/transactions/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemsNewRoute = ItemsNewRouteImport.update({
+  id: '/items/new',
+  path: '/items/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactsContactIdRoute = ContactsContactIdRouteImport.update({
@@ -136,9 +148,11 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
   '/contacts/$contactId': typeof ContactsContactIdRoute
+  '/items/new': typeof ItemsNewRoute
   '/transactions/$id': typeof TransactionsIdRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/contacts/': typeof ContactsIndexRoute
+  '/items/': typeof ItemsIndexRoute
   '/promises/': typeof PromisesIndexRoute
   '/shared-access/': typeof SharedAccessIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
@@ -157,9 +171,11 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
   '/contacts/$contactId': typeof ContactsContactIdRoute
+  '/items/new': typeof ItemsNewRoute
   '/transactions/$id': typeof TransactionsIdRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/contacts': typeof ContactsIndexRoute
+  '/items': typeof ItemsIndexRoute
   '/promises': typeof PromisesIndexRoute
   '/shared-access': typeof SharedAccessIndexRoute
   '/transactions': typeof TransactionsIndexRoute
@@ -179,9 +195,11 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
   '/contacts/$contactId': typeof ContactsContactIdRoute
+  '/items/new': typeof ItemsNewRoute
   '/transactions/$id': typeof TransactionsIdRoute
   '/transactions/new': typeof TransactionsNewRoute
   '/contacts/': typeof ContactsIndexRoute
+  '/items/': typeof ItemsIndexRoute
   '/promises/': typeof PromisesIndexRoute
   '/shared-access/': typeof SharedAccessIndexRoute
   '/transactions/': typeof TransactionsIndexRoute
@@ -202,9 +220,11 @@ export interface FileRouteTypes {
     | '/signup'
     | '/verify-email'
     | '/contacts/$contactId'
+    | '/items/new'
     | '/transactions/$id'
     | '/transactions/new'
     | '/contacts/'
+    | '/items/'
     | '/promises/'
     | '/shared-access/'
     | '/transactions/'
@@ -223,9 +243,11 @@ export interface FileRouteTypes {
     | '/signup'
     | '/verify-email'
     | '/contacts/$contactId'
+    | '/items/new'
     | '/transactions/$id'
     | '/transactions/new'
     | '/contacts'
+    | '/items'
     | '/promises'
     | '/shared-access'
     | '/transactions'
@@ -244,9 +266,11 @@ export interface FileRouteTypes {
     | '/signup'
     | '/verify-email'
     | '/contacts/$contactId'
+    | '/items/new'
     | '/transactions/$id'
     | '/transactions/new'
     | '/contacts/'
+    | '/items/'
     | '/promises/'
     | '/shared-access/'
     | '/transactions/'
@@ -266,9 +290,11 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   ContactsContactIdRoute: typeof ContactsContactIdRoute
+  ItemsNewRoute: typeof ItemsNewRoute
   TransactionsIdRoute: typeof TransactionsIdRoute
   TransactionsNewRoute: typeof TransactionsNewRoute
   ContactsIndexRoute: typeof ContactsIndexRoute
+  ItemsIndexRoute: typeof ItemsIndexRoute
   PromisesIndexRoute: typeof PromisesIndexRoute
   SharedAccessIndexRoute: typeof SharedAccessIndexRoute
   TransactionsIndexRoute: typeof TransactionsIndexRoute
@@ -370,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromisesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/items/': {
+      id: '/items/'
+      path: '/items'
+      fullPath: '/items/'
+      preLoaderRoute: typeof ItemsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contacts/': {
       id: '/contacts/'
       path: '/contacts'
@@ -389,6 +422,13 @@ declare module '@tanstack/react-router' {
       path: '/transactions/$id'
       fullPath: '/transactions/$id'
       preLoaderRoute: typeof TransactionsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/items/new': {
+      id: '/items/new'
+      path: '/items/new'
+      fullPath: '/items/new'
+      preLoaderRoute: typeof ItemsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contacts/$contactId': {
@@ -426,9 +466,11 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   ContactsContactIdRoute: ContactsContactIdRoute,
+  ItemsNewRoute: ItemsNewRoute,
   TransactionsIdRoute: TransactionsIdRoute,
   TransactionsNewRoute: TransactionsNewRoute,
   ContactsIndexRoute: ContactsIndexRoute,
+  ItemsIndexRoute: ItemsIndexRoute,
   PromisesIndexRoute: PromisesIndexRoute,
   SharedAccessIndexRoute: SharedAccessIndexRoute,
   TransactionsIndexRoute: TransactionsIndexRoute,

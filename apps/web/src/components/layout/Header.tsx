@@ -28,6 +28,7 @@ export default function Header() {
 
           <nav className="hidden md:flex items-center gap-1">
             <NavLink to="/transactions">Transactions</NavLink>
+            <NavLink to="/items">Items</NavLink>
             <NavLink to="/promises">Promises</NavLink>
             <NavLink to="/contacts">Contacts</NavLink>
             <NavLink to="/witnesses">Witness Requests</NavLink>
