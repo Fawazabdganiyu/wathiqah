@@ -78,13 +78,21 @@ export type Contact = {
   createdAt: Scalars["DateTime"]["output"];
   email: Maybe<Scalars["String"]["output"]>;
   firstName: Scalars["String"]["output"];
+  hasPendingInvitation: Scalars["Boolean"]["output"];
   id: Scalars["ID"]["output"];
+  isOnPlatform: Scalars["Boolean"]["output"];
   lastName: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   phoneNumber: Maybe<Scalars["String"]["output"]>;
-  transactions: Array<Maybe<Transaction>>;
+  transactions: Maybe<Array<Transaction>>;
   user: User;
   userId: Scalars["String"]["output"];
+};
+
+export type ContactPlatformStatus = {
+  __typename: "ContactPlatformStatus";
+  isOnPlatform: Scalars["Boolean"]["output"];
+  linkedUserId: Maybe<Scalars["String"]["output"]>;
 };
 
 export type CreateContactInput = {
@@ -109,7 +117,9 @@ export type CreateTransactionInput = {
   date: Scalars["DateTime"]["input"];
   description?: InputMaybe<Scalars["String"]["input"]>;
   itemName?: InputMaybe<Scalars["String"]["input"]>;
+  parentId?: InputMaybe<Scalars["ID"]["input"]>;
   quantity?: InputMaybe<Scalars["Int"]["input"]>;
+  returnDirection?: InputMaybe<ReturnDirection>;
   type: TransactionType;
   witnessInvites?: InputMaybe<Array<WitnessInviteInput>>;
   witnessUserIds?: InputMaybe<Array<Scalars["ID"]["input"]>>;
@@ -129,6 +139,12 @@ export type GrantAccessInput = {
   email: Scalars["String"]["input"];
 };
 
+export type InviteContactResponse = {
+  __typename: "InviteContactResponse";
+  message: Scalars["String"]["output"];
+  success: Scalars["Boolean"]["output"];
+};
+
 export type LoginInput = {
   email: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
@@ -146,6 +162,7 @@ export type Mutation = {
   createTransaction: Transaction;
   forgotPassword: Scalars["Boolean"]["output"];
   grantAccess: AccessGrant;
+  inviteContactToPlatform: InviteContactResponse;
   login: AuthPayload;
   logout: Scalars["Boolean"]["output"];
   refreshToken: AuthPayload;
@@ -200,6 +217,10 @@ export type MutationForgotPasswordArgs = {
 
 export type MutationGrantAccessArgs = {
   grantAccessInput: GrantAccessInput;
+};
+
+export type MutationInviteContactToPlatformArgs = {
+  contactId: Scalars["ID"]["input"];
 };
 
 export type MutationLoginArgs = {
@@ -282,10 +303,12 @@ export enum PromiseStatus {
 
 export type Query = {
   __typename: "Query";
+  checkContactOnPlatform: ContactPlatformStatus;
   contact: Contact;
   contacts: Array<Contact>;
   me: User;
   myAccessGrants: Array<AccessGrant>;
+  myContactTransactions: Array<Transaction>;
   myPromises: Array<Promise>;
   myWitnessRequests: Array<Witness>;
   promise: Promise;
@@ -296,6 +319,10 @@ export type Query = {
   transactions: TransactionsResponse;
   user: Maybe<User>;
   witnessInvitation: Witness;
+};
+
+export type QueryCheckContactOnPlatformArgs = {
+  contactId: Scalars["ID"]["input"];
 };
 
 export type QueryContactArgs = {
@@ -343,6 +370,11 @@ export type ResetPasswordInput = {
   token: Scalars["String"]["input"];
 };
 
+export enum ReturnDirection {
+  ToContact = "TO_CONTACT",
+  ToMe = "TO_ME",
+}
+
 export enum SearchType {
   Email = "EMAIL",
   Phone = "PHONE",
@@ -355,9 +387,9 @@ export type SearchWitnessInput = {
 
 export type SharedDataEntity = {
   __typename: "SharedDataEntity";
-  promises: Array<Promise>;
-  transactions: Array<Transaction>;
-  user: User;
+  promises: Maybe<Array<Promise>>;
+  transactions: Maybe<Array<Transaction>>;
+  user: Maybe<User>;
 };
 
 export type SignupInput = {
@@ -372,17 +404,21 @@ export type Transaction = {
   category: AssetCategory;
   contact: Maybe<Contact>;
   contactId: Maybe<Scalars["String"]["output"]>;
-  createdAt: Scalars["DateTime"]["output"];
-  createdBy: User;
+  conversions: Maybe<Array<Transaction>>;
+  createdAt: Maybe<Scalars["DateTime"]["output"]>;
+  createdBy: Maybe<User>;
   createdById: Scalars["String"]["output"];
   date: Scalars["DateTime"]["output"];
   description: Maybe<Scalars["String"]["output"]>;
-  history: Array<Maybe<TransactionHistory>>;
+  history: Maybe<Array<TransactionHistory>>;
   id: Scalars["ID"]["output"];
   itemName: Maybe<Scalars["String"]["output"]>;
+  parent: Maybe<Transaction>;
+  parentId: Maybe<Scalars["String"]["output"]>;
   quantity: Maybe<Scalars["Int"]["output"]>;
+  returnDirection: Maybe<ReturnDirection>;
   type: TransactionType;
-  witnesses: Array<Maybe<Witness>>;
+  witnesses: Maybe<Array<Witness>>;
 };
 
 export type TransactionHistory = {
@@ -393,16 +429,17 @@ export type TransactionHistory = {
   newState: Scalars["JSON"]["output"];
   previousState: Scalars["JSON"]["output"];
   transactionId: Scalars["String"]["output"];
-  user: User;
+  user: Maybe<User>;
   userId: Scalars["String"]["output"];
 };
 
 export enum TransactionType {
-  Collected = "COLLECTED",
   Expense = "EXPENSE",
+  Gift = "GIFT",
   Given = "GIVEN",
   Income = "INCOME",
   Received = "RECEIVED",
+  Returned = "RETURNED",
 }
 
 export type TransactionsResponse = {
@@ -414,11 +451,13 @@ export type TransactionsResponse = {
 export type TransactionsSummary = {
   __typename: "TransactionsSummary";
   netBalance: Scalars["Float"]["output"];
-  totalCollected: Scalars["Float"]["output"];
   totalExpense: Scalars["Float"]["output"];
+  totalGiftGiven: Scalars["Float"]["output"];
+  totalGiftReceived: Scalars["Float"]["output"];
   totalGiven: Scalars["Float"]["output"];
   totalIncome: Scalars["Float"]["output"];
   totalReceived: Scalars["Float"]["output"];
+  totalReturned: Scalars["Float"]["output"];
 };
 
 export type UpdateContactInput = {
@@ -447,7 +486,9 @@ export type UpdateTransactionInput = {
   description?: InputMaybe<Scalars["String"]["input"]>;
   id: Scalars["ID"]["input"];
   itemName?: InputMaybe<Scalars["String"]["input"]>;
+  parentId?: InputMaybe<Scalars["ID"]["input"]>;
   quantity?: InputMaybe<Scalars["Int"]["input"]>;
+  returnDirection?: InputMaybe<ReturnDirection>;
   type?: InputMaybe<TransactionType>;
   witnessInvites?: InputMaybe<Array<WitnessInviteInput>>;
   witnessUserIds?: InputMaybe<Array<Scalars["ID"]["input"]>>;
@@ -478,9 +519,9 @@ export type Witness = {
   id: Scalars["ID"]["output"];
   invitedAt: Scalars["DateTime"]["output"];
   status: WitnessStatus;
-  transaction: Transaction;
+  transaction: Maybe<Transaction>;
   transactionId: Scalars["String"]["output"];
-  user: User;
+  user: Maybe<User>;
   userId: Scalars["String"]["output"];
 };
 
@@ -617,6 +658,8 @@ export type GetContactsQuery = {
     email: string | null;
     phoneNumber: string | null;
     balance: number;
+    isOnPlatform: boolean;
+    hasPendingInvitation: boolean;
     createdAt: unknown;
   }>;
 };
@@ -633,7 +676,21 @@ export type GetContactQuery = {
     email: string | null;
     phoneNumber: string | null;
     balance: number;
+    isOnPlatform: boolean;
+    hasPendingInvitation: boolean;
     createdAt: unknown;
+  };
+};
+
+export type InviteContactMutationVariables = Exact<{
+  contactId: Scalars["ID"]["input"];
+}>;
+
+export type InviteContactMutation = {
+  inviteContactToPlatform: {
+    __typename: "InviteContactResponse";
+    success: boolean;
+    message: string;
   };
 };
 
@@ -791,7 +848,13 @@ export type SharedDataQueryVariables = Exact<{
 export type SharedDataQuery = {
   sharedData: {
     __typename: "SharedDataEntity";
-    user: { __typename: "User"; id: string; firstName: string; lastName: string; email: string };
+    user: {
+      __typename: "User";
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+    } | null;
     transactions: Array<{
       __typename: "Transaction";
       id: string;
@@ -807,9 +870,9 @@ export type SharedDataQuery = {
         __typename: "Witness";
         id: string;
         status: WitnessStatus;
-        user: { __typename: "User"; name: string };
-      } | null>;
-    }>;
+        user: { __typename: "User"; name: string } | null;
+      }> | null;
+    }> | null;
     promises: Array<{
       __typename: "Promise";
       id: string;
@@ -819,7 +882,7 @@ export type SharedDataQuery = {
       priority: Priority;
       status: PromiseStatus;
       notes: string | null;
-    }>;
+    }> | null;
   };
 };
 
@@ -838,7 +901,16 @@ export type TransactionQuery = {
     description: string | null;
     itemName: string | null;
     quantity: number | null;
-    createdAt: unknown;
+    returnDirection: ReturnDirection | null;
+    createdAt: unknown | null;
+    parentId: string | null;
+    conversions: Array<{
+      __typename: "Transaction";
+      id: string;
+      amount: number | null;
+      type: TransactionType;
+      date: unknown;
+    }> | null;
     contact: { __typename: "Contact"; id: string; name: string } | null;
     witnesses: Array<{
       __typename: "Witness";
@@ -846,8 +918,8 @@ export type TransactionQuery = {
       status: WitnessStatus;
       invitedAt: unknown;
       acknowledgedAt: unknown | null;
-      user: { __typename: "User"; id: string; name: string; email: string };
-    } | null>;
+      user: { __typename: "User"; id: string; name: string; email: string } | null;
+    }> | null;
     history: Array<{
       __typename: "TransactionHistory";
       id: string;
@@ -855,8 +927,8 @@ export type TransactionQuery = {
       previousState: unknown;
       newState: unknown;
       createdAt: unknown;
-      user: { __typename: "User"; id: string; name: string; email: string };
-    } | null>;
+      user: { __typename: "User"; id: string; name: string; email: string } | null;
+    }> | null;
   };
 };
 
@@ -877,18 +949,51 @@ export type TransactionsQuery = {
       description: string | null;
       itemName: string | null;
       quantity: number | null;
-      createdAt: unknown;
+      returnDirection: ReturnDirection | null;
+      createdAt: unknown | null;
       contact: { __typename: "Contact"; id: string; name: string } | null;
-      witnesses: Array<{ __typename: "Witness"; id: string; status: WitnessStatus } | null>;
+      witnesses: Array<{ __typename: "Witness"; id: string; status: WitnessStatus }> | null;
     }>;
     summary: {
       __typename: "TransactionsSummary";
       totalGiven: number;
       totalReceived: number;
-      totalCollected: number;
+      totalReturned: number;
+      totalIncome: number;
+      totalExpense: number;
+      totalGiftGiven: number;
+      totalGiftReceived: number;
       netBalance: number;
     };
   };
+};
+
+export type MyContactTransactionsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type MyContactTransactionsQuery = {
+  myContactTransactions: Array<{
+    __typename: "Transaction";
+    id: string;
+    amount: number | null;
+    category: AssetCategory;
+    type: TransactionType;
+    date: unknown;
+    description: string | null;
+    itemName: string | null;
+    quantity: number | null;
+    returnDirection: ReturnDirection | null;
+    createdAt: unknown | null;
+    createdBy: { __typename: "User"; id: string; name: string; email: string } | null;
+    contact: { __typename: "Contact"; id: string; name: string } | null;
+    witnesses: Array<{
+      __typename: "Witness";
+      id: string;
+      status: WitnessStatus;
+      invitedAt: unknown;
+      acknowledgedAt: unknown | null;
+      user: { __typename: "User"; id: string; name: string; email: string } | null;
+    }> | null;
+  }>;
 };
 
 export type CreateTransactionMutationVariables = Exact<{
@@ -903,6 +1008,7 @@ export type CreateTransactionMutation = {
     type: TransactionType;
     description: string | null;
     date: unknown;
+    parentId: string | null;
   };
 };
 
@@ -919,8 +1025,8 @@ export type AddWitnessMutation = {
       id: string;
       status: WitnessStatus;
       invitedAt: unknown;
-      user: { __typename: "User"; id: string; name: string; email: string };
-    } | null>;
+      user: { __typename: "User"; id: string; name: string; email: string } | null;
+    }> | null;
   };
 };
 
@@ -957,8 +1063,8 @@ export type MyWitnessRequestsQuery = {
       type: TransactionType;
       description: string | null;
       date: unknown;
-      createdBy: { __typename: "User"; name: string; email: string };
-    };
+      createdBy: { __typename: "User"; name: string; email: string } | null;
+    } | null;
   }>;
 };
 
@@ -991,14 +1097,14 @@ export type GetWitnessInvitationQuery = {
       type: TransactionType;
       description: string | null;
       date: unknown;
-      createdBy: { __typename: "User"; name: string };
-    };
+      createdBy: { __typename: "User"; name: string } | null;
+    } | null;
     user: {
       __typename: "User";
       id: string;
       email: string;
       name: string;
       passwordHash: string | null;
-    };
+    } | null;
   };
 };
