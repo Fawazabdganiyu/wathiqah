@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils/formatters";
 import { format } from "date-fns";
+import { BalanceIndicator } from "@/components/ui/balance-indicator";
 
 export function Dashboard() {
   const { transactions, loading: loadingTx, summary } = useTransactions();
@@ -48,40 +49,47 @@ export function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Overview of your financial activities and commitments.
+            Your personal ledger for loans, promises, and shared expenses.
           </p>
         </div>
         <div className="flex gap-2">
           <Button asChild>
-            <Link to="/transactions/new">New Transaction</Link>
+            <Link to="/transactions/new" search={{ contactId: undefined }}>
+              New Transaction
+            </Link>
           </Button>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Use Case Focused Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Balance"
-          value={formatCurrency(totalBalance)}
+          value={
+            <BalanceIndicator
+              amount={totalBalance}
+              className="text-2xl h-auto px-2 py-0 border-0 bg-transparent"
+            />
+          }
           icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
-          description="Net balance across all contacts"
+          description="Net across all relationships"
         />
         <StatsCard
           title="Active Promises"
           value={activePromises.toString()}
           icon={<CalendarClock className="h-4 w-4 text-muted-foreground" />}
-          description="Pending commitments"
+          description="Pending commitments to keep"
           link="/promises"
         />
         <StatsCard
-          title="Witness Requests"
+          title="Pending Verifications"
           value={pendingWitnessRequests.toString()}
           icon={<FileCheck className="h-4 w-4 text-muted-foreground" />}
-          description="Awaiting your acknowledgement"
+          description="Witness requests to review"
           link="/witnesses"
         />
         <StatsCard
-          title="Total Contacts"
+          title="Relationships"
           value={totalContacts.toString()}
           icon={<Users className="h-4 w-4 text-muted-foreground" />}
           description="Active connections"
@@ -93,14 +101,21 @@ export function Dashboard() {
         {/* Recent Transactions */}
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
+            <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
               {recentTransactions.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No recent transactions found.
-                </p>
+                <div className="text-center py-12">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No transactions yet. Start by recording a loan or expense.
+                  </p>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/transactions/new" search={{ contactId: undefined }}>
+                      Record Transaction
+                    </Link>
+                  </Button>
+                </div>
               ) : (
                 recentTransactions.map((tx) => (
                   <div key={tx.id} className="flex items-center">
@@ -136,7 +151,7 @@ export function Dashboard() {
         {/* Quick Actions / Recent Promises */}
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Pending Promises</CardTitle>
+            <CardTitle>Your Promises</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -160,13 +175,20 @@ export function Dashboard() {
                   </div>
                 ))}
               {promises.filter((p) => p.status === "PENDING").length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No pending promises.
-                </p>
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No pending promises. Good job!
+                  </p>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/promises">Make a Promise</Link>
+                  </Button>
+                </div>
               )}
-              <Button variant="outline" className="w-full" asChild>
-                <Link to="/promises">Manage Promises</Link>
-              </Button>
+              {promises.filter((p) => p.status === "PENDING").length > 0 && (
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/promises">View All Promises</Link>
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -183,7 +205,7 @@ function StatsCard({
   link,
 }: {
   title: string;
-  value: string;
+  value: string | React.ReactNode;
   icon: React.ReactNode;
   description: string;
   link?: string;

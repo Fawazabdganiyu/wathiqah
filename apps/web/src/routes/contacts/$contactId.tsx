@@ -5,7 +5,7 @@ import { GET_TRANSACTIONS } from "@/lib/apollo/queries/transactions";
 import { authGuard } from "@/utils/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowUpRight, ArrowDownLeft, ArrowRightLeft } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Plus } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/formatters";
 import { format } from "date-fns";
 import {
@@ -19,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PageLoader, BrandLoader } from "@/components/ui/page-loader";
 import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
+import { BalanceIndicator } from "@/components/ui/balance-indicator";
 
 export const Route = createFileRoute("/contacts/$contactId")({
   component: ContactDetailsPage,
@@ -51,19 +52,27 @@ function ContactDetailsPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/contacts">
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{contact.name}</h1>
-          <div className="text-muted-foreground flex gap-4 text-sm mt-1">
-            {contact.email && <span>{contact.email}</span>}
-            {contact.phoneNumber && <span>{contact.phoneNumber}</span>}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/contacts">
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">{contact.name}</h1>
+            <div className="text-muted-foreground flex gap-4 text-sm mt-1">
+              {contact.email && <span>{contact.email}</span>}
+              {contact.phoneNumber && <span>{contact.phoneNumber}</span>}
+            </div>
           </div>
         </div>
+        <Button asChild>
+          <Link to="/transactions/new" search={{ contactId: contact.id }}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Transaction
+          </Link>
+        </Button>
       </div>
 
       {/* Summary Cards */}
@@ -75,11 +84,7 @@ function ContactDetailsPage() {
               <div className="h-4 w-4 text-muted-foreground">💰</div>
             </CardHeader>
             <CardContent>
-              <div
-                className={`text-2xl font-bold ${summary.netBalance >= 0 ? "text-green-600" : "text-red-600"}`}
-              >
-                {formatCurrency(summary.netBalance)}
-              </div>
+              <BalanceIndicator amount={summary.netBalance} className="text-2xl px-3 py-1 h-auto" />
             </CardContent>
           </Card>
           <Card>

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,6 +29,11 @@ import { TransactionType, AssetCategory } from "@/types/__generated__/graphql";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/transactions/new")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      contactId: search.contactId as string | undefined,
+    };
+  },
   component: NewTransactionPage,
 });
 
@@ -66,6 +71,7 @@ const formSchema = z
 
 function NewTransactionPage() {
   const navigate = useNavigate();
+  const search = useSearch({ from: "/transactions/new" });
   const { createTransaction, creating } = useTransactions();
   const { contacts, loading: loadingContacts } = useContacts();
 
@@ -73,7 +79,8 @@ function NewTransactionPage() {
     // biome-ignore lint/suspicious/noExplicitAny: Complex type mismatch with zodResolver
     resolver: zodResolver(formSchema) as any,
     defaultValues: {
-      type: TransactionType.Expense,
+      type: search.contactId ? TransactionType.Given : TransactionType.Expense,
+      contactId: search.contactId,
       date: format(new Date(), "yyyy-MM-dd"),
       category: AssetCategory.Funds,
     },

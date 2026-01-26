@@ -15,9 +15,9 @@ import {
   Mail,
   Wallet,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/utils/formatters";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BalanceIndicator } from "@/components/ui/balance-indicator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -154,21 +154,7 @@ function ContactsPage() {
                         {contact.name ?? "Unnamed"}
                       </Link>
                     </h3>
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        contact.balance > 0
-                          ? "bg-destructive/10 text-destructive"
-                          : contact.balance < 0
-                            ? "bg-primary/10 text-primary"
-                            : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {contact.balance === 0
-                        ? "Settled"
-                        : contact.balance > 0
-                          ? `Owes you ${formatCurrency(contact.balance)}`
-                          : `You owe ${formatCurrency(Math.abs(contact.balance))}`}
-                    </span>
+                    <BalanceIndicator amount={contact.balance} withLabel />
                   </div>
                 </div>
 
@@ -220,7 +206,11 @@ function ContactsPage() {
                 )}
                 <div className="flex items-center gap-2">
                   <Wallet className="w-4 h-4 text-muted-foreground" />
-                  <span>Balance: {formatCurrency(Math.abs(contact.balance))}</span>
+                  <span className="text-muted-foreground">Balance: </span>
+                  <BalanceIndicator
+                    amount={contact.balance}
+                    className="text-xs py-0 px-1.5 h-auto"
+                  />
                 </div>
               </div>
             </div>

@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { BrandLoader } from "@/components/ui/page-loader";
 import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
+import { BalanceIndicator } from "@/components/ui/balance-indicator";
 
 export const Route = createFileRoute("/transactions/")({
   component: TransactionsPage,
@@ -89,7 +90,7 @@ function TransactionsPage() {
             <Download className="w-4 h-4 mr-2" /> Export
           </Button>
           <Button asChild>
-            <Link to="/transactions/new">
+            <Link to="/transactions/new" search={{ contactId: undefined }}>
               <Plus className="w-4 h-4 mr-2" /> New Transaction
             </Link>
           </Button>
@@ -105,7 +106,7 @@ function TransactionsPage() {
               <div className="h-4 w-4 text-muted-foreground">💰</div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(summary.netBalance)}</div>
+              <BalanceIndicator amount={summary.netBalance} className="text-2xl px-3 py-1 h-auto" />
             </CardContent>
           </Card>
           <Card>
