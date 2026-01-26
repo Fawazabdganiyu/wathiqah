@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordPage,
@@ -14,7 +15,6 @@ function ForgotPasswordPage() {
   const { forgotPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const id = useId();
@@ -22,16 +22,16 @@ function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       await forgotPassword({ email });
       setIsSubmitted(true);
+      toast.success("Instructions sent to your email");
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to process request");
+        toast.error(err.message || "Failed to process request");
       } else {
-        setError("Failed to process request");
+        toast.error("Failed to process request");
       }
     } finally {
       setIsLoading(false);
@@ -78,12 +78,6 @@ function ForgotPasswordPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-              {error}
-            </div>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor={`${id}-email`}>Email address</Label>
             <Input

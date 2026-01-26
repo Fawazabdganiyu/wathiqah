@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/signup")({
   component: SignupComponent,
@@ -16,22 +17,21 @@ function SignupComponent() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
     try {
       await signup({ name, email, password });
       setIsSuccess(true);
+      toast.success("Account created successfully!");
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to sign up");
+        toast.error(err.message || "Failed to sign up");
       } else {
-        setError("Failed to sign up");
+        toast.error("Failed to sign up");
       }
       setIsLoading(false);
     }
@@ -116,8 +116,6 @@ function SignupComponent() {
               />
             </div>
           </div>
-
-          {error && <div className="text-destructive text-sm text-center">{error}</div>}
 
           <Button type="submit" className="w-full" isLoading={isLoading}>
             Sign up

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
   component: LoginComponent,
@@ -15,21 +16,20 @@ function LoginComponent() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
     try {
       await login({ email, password });
+      toast.success("Welcome back!");
       navigate({ to: "/" });
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to login");
+        toast.error(err.message || "Failed to login");
       } else {
-        setError("Failed to login");
+        toast.error("Failed to login");
       }
       setIsLoading(false);
     }
@@ -82,8 +82,6 @@ function LoginComponent() {
               />
             </div>
           </div>
-
-          {error && <div className="text-destructive text-sm text-center">{error}</div>}
 
           <Button type="submit" className="w-full" isLoading={isLoading}>
             Sign in

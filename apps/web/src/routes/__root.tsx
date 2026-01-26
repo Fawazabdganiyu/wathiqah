@@ -18,6 +18,7 @@ interface MyRouterContext extends ApolloClientIntegration.RouterContext {
 
 import { NotFound } from "@/components/errors/NotFound";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   notFoundComponent: NotFound,
@@ -94,6 +95,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <Header />
           <main className="flex-1 flex flex-col">{children}</main>
+          <Toaster />
           <TanStackDevtools
             config={{
               position: "bottom-right",

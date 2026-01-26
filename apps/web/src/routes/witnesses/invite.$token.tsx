@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useId, useState } from "react";
 import { WitnessStatus } from "@/types/__generated__/graphql";
 import { useAcknowledgeWitness, useWitnessInvitation } from "@/hooks/useWitnesses";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/witnesses/invite/$token")({
   component: InviteComponent,
@@ -19,8 +20,6 @@ function InviteComponent() {
   const { user: currentUser, acceptInvitation } = useAuth();
 
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const { invitation: witnessInvitation, loading, error: queryError } = useWitnessInvitation(token);
@@ -58,13 +57,13 @@ function InviteComponent() {
     setIsLoading(true);
     try {
       await acceptInvitation({ token, password });
-      setSuccess("Account created successfully!");
+      toast.success("Account created successfully!");
       navigate({ to: "/" });
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to create account");
+        toast.error(err.message || "Failed to create account");
       } else {
-        setError("Failed to create account");
+        toast.error("Failed to create account");
       }
       setIsLoading(false);
     }
@@ -73,13 +72,13 @@ function InviteComponent() {
   const handleAcknowledge = async (status: WitnessStatus) => {
     try {
       await acknowledge(witnessInvitation.id, status);
-      setSuccess(`Transaction ${status.toLowerCase()} successfully!`);
+      toast.success(`Transaction ${status.toLowerCase()} successfully!`);
       navigate({ to: "/" });
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to update status");
+        toast.error(err.message || "Failed to update status");
       } else {
-        setError("Failed to update status");
+        toast.error("Failed to update status");
       }
     }
   };
@@ -128,18 +127,6 @@ function InviteComponent() {
 
         {/* Action Section */}
         <div className="space-y-4">
-          {error && (
-            <div className="text-red-500 text-sm text-center bg-red-50 dark:bg-red-950/30 p-2 rounded">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="text-emerald-500 text-sm text-center bg-emerald-50 dark:bg-emerald-950/30 p-2 rounded">
-              {success}
-            </div>
-          )}
-
           {witnessInvitation.status !== WitnessStatus.Pending ? (
             <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-blue-700 dark:text-blue-300 font-medium">

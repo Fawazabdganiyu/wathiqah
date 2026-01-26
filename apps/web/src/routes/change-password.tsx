@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 
 import { authGuard } from "@/utils/auth";
 
@@ -19,24 +20,20 @@ function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const id = useId();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
+      toast.error("New passwords do not match");
       return;
     }
 
     if (newPassword.length < 8) {
-      setError("New password must be at least 8 characters long");
+      toast.error("New password must be at least 8 characters long");
       return;
     }
 
@@ -44,15 +41,15 @@ function ChangePasswordPage() {
 
     try {
       await changePassword({ currentPassword, newPassword });
-      setSuccess("Password updated successfully");
+      toast.success("Password updated successfully");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to update password");
+        toast.error(err.message || "Failed to update password");
       } else {
-        setError("Failed to update password");
+        toast.error("Failed to update password");
       }
     } finally {
       setIsLoading(false);
@@ -78,18 +75,6 @@ function ChangePasswordPage() {
 
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
-            {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="p-3 text-sm text-primary bg-primary/10 border border-primary/20 rounded-md">
-                {success}
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor={`${id}-current-password`}>Current Password</Label>
               <PasswordInput

@@ -8,6 +8,7 @@ import { PageLoader, BrandLoader } from "@/components/ui/page-loader";
 import { useState, useId } from "react";
 import { Trash2, Plus, UserPlus, Key } from "lucide-react";
 import { Eye, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({
   component: SettingsPage,
@@ -56,45 +57,38 @@ function SharedAccessSection() {
   const [email, setEmail] = useState("");
   const [revokingId, setRevokingId] = useState<string | null>(null);
 
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
   const grantEmailId = useId();
 
   const handleGrant = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    setSuccessMessage("");
-    setErrorMessage("");
 
     try {
       await grantAccess({ email });
       setEmail("");
-      setSuccessMessage(`Access granted to ${email}`);
+      toast.success(`Access granted to ${email}`);
     } catch (err) {
       console.error(err);
       if (err instanceof Error) {
-        setErrorMessage(err.message || "Failed to grant access");
+        toast.error(err.message || "Failed to grant access");
       } else {
-        setErrorMessage("Failed to grant access");
+        toast.error("Failed to grant access");
       }
     }
   };
 
   const handleRevoke = async (id: string) => {
     if (!confirm("Are you sure you want to revoke access?")) return;
-    setSuccessMessage("");
-    setErrorMessage("");
     try {
       setRevokingId(id);
       await revokeAccess(id);
-      setSuccessMessage("Access revoked successfully");
+      toast.success("Access revoked successfully");
     } catch (err) {
       console.error(err);
       if (err instanceof Error) {
-        setErrorMessage(err.message || "Failed to revoke access");
+        toast.error(err.message || "Failed to revoke access");
       } else {
-        setErrorMessage("Failed to revoke access");
+        toast.error("Failed to revoke access");
       }
     } finally {
       setRevokingId(null);
@@ -185,18 +179,6 @@ function SharedAccessSection() {
             </p>
           </div>
         </div>
-
-        {successMessage && (
-          <div className="mb-4 p-3 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-md text-sm">
-            {successMessage}
-          </div>
-        )}
-
-        {errorMessage && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-md text-sm">
-            {errorMessage}
-          </div>
-        )}
 
         <form onSubmit={handleGrant} className="flex gap-4 mb-8 items-end">
           <div className="flex-1 space-y-2">

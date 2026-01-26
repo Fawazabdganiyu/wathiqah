@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { BrandLoader } from "@/components/ui/page-loader";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { z } from "zod";
+import { toast } from "sonner";
 
 const verifyEmailSearchSchema = z.object({
   token: z.string().min(1),
@@ -72,9 +73,11 @@ function VerifyEmailPage() {
     try {
       await resendVerificationEmail(resendEmail);
       setResendStatus("success");
+      toast.success("Verification email sent! Please check your inbox.");
     } catch (err) {
       console.error(err);
       setResendStatus("error");
+      toast.error("Failed to send email. Please try again.");
     }
   };
 
@@ -138,9 +141,6 @@ function VerifyEmailPage() {
                   <Button type="submit" className="w-full" isLoading={resendStatus === "loading"}>
                     Resend Verification Email
                   </Button>
-                  {resendStatus === "error" && (
-                    <p className="text-xs text-red-500">Failed to send email. Please try again.</p>
-                  )}
                 </form>
               )}
             </div>

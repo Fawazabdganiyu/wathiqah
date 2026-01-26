@@ -4,6 +4,7 @@ import { useSharedAccess } from "@/hooks/useSharedAccess";
 import { PageLoader } from "@/components/ui/page-loader";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/shared-access/")({
   component: SharedAccessIndex,
@@ -20,14 +21,13 @@ function SharedAccessIndex() {
       try {
         await acceptAccess(token);
         setStatus("success");
+        toast.success("Invitation accepted successfully!");
       } catch (err: unknown) {
         console.error(err);
         setStatus("error");
-        if (err instanceof Error) {
-          setErrorMsg(err.message || "Failed to accept invitation");
-        } else {
-          setErrorMsg("Failed to accept invitation");
-        }
+        const msg = err instanceof Error ? err.message : "Failed to accept invitation";
+        setErrorMsg(msg);
+        toast.error(msg);
       }
     };
 
