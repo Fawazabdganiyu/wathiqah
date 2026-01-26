@@ -1,18 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
-import { useProfile } from "@/hooks/useProfile";
+import { Mail, Phone, Shield, User } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageLoader } from "@/components/ui/page-loader";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useState, useEffect, useId } from "react";
-import { User, Mail, Phone, Shield } from "lucide-react";
-import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/useProfile";
+import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/profile")({
+  beforeLoad: authGuard,
   component: ProfilePage,
 });
 

@@ -1,14 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
-import { PageLoader } from "@/components/ui/page-loader";
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Label } from "@/components/ui/label";
 import { useId, useState } from "react";
-import { WitnessStatus } from "@/types/__generated__/graphql";
-import { useAcknowledgeWitness, useWitnessInvitation } from "@/hooks/useWitnesses";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { PageLoader } from "@/components/ui/page-loader";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useAuth } from "@/hooks/use-auth";
+import { useAcknowledgeWitness, useWitnessInvitation } from "@/hooks/useWitnesses";
+import { WitnessStatus } from "@/types/__generated__/graphql";
 
 export const Route = createFileRoute("/witnesses/invite/$token")({
   component: InviteComponent,

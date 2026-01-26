@@ -1,13 +1,23 @@
+import { useMutation, useQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@apollo/client/react";
-import { GET_CONTACT } from "@/lib/apollo/queries/contacts";
-import { GET_TRANSACTIONS } from "@/lib/apollo/queries/transactions";
-import { authGuard } from "@/utils/auth";
+import { format } from "date-fns";
+import {
+  ArrowDownLeft,
+  ArrowLeft,
+  ArrowRightLeft,
+  ArrowUpRight,
+  Clock,
+  Package,
+  Plus,
+  ShieldCheck,
+  UserPlus,
+} from "lucide-react";
+import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
+import { Badge } from "@/components/ui/badge";
+import { BalanceIndicator } from "@/components/ui/balance-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Plus } from "lucide-react";
-import { formatCurrency } from "@/lib/utils/formatters";
-import { format } from "date-fns";
+import { BrandLoader, PageLoader } from "@/components/ui/page-loader";
 import {
   Table,
   TableBody,
@@ -16,10 +26,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { PageLoader, BrandLoader } from "@/components/ui/page-loader";
-import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
-import { BalanceIndicator } from "@/components/ui/balance-indicator";
+import { GET_CONTACT, GET_CONTACTS, INVITE_CONTACT } from "@/lib/apollo/queries/contacts";
+import { GET_TRANSACTIONS } from "@/lib/apollo/queries/transactions";
+import { formatCurrency } from "@/lib/utils/formatters";
+import { AssetCategory } from "@/types/__generated__/graphql";
+import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/contacts/$contactId")({
   component: ContactDetailsPage,
@@ -41,6 +52,18 @@ function ContactDetailsPage() {
     variables: { filter: { contactId } },
   });
 
+  const [inviteContact] = useMutation(INVITE_CONTACT, {
+    refetchQueries: [{ query: GET_CONTACT, variables: { id: contactId } }, { query: GET_CONTACTS }],
+  });
+
+  const handleInvite = async () => {
+    try {
+      await inviteContact({ variables: { contactId } });
+    } catch (err) {
+      console.error("Failed to invite contact:", err);
+    }
+  };
+
   if (contactLoading) return <PageLoader />;
   if (contactError)
     return <div className="p-8 text-center text-red-500">Error: {contactError.message}</div>;
@@ -60,7 +83,43 @@ function ContactDetailsPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{contact.name}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold tracking-tight">{contact.name}</h1>
+              {contact.isOnPlatform ? (
+                <Badge
+                  variant="outline"
+                  className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 flex items-center gap-1.5 py-1.5 px-4 shadow-sm animate-in fade-in zoom-in duration-300"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span className="font-bold">Platform Member</span>
+                </Badge>
+              ) : contact.hasPendingInvitation ? (
+                <Badge
+                  variant="outline"
+                  className="bg-amber-500/10 text-amber-600 border-amber-500/20 flex items-center gap-1.5 py-1.5 px-4 shadow-sm animate-in fade-in zoom-in duration-300"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span className="font-bold">Invitation Sent</span>
+                </Badge>
+              ) : contact.email ? (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleInvite}
+                  className="h-9 px-4 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Invite to Platform
+                </Button>
+              ) : (
+                <Badge
+                  variant="outline"
+                  className="bg-muted/50 text-muted-foreground border-border/50 flex items-center gap-1.5 py-1.5 px-4 italic opacity-70"
+                >
+                  Add Email to Invite
+                </Badge>
+              )}
+            </div>
             <div className="text-muted-foreground flex gap-4 text-sm mt-1">
               {contact.email && <span>{contact.email}</span>}
               {contact.phoneNumber && <span>{contact.phoneNumber}</span>}
@@ -90,10 +149,10 @@ function ContactDetailsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Given</CardTitle>
-              <ArrowUpRight className="h-4 w-4 text-red-500" />
+              <ArrowUpRight className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-bold text-blue-600">
                 {formatCurrency(summary.totalGiven)}
               </div>
             </CardContent>
@@ -101,22 +160,22 @@ function ContactDetailsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Received</CardTitle>
-              <ArrowDownLeft className="h-4 w-4 text-green-500" />
+              <ArrowDownLeft className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-red-600">
                 {formatCurrency(summary.totalReceived)}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Collected</CardTitle>
-              <ArrowRightLeft className="h-4 w-4 text-blue-500" />
+              <CardTitle className="text-sm font-medium">Total Returned</CardTitle>
+              <ArrowRightLeft className="h-4 w-4 text-emerald-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                {formatCurrency(summary.totalCollected)}
+              <div className="text-2xl font-bold text-emerald-600">
+                {formatCurrency(summary.totalReturned)}
               </div>
             </CardContent>
           </Card>
@@ -170,25 +229,46 @@ function ContactDetailsPage() {
                         variant="outline"
                         className={
                           tx.type === "GIVEN"
-                            ? "text-red-600 border-red-200 bg-red-50"
+                            ? "text-blue-600 border-blue-200 bg-blue-50"
                             : tx.type === "RECEIVED"
-                              ? "text-green-600 border-green-200 bg-green-50"
-                              : "text-blue-600 border-blue-200 bg-blue-50"
+                              ? "text-red-600 border-red-200 bg-red-50"
+                              : "text-emerald-600 border-emerald-200 bg-emerald-50"
                         }
                       >
                         {tx.type}
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-[300px] truncate" title={tx.description as string}>
-                      {tx.description || "-"}
+                      {tx.category === AssetCategory.Item ? (
+                        <div className="flex items-center gap-1.5 font-medium text-foreground">
+                          <Package className="h-4 w-4 text-muted-foreground" />
+                          <span>
+                            {tx.quantity}x {tx.itemName}
+                          </span>
+                        </div>
+                      ) : (
+                        tx.description || "-"
+                      )}
                     </TableCell>
                     <TableCell
                       className={`text-right font-bold ${
-                        tx.type === "GIVEN" ? "text-red-600" : "text-green-600"
+                        tx.category === AssetCategory.Item
+                          ? "text-muted-foreground font-normal italic text-xs"
+                          : tx.type === "GIVEN"
+                            ? "text-blue-600"
+                            : tx.type === "RECEIVED"
+                              ? "text-red-600"
+                              : "text-emerald-600"
                       }`}
                     >
-                      {tx.type === "GIVEN" ? "-" : "+"}
-                      {formatCurrency(tx.amount)}
+                      {tx.category === AssetCategory.Item ? (
+                        "Physical Item"
+                      ) : (
+                        <>
+                          {tx.type === "GIVEN" ? "+" : "-"}
+                          {formatCurrency(tx.amount)}
+                        </>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Button variant="ghost" size="sm" asChild>

@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSharedData } from "@/hooks/useSharedData";
-import { PageLoader } from "@/components/ui/page-loader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Calendar, Eye, Lock, Package, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Lock, ArrowLeft, Calendar, User, Eye } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils/formatters";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageLoader } from "@/components/ui/page-loader";
 import {
   Table,
   TableBody,
@@ -15,6 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSharedData } from "@/hooks/useSharedData";
+import { formatCurrency, formatDate } from "@/lib/utils/formatters";
+import { AssetCategory } from "@/types/__generated__/graphql";
 
 export const Route = createFileRoute("/shared-access/view/$grantId")({
   component: SharedAccessView,
@@ -182,15 +183,34 @@ function SharedAccessView() {
                               className="max-w-[200px] truncate"
                               title={tx.description as string}
                             >
-                              {tx.description || "-"}
+                              {tx.category === AssetCategory.Item ? (
+                                <div className="flex items-center gap-1.5 font-medium text-foreground">
+                                  <Package className="h-4 w-4 text-muted-foreground" />
+                                  <span>
+                                    {tx.quantity}x {tx.itemName}
+                                  </span>
+                                </div>
+                              ) : (
+                                tx.description || "-"
+                              )}
                             </TableCell>
                             <TableCell
                               className={`text-right font-bold ${
-                                tx.type === "GIVEN" ? "text-red-600" : "text-green-600"
+                                tx.category === AssetCategory.Item
+                                  ? "text-muted-foreground font-normal italic text-xs"
+                                  : tx.type === "GIVEN"
+                                    ? "text-red-600"
+                                    : "text-green-600"
                               }`}
                             >
-                              {tx.type === "GIVEN" ? "-" : "+"}
-                              {formatCurrency(tx.amount)}
+                              {tx.category === AssetCategory.Item ? (
+                                "Physical Item"
+                              ) : (
+                                <>
+                                  {tx.type === "GIVEN" ? "-" : "+"}
+                                  {formatCurrency(tx.amount)}
+                                </>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))

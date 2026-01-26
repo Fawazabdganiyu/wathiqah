@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ItemsList } from "@/components/items/ItemsList";
+import { Button } from "@/components/ui/button";
 import { useItems } from "@/hooks/useItems";
 
 export const Route = createFileRoute("/items/")({

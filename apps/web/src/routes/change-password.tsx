@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useId, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Label } from "@/components/ui/label";
 import { ShieldCheck } from "lucide-react";
+import { useId, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useAuth } from "@/hooks/use-auth";
 
 import { authGuard } from "@/utils/auth";
 

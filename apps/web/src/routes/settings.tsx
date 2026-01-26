@@ -1,16 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useAuth } from "@/hooks/use-auth";
-import { useSharedAccess } from "@/hooks/useSharedAccess";
+import { ExternalLink, Eye, Key, Plus, Trash2, UserPlus } from "lucide-react";
+import { useId, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PageLoader, BrandLoader } from "@/components/ui/page-loader";
-import { useState, useId } from "react";
-import { Trash2, Plus, UserPlus, Key } from "lucide-react";
-import { Eye, ExternalLink } from "lucide-react";
-import { toast } from "sonner";
+import { BrandLoader, PageLoader } from "@/components/ui/page-loader";
+import { useAuth } from "@/hooks/use-auth";
+import { useSharedAccess } from "@/hooks/useSharedAccess";
+import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/settings")({
+  beforeLoad: authGuard,
   component: SettingsPage,
 });
 

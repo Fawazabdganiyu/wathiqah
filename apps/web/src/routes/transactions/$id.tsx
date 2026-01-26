@@ -1,15 +1,16 @@
-import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useTransaction } from "@/hooks/useTransaction";
-import { TransactionWitnessList } from "@/components/transactions/TransactionWitnessList";
-import { AddWitnessDialog } from "@/components/transactions/AddWitnessDialog";
-import { HistoryViewer } from "@/components/history/HistoryViewer";
-import { ArrowLeft, Calendar, FileText, Package, UserPlus } from "lucide-react";
 import { format } from "date-fns";
+import { ArrowLeft, Calendar, FileText, Gift, Package, UserPlus } from "lucide-react";
+import { useState } from "react";
+import { HistoryViewer } from "@/components/history/HistoryViewer";
+import { AddWitnessDialog } from "@/components/transactions/AddWitnessDialog";
+import { ConvertGiftDialog } from "@/components/transactions/ConvertGiftDialog";
+import { TransactionWitnessList } from "@/components/transactions/TransactionWitnessList";
 import { Button } from "@/components/ui/button";
 import { PageLoader } from "@/components/ui/page-loader";
+import { useTransaction } from "@/hooks/useTransaction";
+import { AssetCategory, TransactionType, type Witness } from "@/types/__generated__/graphql";
 import { authGuard } from "@/utils/auth";
-import type { Witness } from "@/types/__generated__/graphql";
 
 export const Route = createFileRoute("/transactions/$id")({
   component: TransactionDetailPage,
@@ -19,7 +20,8 @@ export const Route = createFileRoute("/transactions/$id")({
 function TransactionDetailPage() {
   const { id } = Route.useParams();
   const [isAddWitnessOpen, setIsAddWitnessOpen] = useState(false);
-  const { transaction, loading, error } = useTransaction(id);
+  const [isConvertGiftOpen, setIsConvertGiftOpen] = useState(false);
+  const { transaction, loading, error, refetch } = useTransaction(id);
 
   if (loading) {
     return <PageLoader />;
@@ -39,6 +41,18 @@ function TransactionDetailPage() {
 
   const currentTransaction = transaction;
 
+  const canConvertToGift =
+    currentTransaction.category === AssetCategory.Funds &&
+    (currentTransaction.type === TransactionType.Given ||
+      currentTransaction.type === TransactionType.Received);
+
+  const totalConverted = (currentTransaction.conversions || []).reduce(
+    (sum, conv) => sum + (conv?.amount || 0),
+    0,
+  );
+
+  const remainingAmount = Math.max(0, (currentTransaction.amount || 0) - totalConverted);
+
   return (
     <div className="container mx-auto max-w-3xl p-4 py-8">
       <div className="mb-6">
@@ -52,11 +66,15 @@ function TransactionDetailPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">
-              {currentTransaction.type === "GIVEN"
+              {currentTransaction.type === TransactionType.Given
                 ? "Given to"
-                : currentTransaction.type === "RECEIVED"
+                : currentTransaction.type === TransactionType.Received
                   ? "Received from"
-                  : "Collected from"}{" "}
+                  : currentTransaction.type === TransactionType.Returned
+                    ? "Returned"
+                    : currentTransaction.type === TransactionType.Gift
+                      ? "Gift"
+                      : "Collected from"}{" "}
               {currentTransaction.contact?.name || "Personal"}
             </h1>
             <p className="text-neutral-500 dark:text-neutral-400 mt-1 flex items-center gap-2">
@@ -73,6 +91,15 @@ function TransactionDetailPage() {
                 }).format(currentTransaction.amount)}
               </div>
             )}
+            {totalConverted > 0 && (
+              <div className="text-sm font-medium text-orange-600 dark:text-orange-400">
+                Converted to gift:{" "}
+                {new Intl.NumberFormat("en-NG", {
+                  style: "currency",
+                  currency: "NGN",
+                }).format(totalConverted)}
+              </div>
+            )}
             {currentTransaction.quantity && (
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {currentTransaction.quantity} x {currentTransaction.itemName || "Item"}
@@ -83,6 +110,21 @@ function TransactionDetailPage() {
       </div>
 
       <div className="grid gap-6">
+        {/* Actions bar if applicable */}
+        {canConvertToGift && remainingAmount > 0 && (
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 text-orange-600 border-orange-200 hover:bg-orange-50"
+              onClick={() => setIsConvertGiftOpen(true)}
+            >
+              <Gift size={16} />
+              Convert to Gift
+            </Button>
+          </div>
+        )}
+
         {/* Transaction Details Card */}
         <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
@@ -91,6 +133,12 @@ function TransactionDetailPage() {
           </h3>
 
           <div className="space-y-4">
+            {currentTransaction.parentId && (
+              <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                This transaction is a conversion from another transaction.
+              </div>
+            )}
+
             {currentTransaction.description && (
               <div>
                 <span className="block text-sm font-medium text-neutral-500">Description</span>
@@ -112,8 +160,48 @@ function TransactionDetailPage() {
                 </div>
               </div>
             )}
+
+            {currentTransaction.returnDirection && (
+              <div>
+                <span className="block text-sm font-medium text-neutral-500">Return Direction</span>
+                <p className="mt-1 text-neutral-900 dark:text-neutral-100">
+                  {currentTransaction.returnDirection === "TO_ME" ? "To Me" : "To Contact"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Conversions Section if applicable */}
+        {(currentTransaction.conversions || []).length > 0 && (
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
+              <Gift size={20} className="text-orange-600" />
+              Gift Conversions
+            </h3>
+            <div className="space-y-3">
+              {currentTransaction.conversions.map((conv) => (
+                <div
+                  key={conv?.id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-800"
+                >
+                  <div>
+                    <p className="text-sm font-medium">
+                      {format(new Date(conv?.date as string), "MMM d, yyyy")}
+                    </p>
+                    <p className="text-xs text-neutral-500">Gifted back</p>
+                  </div>
+                  <div className="font-semibold text-orange-600">
+                    {new Intl.NumberFormat("en-NG", {
+                      style: "currency",
+                      currency: "NGN",
+                    }).format(conv?.amount || 0)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Witnesses Section */}
         <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
@@ -139,6 +227,19 @@ function TransactionDetailPage() {
           isOpen={isAddWitnessOpen}
           onClose={() => setIsAddWitnessOpen(false)}
           transactionId={id}
+        />
+
+        <ConvertGiftDialog
+          isOpen={isConvertGiftOpen}
+          onClose={() => setIsConvertGiftOpen(false)}
+          transaction={{
+            id: currentTransaction.id,
+            amount: remainingAmount,
+            type: currentTransaction.type,
+            contactId: currentTransaction.contact?.id,
+            description: currentTransaction.description,
+          }}
+          onSuccess={() => refetch()}
         />
 
         {/* History Section */}

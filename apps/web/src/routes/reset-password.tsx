@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { CheckCircle2, Lock } from "lucide-react";
 import { useId, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Label } from "@/components/ui/label";
-import { Lock, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useAuth } from "@/hooks/use-auth";
 
 const resetPasswordSearchSchema = z.object({
   token: z.string().min(1),

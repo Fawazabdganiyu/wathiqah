@@ -1,18 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ShieldCheck,
-  Users,
-  History,
   ArrowRight,
+  Eye,
   FileSignature,
   Handshake,
-  Wallet,
-  Eye,
+  History,
   Lock,
+  ShieldCheck,
+  Users,
+  Wallet,
 } from "lucide-react";
+import { Dashboard } from "@/components/dashboard/Dashboard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { Dashboard } from "@/components/dashboard/Dashboard";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 

@@ -1,14 +1,11 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { format } from "date-fns";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useTransactions } from "@/hooks/useTransactions";
-import { useContacts } from "@/hooks/useContacts";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { BrandLoader } from "@/components/ui/page-loader";
 import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -17,6 +14,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { BrandLoader } from "@/components/ui/page-loader";
 import {
   Select,
   SelectContent,
@@ -24,9 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TransactionType, AssetCategory } from "@/types/__generated__/graphql";
-import { format } from "date-fns";
+import { Textarea } from "@/components/ui/textarea";
+import { useContacts } from "@/hooks/useContacts";
+import { useTransactions } from "@/hooks/useTransactions";
+import { AssetCategory, ReturnDirection, TransactionType } from "@/types/__generated__/graphql";
 
 export const Route = createFileRoute("/transactions/new")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -43,7 +43,8 @@ const formSchema = z
     type: z.enum([
       TransactionType.Given,
       TransactionType.Received,
-      TransactionType.Collected,
+      TransactionType.Returned,
+      TransactionType.Gift,
       TransactionType.Expense,
       TransactionType.Income,
     ]),
@@ -51,13 +52,19 @@ const formSchema = z
     date: z.string().min(1, "Date is required"),
     description: z.string().optional(),
     category: z.enum(AssetCategory).default(AssetCategory.Funds),
+    returnDirection: z.enum([ReturnDirection.ToMe, ReturnDirection.ToContact]).optional(),
   })
   .refine(
     (data) => {
-      // If contactId is present, type must be GIVEN, RECEIVED, or COLLECTED
+      // If contactId is present, type must be GIVEN, RECEIVED, RETURNED or GIFT
       if (data.contactId) {
         return (
-          [TransactionType.Given, TransactionType.Received, TransactionType.Collected] as string[]
+          [
+            TransactionType.Given,
+            TransactionType.Received,
+            TransactionType.Returned,
+            TransactionType.Gift,
+          ] as string[]
         ).includes(data.type);
       }
       // If contactId is missing, type must be EXPENSE or INCOME
@@ -66,6 +73,22 @@ const formSchema = z
     {
       message: "Invalid transaction type for the selected context (Personal vs Contact)",
       path: ["type"],
+    },
+  )
+  .refine(
+    (data) => {
+      // returnDirection is required for RETURNED or GIFT with contact
+      if (
+        (data.type === TransactionType.Returned || data.type === TransactionType.Gift) &&
+        data.contactId
+      ) {
+        return !!data.returnDirection;
+      }
+      return true;
+    },
+    {
+      message: "Return direction is required for this transaction type",
+      path: ["returnDirection"],
     },
   );
 
@@ -87,6 +110,7 @@ function NewTransactionPage() {
   });
 
   const contactId = form.watch("contactId");
+  const type = form.watch("type");
 
   // Reset type when contact selection changes
   // If contact selected -> GIVEN (default)
@@ -102,7 +126,7 @@ function NewTransactionPage() {
         contactId: values.contactId || "", // Ensure string if undefined (though backend handles optional)
         date: new Date(values.date).toISOString(),
       });
-      navigate({ to: "/transactions" });
+      navigate({ to: "/transactions", search: { tab: "funds" } });
     } catch (error) {
       console.error(error);
     }
@@ -187,7 +211,8 @@ function NewTransactionPage() {
                             <>
                               <SelectItem value={TransactionType.Given}>Given</SelectItem>
                               <SelectItem value={TransactionType.Received}>Received</SelectItem>
-                              <SelectItem value={TransactionType.Collected}>Collected</SelectItem>
+                              <SelectItem value={TransactionType.Returned}>Returned</SelectItem>
+                              <SelectItem value={TransactionType.Gift}>Gift</SelectItem>
                             </>
                           ) : (
                             <>
@@ -216,6 +241,31 @@ function NewTransactionPage() {
                   )}
                 />
               </div>
+
+              {(type === TransactionType.Returned || type === TransactionType.Gift) &&
+                contactId && (
+                  <FormField
+                    control={form.control}
+                    name="returnDirection"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Direction</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select direction" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value={ReturnDirection.ToMe}>To Me</SelectItem>
+                            <SelectItem value={ReturnDirection.ToContact}>To Contact</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
               <FormField
                 control={form.control}
@@ -253,7 +303,7 @@ function NewTransactionPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate({ to: "/transactions" })}
+                  onClick={() => navigate({ to: "/transactions", search: { tab: "funds" } })}
                 >
                   Cancel
                 </Button>

@@ -1,13 +1,12 @@
+import { ApolloLink, HttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  routerWithApolloClient,
+} from "@apollo/client-integration-tanstack-start";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";
-
-import {
-  routerWithApolloClient,
-  ApolloClient,
-  InMemoryCache,
-} from "@apollo/client-integration-tanstack-start";
-import { HttpLink, ApolloLink } from "@apollo/client";
 import { authLink, errorLink } from "./lib/apollo-links";
 
 // Import the generated route tree

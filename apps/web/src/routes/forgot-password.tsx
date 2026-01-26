@@ -1,13 +1,21 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useId, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { isAuthenticated } from "@/utils/auth";
 
 export const Route = createFileRoute("/forgot-password")({
+  beforeLoad: () => {
+    if (isAuthenticated()) {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
   component: ForgotPasswordPage,
 });
 

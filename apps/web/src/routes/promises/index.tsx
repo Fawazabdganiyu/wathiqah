@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Filter, Plus, Search } from "lucide-react";
 import { useState } from "react";
-import { usePromises } from "@/hooks/usePromises";
-import { authGuard } from "@/utils/auth";
 import { PromiseCard } from "@/components/promises/PromiseCard";
 import { PromiseFormDialog } from "@/components/promises/PromiseFormDialog";
 import { Button } from "@/components/ui/button";
@@ -13,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, Plus } from "lucide-react";
+import { usePromises } from "@/hooks/usePromises";
 import { PromiseStatus, type Promise as PromiseType } from "@/types/__generated__/graphql";
+import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/promises/")({
   component: PromisesPage,

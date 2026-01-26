@@ -1,14 +1,22 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { CheckCircle2 } from "lucide-react";
 import { useId, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useAuth } from "@/hooks/use-auth";
+import { isAuthenticated } from "@/utils/auth";
 
 export const Route = createFileRoute("/signup")({
+  beforeLoad: () => {
+    if (isAuthenticated()) {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
   component: SignupComponent,
 });
 

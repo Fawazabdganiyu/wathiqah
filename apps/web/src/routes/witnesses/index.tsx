@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMyWitnessRequests, useAcknowledgeWitness } from "@/hooks/useWitnesses";
 import { PageLoader } from "@/components/ui/page-loader";
 import { WitnessList } from "@/components/witnesses/WitnessList";
+import { useAcknowledgeWitness, useMyWitnessRequests } from "@/hooks/useWitnesses";
 import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/witnesses/")({

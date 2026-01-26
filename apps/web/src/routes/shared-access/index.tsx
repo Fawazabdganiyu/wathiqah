@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useSharedAccess } from "@/hooks/useSharedAccess";
-import { PageLoader } from "@/components/ui/page-loader";
-import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { PageLoader } from "@/components/ui/page-loader";
+import { useSharedAccess } from "@/hooks/useSharedAccess";
 
 export const Route = createFileRoute("/shared-access/")({
   component: SharedAccessIndex,

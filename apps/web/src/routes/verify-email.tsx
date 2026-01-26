@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useState, useId } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrandLoader } from "@/components/ui/page-loader";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { z } from "zod";
-import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
 
 const verifyEmailSearchSchema = z.object({
   token: z.string().min(1),
