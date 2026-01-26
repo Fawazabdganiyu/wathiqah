@@ -11,15 +11,23 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WitnessesIndexRouteImport } from './routes/witnesses/index'
+import { Route as TransactionsIndexRouteImport } from './routes/transactions/index'
+import { Route as SharedAccessIndexRouteImport } from './routes/shared-access/index'
+import { Route as PromisesIndexRouteImport } from './routes/promises/index'
 import { Route as ContactsIndexRouteImport } from './routes/contacts/index'
+import { Route as TransactionsNewRouteImport } from './routes/transactions/new'
 import { Route as TransactionsIdRouteImport } from './routes/transactions/$id'
+import { Route as ContactsContactIdRouteImport } from './routes/contacts/$contactId'
 import { Route as WitnessesInviteTokenRouteImport } from './routes/witnesses/invite.$token'
+import { Route as SharedAccessViewGrantIdRouteImport } from './routes/shared-access/view.$grantId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
@@ -31,9 +39,19 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -61,9 +79,29 @@ const WitnessesIndexRoute = WitnessesIndexRouteImport.update({
   path: '/witnesses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransactionsIndexRoute = TransactionsIndexRouteImport.update({
+  id: '/transactions/',
+  path: '/transactions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SharedAccessIndexRoute = SharedAccessIndexRouteImport.update({
+  id: '/shared-access/',
+  path: '/shared-access/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromisesIndexRoute = PromisesIndexRouteImport.update({
+  id: '/promises/',
+  path: '/promises/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactsIndexRoute = ContactsIndexRouteImport.update({
   id: '/contacts/',
   path: '/contacts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsNewRoute = TransactionsNewRouteImport.update({
+  id: '/transactions/new',
+  path: '/transactions/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TransactionsIdRoute = TransactionsIdRouteImport.update({
@@ -71,9 +109,19 @@ const TransactionsIdRoute = TransactionsIdRouteImport.update({
   path: '/transactions/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactsContactIdRoute = ContactsContactIdRouteImport.update({
+  id: '/contacts/$contactId',
+  path: '/contacts/$contactId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WitnessesInviteTokenRoute = WitnessesInviteTokenRouteImport.update({
   id: '/witnesses/invite/$token',
   path: '/witnesses/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SharedAccessViewGrantIdRoute = SharedAccessViewGrantIdRouteImport.update({
+  id: '/shared-access/view/$grantId',
+  path: '/shared-access/view/$grantId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -82,12 +130,20 @@ export interface FileRoutesByFullPath {
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/contacts/$contactId': typeof ContactsContactIdRoute
   '/transactions/$id': typeof TransactionsIdRoute
+  '/transactions/new': typeof TransactionsNewRoute
   '/contacts/': typeof ContactsIndexRoute
+  '/promises/': typeof PromisesIndexRoute
+  '/shared-access/': typeof SharedAccessIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
   '/witnesses/': typeof WitnessesIndexRoute
+  '/shared-access/view/$grantId': typeof SharedAccessViewGrantIdRoute
   '/witnesses/invite/$token': typeof WitnessesInviteTokenRoute
 }
 export interface FileRoutesByTo {
@@ -95,12 +151,20 @@ export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/contacts/$contactId': typeof ContactsContactIdRoute
   '/transactions/$id': typeof TransactionsIdRoute
+  '/transactions/new': typeof TransactionsNewRoute
   '/contacts': typeof ContactsIndexRoute
+  '/promises': typeof PromisesIndexRoute
+  '/shared-access': typeof SharedAccessIndexRoute
+  '/transactions': typeof TransactionsIndexRoute
   '/witnesses': typeof WitnessesIndexRoute
+  '/shared-access/view/$grantId': typeof SharedAccessViewGrantIdRoute
   '/witnesses/invite/$token': typeof WitnessesInviteTokenRoute
 }
 export interface FileRoutesById {
@@ -109,12 +173,20 @@ export interface FileRoutesById {
   '/change-password': typeof ChangePasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/contacts/$contactId': typeof ContactsContactIdRoute
   '/transactions/$id': typeof TransactionsIdRoute
+  '/transactions/new': typeof TransactionsNewRoute
   '/contacts/': typeof ContactsIndexRoute
+  '/promises/': typeof PromisesIndexRoute
+  '/shared-access/': typeof SharedAccessIndexRoute
+  '/transactions/': typeof TransactionsIndexRoute
   '/witnesses/': typeof WitnessesIndexRoute
+  '/shared-access/view/$grantId': typeof SharedAccessViewGrantIdRoute
   '/witnesses/invite/$token': typeof WitnessesInviteTokenRoute
 }
 export interface FileRouteTypes {
@@ -124,12 +196,20 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/forgot-password'
     | '/login'
+    | '/profile'
     | '/reset-password'
+    | '/settings'
     | '/signup'
     | '/verify-email'
+    | '/contacts/$contactId'
     | '/transactions/$id'
+    | '/transactions/new'
     | '/contacts/'
+    | '/promises/'
+    | '/shared-access/'
+    | '/transactions/'
     | '/witnesses/'
+    | '/shared-access/view/$grantId'
     | '/witnesses/invite/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -137,12 +217,20 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/forgot-password'
     | '/login'
+    | '/profile'
     | '/reset-password'
+    | '/settings'
     | '/signup'
     | '/verify-email'
+    | '/contacts/$contactId'
     | '/transactions/$id'
+    | '/transactions/new'
     | '/contacts'
+    | '/promises'
+    | '/shared-access'
+    | '/transactions'
     | '/witnesses'
+    | '/shared-access/view/$grantId'
     | '/witnesses/invite/$token'
   id:
     | '__root__'
@@ -150,12 +238,20 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/forgot-password'
     | '/login'
+    | '/profile'
     | '/reset-password'
+    | '/settings'
     | '/signup'
     | '/verify-email'
+    | '/contacts/$contactId'
     | '/transactions/$id'
+    | '/transactions/new'
     | '/contacts/'
+    | '/promises/'
+    | '/shared-access/'
+    | '/transactions/'
     | '/witnesses/'
+    | '/shared-access/view/$grantId'
     | '/witnesses/invite/$token'
   fileRoutesById: FileRoutesById
 }
@@ -164,12 +260,20 @@ export interface RootRouteChildren {
   ChangePasswordRoute: typeof ChangePasswordRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  ProfileRoute: typeof ProfileRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  ContactsContactIdRoute: typeof ContactsContactIdRoute
   TransactionsIdRoute: typeof TransactionsIdRoute
+  TransactionsNewRoute: typeof TransactionsNewRoute
   ContactsIndexRoute: typeof ContactsIndexRoute
+  PromisesIndexRoute: typeof PromisesIndexRoute
+  SharedAccessIndexRoute: typeof SharedAccessIndexRoute
+  TransactionsIndexRoute: typeof TransactionsIndexRoute
   WitnessesIndexRoute: typeof WitnessesIndexRoute
+  SharedAccessViewGrantIdRoute: typeof SharedAccessViewGrantIdRoute
   WitnessesInviteTokenRoute: typeof WitnessesInviteTokenRoute
 }
 
@@ -189,11 +293,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -231,11 +349,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WitnessesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/transactions/': {
+      id: '/transactions/'
+      path: '/transactions'
+      fullPath: '/transactions/'
+      preLoaderRoute: typeof TransactionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shared-access/': {
+      id: '/shared-access/'
+      path: '/shared-access'
+      fullPath: '/shared-access/'
+      preLoaderRoute: typeof SharedAccessIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promises/': {
+      id: '/promises/'
+      path: '/promises'
+      fullPath: '/promises/'
+      preLoaderRoute: typeof PromisesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contacts/': {
       id: '/contacts/'
       path: '/contacts'
       fullPath: '/contacts/'
       preLoaderRoute: typeof ContactsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions/new': {
+      id: '/transactions/new'
+      path: '/transactions/new'
+      fullPath: '/transactions/new'
+      preLoaderRoute: typeof TransactionsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transactions/$id': {
@@ -245,11 +391,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransactionsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contacts/$contactId': {
+      id: '/contacts/$contactId'
+      path: '/contacts/$contactId'
+      fullPath: '/contacts/$contactId'
+      preLoaderRoute: typeof ContactsContactIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/witnesses/invite/$token': {
       id: '/witnesses/invite/$token'
       path: '/witnesses/invite/$token'
       fullPath: '/witnesses/invite/$token'
       preLoaderRoute: typeof WitnessesInviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shared-access/view/$grantId': {
+      id: '/shared-access/view/$grantId'
+      path: '/shared-access/view/$grantId'
+      fullPath: '/shared-access/view/$grantId'
+      preLoaderRoute: typeof SharedAccessViewGrantIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -260,12 +420,20 @@ const rootRouteChildren: RootRouteChildren = {
   ChangePasswordRoute: ChangePasswordRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  ProfileRoute: ProfileRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  ContactsContactIdRoute: ContactsContactIdRoute,
   TransactionsIdRoute: TransactionsIdRoute,
+  TransactionsNewRoute: TransactionsNewRoute,
   ContactsIndexRoute: ContactsIndexRoute,
+  PromisesIndexRoute: PromisesIndexRoute,
+  SharedAccessIndexRoute: SharedAccessIndexRoute,
+  TransactionsIndexRoute: TransactionsIndexRoute,
   WitnessesIndexRoute: WitnessesIndexRoute,
+  SharedAccessViewGrantIdRoute: SharedAccessViewGrantIdRoute,
   WitnessesInviteTokenRoute: WitnessesInviteTokenRoute,
 }
 export const routeTree = rootRouteImport

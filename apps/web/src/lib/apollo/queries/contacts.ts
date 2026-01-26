@@ -1,19 +1,18 @@
 import type {
-	CreateContactMutation,
-	CreateContactMutationVariables,
-	DeleteContactMutation,
-	DeleteContactMutationVariables,
-	GetContactsQuery,
-	GetContactsQueryVariables,
-	UpdateContactMutation,
-	UpdateContactMutationVariables,
+  CreateContactMutation,
+  CreateContactMutationVariables,
+  DeleteContactMutation,
+  DeleteContactMutationVariables,
+  GetContactsQuery,
+  GetContactsQueryVariables,
+  GetContactQuery,
+  GetContactQueryVariables,
+  UpdateContactMutation,
+  UpdateContactMutationVariables,
 } from "@/types/__generated__/graphql";
 import { gql, type TypedDocumentNode } from "@apollo/client";
 
-export const GET_CONTACTS: TypedDocumentNode<
-	GetContactsQuery,
-	GetContactsQueryVariables
-> = gql`
+export const GET_CONTACTS: TypedDocumentNode<GetContactsQuery, GetContactsQueryVariables> = gql`
   query GetContacts {
     contacts {
       id
@@ -26,9 +25,22 @@ export const GET_CONTACTS: TypedDocumentNode<
   }
 `;
 
+export const GET_CONTACT: TypedDocumentNode<GetContactQuery, GetContactQueryVariables> = gql`
+  query GetContact($id: ID!) {
+    contact(id: $id) {
+      id
+      name
+      email
+      phoneNumber
+      balance
+      createdAt
+    }
+  }
+`;
+
 export const CREATE_CONTACT: TypedDocumentNode<
-	CreateContactMutation,
-	CreateContactMutationVariables
+  CreateContactMutation,
+  CreateContactMutationVariables
 > = gql`
   mutation CreateContact($createContactInput: CreateContactInput!) {
     createContact(createContactInput: $createContactInput) {
@@ -42,8 +54,8 @@ export const CREATE_CONTACT: TypedDocumentNode<
 `;
 
 export const UPDATE_CONTACT: TypedDocumentNode<
-	UpdateContactMutation,
-	UpdateContactMutationVariables
+  UpdateContactMutation,
+  UpdateContactMutationVariables
 > = gql`
   mutation UpdateContact($updateContactInput: UpdateContactInput!) {
     updateContact(updateContactInput: $updateContactInput) {
@@ -56,8 +68,8 @@ export const UPDATE_CONTACT: TypedDocumentNode<
 `;
 
 export const DELETE_CONTACT: TypedDocumentNode<
-	DeleteContactMutation,
-	DeleteContactMutationVariables
+  DeleteContactMutation,
+  DeleteContactMutationVariables
 > = gql`
   mutation DeleteContact($id: ID!) {
     removeContact(id: $id) {

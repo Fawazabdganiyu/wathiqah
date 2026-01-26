@@ -1,254 +1,375 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-	ShieldCheck,
-	Users,
-	History,
-	ArrowRight,
-	FileSignature,
-	Lock,
+  ShieldCheck,
+  Users,
+  History,
+  ArrowRight,
+  FileSignature,
+  Handshake,
+  Wallet,
+  Eye,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { Dashboard } from "@/components/dashboard/Dashboard";
 
 export const Route = createFileRoute("/")({ component: LandingPage });
 
 function LandingPage() {
-	return (
-		<div className="flex flex-col flex-1 bg-background text-foreground">
-			{/* Hero Section */}
-			<section className="relative pt-20 pb-32 overflow-hidden">
-				<div className="container mx-auto px-4 relative z-10">
-					<div className="max-w-4xl mx-auto text-center">
-						<div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-6">
-							<span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
-							New: Witness Invitation System Live
-						</div>
-						<h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground mb-8">
-							Financial Trust, <br />
-							<span className="text-primary">Digitally Verified.</span>
-						</h1>
-						<p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-							Wathȋqah bridges the gap between informal agreements and legal
-							contracts. Document loans, shared expenses, and payments with
-							verified witnesses for peace of mind.
-						</p>
-						<div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-							<Button
-								size="lg"
-								className="h-12 px-8 text-lg bg-primary hover:bg-primary/90 text-primary-foreground"
-								asChild
-							>
-								<Link to="/signup">Start for Free</Link>
-							</Button>
-							<Button
-								size="lg"
-								variant="outline"
-								className="h-12 px-8 text-lg"
-								asChild
-							>
-								<Link to="/login">Sign In</Link>
-							</Button>
-						</div>
-					</div>
-				</div>
+  const { user, loading } = useAuth();
 
-				{/* Background Decorative Elements */}
-				<div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden -z-10 pointer-events-none">
-					<div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
-					<div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl"></div>
-				</div>
-			</section>
+  if (loading) {
+    return null;
+  }
 
-			{/* Feature Grid */}
-			<section className="py-24 bg-muted/50">
-				<div className="container mx-auto px-4">
-					<div className="text-center max-w-3xl mx-auto mb-16">
-						<h2 className="text-3xl font-bold text-foreground mb-4">
-							Why Choose Wathiqah?
-						</h2>
-						<p className="text-lg text-muted-foreground">
-							Built for relationships that matter. We provide the tools to
-							ensure transparency without the complexity of traditional legal
-							frameworks.
-						</p>
-					</div>
+  if (user) {
+    return <Dashboard />;
+  }
 
-					<div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-						<FeatureCard
-							icon={<Users className="w-10 h-10 text-primary" />}
-							title="Verified Witnesses"
-							description="Invite trusted third parties to digitally acknowledge and verify your transactions via secure links."
-						/>
-						<FeatureCard
-							icon={<History className="w-10 h-10 text-primary" />}
-							title="Digital Audit Trail"
-							description="Keep a permanent, unalterable history of every action, modification, and acknowledgment."
-						/>
-						<FeatureCard
-							icon={<ShieldCheck className="w-10 h-10 text-primary" />}
-							title="Secure & Private"
-							description="Your financial data is encrypted and visible only to the parties involved in the transaction."
-						/>
-					</div>
-				</div>
-			</section>
+  return (
+    <div className="flex flex-col flex-1 bg-background text-foreground">
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-32 overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+              <span className="flex h-2 w-2 rounded-full bg-primary mr-2.5 animate-pulse"></span>
+              Now with Verified Witness Invitations
+            </div>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-8 leading-[1.1]">
+              The Digital Ledger for <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-500">
+                Personal Trust.
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+              Document loans, track promises, and verify shared expenses with friends and family. No
+              awkward conversations, just clear records.
+            </p>
+            {!user && !loading && (
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button
+                  size="lg"
+                  className="h-14 px-8 text-lg rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
+                  asChild
+                >
+                  <Link to="/signup">Start Documenting Free</Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-14 px-8 text-lg rounded-full border-2 hover:bg-muted/50"
+                  asChild
+                >
+                  <Link to="/login">Sign In</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
 
-			{/* How It Works */}
-			<section className="py-24 overflow-hidden">
-				<div className="container mx-auto px-4">
-					<div className="flex flex-col lg:flex-row items-center gap-16 max-w-6xl mx-auto">
-						<div className="lg:w-1/2 space-y-8">
-							<h2 className="text-3xl md:text-4xl font-bold text-foreground">
-								Simple Steps to{" "}
-								<span className="text-primary">Secure Agreements</span>
-							</h2>
+        {/* Hero Background Elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden -z-10 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[120px]"></div>
+          <div className="absolute top-[20%] right-[15%] w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]"></div>
+        </div>
+      </section>
 
-							<div className="space-y-6">
-								<Step
-									number="01"
-									title="Create a Transaction"
-									description="Log details about the loan, payment, or shared expense, including amount and date."
-								/>
-								<Step
-									number="02"
-									title="Invite a Witness"
-									description="Send a secure invitation link to a neutral third party via email."
-								/>
-								<Step
-									number="03"
-									title="Get Verification"
-									description="The witness reviews and digitally acknowledges the transaction, creating a permanent record."
-								/>
-							</div>
-						</div>
+      {/* Feature Grid */}
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+              Everything You Need for Financial Clarity
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Wathȋqah provides a suite of tools designed to bring transparency to your personal
+              financial relationships.
+            </p>
+          </div>
 
-						<div className="lg:w-1/2 relative">
-							<div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-blue-50 dark:to-blue-900/20 rounded-2xl transform rotate-3"></div>
-							<div className="relative bg-card border border-border rounded-2xl shadow-xl p-8">
-								{/* Abstract UI Mockup */}
-								<div className="space-y-6">
-									<div className="flex items-center justify-between border-b border-border pb-4">
-										<div className="flex items-center gap-3">
-											<div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-												<FileSignature size={20} />
-											</div>
-											<div>
-												<div className="h-4 w-24 bg-muted rounded mb-2"></div>
-												<div className="h-3 w-16 bg-muted/50 rounded"></div>
-											</div>
-										</div>
-										<div className="h-8 w-20 bg-primary/10 rounded-full"></div>
-									</div>
-									<div className="space-y-3">
-										<div className="h-4 w-full bg-muted rounded"></div>
-										<div className="h-4 w-5/6 bg-muted rounded"></div>
-										<div className="h-4 w-4/6 bg-muted rounded"></div>
-									</div>
-									<div className="flex gap-4 pt-4">
-										<div className="h-10 w-full bg-primary rounded-md opacity-90"></div>
-										<div className="h-10 w-full bg-muted rounded-md"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <FeatureCard
+              icon={<Wallet className="w-8 h-8 text-primary" />}
+              title="Smart Transactions"
+              description="Record every penny given, received, or collected. Categorize expenses and incomes with ease."
+            />
+            <FeatureCard
+              icon={<Handshake className="w-8 h-8 text-emerald-500" />}
+              title="Promise Keeper"
+              description="Track commitments and IOUs. Set due dates and priorities so you never forget a promise made."
+            />
+            <FeatureCard
+              icon={<Users className="w-8 h-8 text-blue-500" />}
+              title="Verified Witnesses"
+              description="Invite trusted third parties to digitally acknowledge and verify your transactions via secure email links."
+            />
+            <FeatureCard
+              icon={<History className="w-8 h-8 text-orange-500" />}
+              title="Audit Trail"
+              description="Every action creates a permanent, unalterable history log. Transparency that builds trust."
+            />
+            <FeatureCard
+              icon={<Eye className="w-8 h-8 text-purple-500" />}
+              title="Shared Access"
+              description="Grant read-only access to partners, accountants, or family members to keep everyone on the same page."
+            />
+            <FeatureCard
+              icon={<Lock className="w-8 h-8 text-red-500" />}
+              title="Bank-Grade Security"
+              description="Your data is encrypted and secure. We prioritize your privacy and data protection above all."
+            />
+          </div>
+        </div>
+      </section>
 
-			{/* CTA Section */}
-			<section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
-				<div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-				<div className="container mx-auto px-4 text-center relative z-10">
-					<h2 className="text-3xl md:text-4xl font-bold mb-6">
-						Ready to secure your financial promises?
-					</h2>
-					<p className="text-primary-foreground/90 text-lg mb-10 max-w-2xl mx-auto">
-						Join thousands of users who trust Wathiqah to keep their personal
-						finances transparent and dispute-free.
-					</p>
-					<Button
-						size="lg"
-						className="h-14 px-10 text-lg bg-background text-foreground hover:bg-muted font-semibold"
-						asChild
-					>
-						<Link to="/signup">
-							Create Your Account
-							<ArrowRight className="ml-2 w-5 h-5" />
-						</Link>
-					</Button>
-				</div>
-			</section>
+      {/* How It Works */}
+      <section className="py-32 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center gap-20 max-w-7xl mx-auto">
+            <div className="lg:w-1/2 space-y-10">
+              <div>
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+                  Simple Steps to <br />
+                  <span className="text-primary">Unbreakable Trust</span>
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Our process is designed to be as frictionless as possible while providing maximum
+                  security and verification.
+                </p>
+              </div>
 
-			{/* Footer */}
-			<footer className="bg-muted/30 py-12 border-t border-border">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="flex flex-col md:flex-row justify-between items-center">
-						<div className="flex items-center gap-2.5 mb-4 md:mb-0">
-							<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-								<ShieldCheck className="h-5 w-5" strokeWidth={2.5} />
-							</div>
-							<span className="font-bold text-xl leading-none tracking-tight text-primary">
-								Wathȋqah
-							</span>
-						</div>
-						<div className="flex gap-8 text-sm text-muted-foreground">
-							<Link to="/" className="hover:text-primary transition-colors">
-								Privacy
-							</Link>
-							<Link to="/" className="hover:text-primary transition-colors">
-								Terms
-							</Link>
-							<Link to="/" className="hover:text-primary transition-colors">
-								Contact
-							</Link>
-						</div>
-					</div>
-					<div className="mt-8 text-center text-xs text-muted-foreground">
-						&copy; {new Date().getFullYear()} Wathȋqah. All rights reserved.
-					</div>
-				</div>
-			</footer>
-		</div>
-	);
+              <div className="space-y-8">
+                <Step
+                  number="01"
+                  title="Record the Detail"
+                  description="Log the transaction or promise details, including amount, date, and the other party involved."
+                />
+                <Step
+                  number="02"
+                  title="Invite Verification"
+                  description="Optionally add a witness. We'll send them a secure link to review and acknowledge the record."
+                />
+                <Step
+                  number="03"
+                  title="Secure & Share"
+                  description="The record is locked in your history. Share access with relevant parties for total transparency."
+                />
+              </div>
+            </div>
+
+            <div className="lg:w-1/2 relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-emerald-500/20 rounded-3xl transform rotate-3 scale-105 blur-lg opacity-70"></div>
+              <div className="relative bg-card border border-border/50 rounded-2xl shadow-2xl p-8 backdrop-blur-sm">
+                {/* Abstract UI Mockup */}
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between border-b border-border pb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <FileSignature size={24} />
+                      </div>
+                      <div>
+                        <div className="h-5 w-32 bg-foreground/10 rounded mb-2"></div>
+                        <div className="h-4 w-24 bg-foreground/5 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="h-9 w-24 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center text-xs font-bold">
+                      VERIFIED
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="h-4 w-20 bg-foreground/5 rounded"></div>
+                      <div className="h-4 w-32 bg-foreground/10 rounded"></div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="h-4 w-24 bg-foreground/5 rounded"></div>
+                      <div className="h-4 w-16 bg-foreground/10 rounded"></div>
+                    </div>
+                    <div className="p-4 bg-muted/50 rounded-lg border border-border/50 mt-4">
+                      <div className="flex gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                          <Users size={16} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="h-4 w-full bg-foreground/5 rounded mb-2"></div>
+                          <div className="h-3 w-2/3 bg-foreground/5 rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <div className="h-12 w-full bg-primary rounded-xl opacity-90 shadow-lg"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Built for Real Relationships
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Wathȋqah is designed to solve the delicate balance between trust and accountability in
+              personal finance.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <UseCaseCard
+              title="Family Loans"
+              description="Lending to a sibling? Document the terms clearly to prevent misunderstandings and keep family dinners awkward-free."
+              icon={<Users className="w-6 h-6" />}
+            />
+            <UseCaseCard
+              title="Shared Living"
+              description="Track shared expenses with roommates or partners. Keep a running tally and settle up with a clear, undisputed record."
+              icon={<Wallet className="w-6 h-6" />}
+            />
+            <UseCaseCard
+              title="Small Business & Gigs"
+              description="For informal agreements and quick jobs, create a lightweight, verified record of work and payment terms instantly."
+              icon={<Handshake className="w-6 h-6" />}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      {!user && !loading && (
+        <section className="py-32 relative overflow-hidden">
+          <div className="absolute inset-0 bg-primary/90"></div>
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-8">
+              Ready to Secure Your Peace of Mind?
+            </h2>
+            <p className="text-primary-foreground/80 text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+              Join Wathȋqah today. It's free to start, simple to use, and invaluable for your
+              personal relationships.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <Button
+                size="lg"
+                className="h-16 px-12 text-lg rounded-full bg-background text-foreground hover:bg-white/90 font-bold shadow-xl transition-transform hover:scale-105"
+                asChild
+              >
+                <Link to="/signup">
+                  Create Free Account
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Footer */}
+      <footer className="bg-background py-16 border-t border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg">
+                  <ShieldCheck className="h-6 w-6" strokeWidth={2.5} />
+                </div>
+                <span className="font-bold text-2xl tracking-tight text-foreground">Wathȋqah</span>
+              </div>
+              <p className="text-muted-foreground max-w-xs text-sm">
+                The standard for personal financial documentation and verification.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-x-8 gap-y-4 text-sm text-muted-foreground font-medium">
+              <Link to="/" className="hover:text-primary transition-colors">
+                Features
+              </Link>
+              <Link to="/" className="hover:text-primary transition-colors">
+                Pricing
+              </Link>
+              <Link to="/" className="hover:text-primary transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/" className="hover:text-primary transition-colors">
+                Terms of Service
+              </Link>
+            </div>
+          </div>
+          <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Wathȋqah. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
 }
 
 function FeatureCard({
-	icon,
-	title,
-	description,
+  icon,
+  title,
+  description,
 }: {
-	icon: React.ReactNode;
-	title: string;
-	description: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
 }) {
-	return (
-		<div className="p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-			<div className="mb-6 bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center">
-				{icon}
-			</div>
-			<h3 className="text-xl font-bold text-foreground mb-3">{title}</h3>
-			<p className="text-muted-foreground leading-relaxed">{description}</p>
-		</div>
-	);
+  return (
+    <div className="p-8 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 group">
+      <div className="mb-6 bg-muted w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+        {title}
+      </h3>
+      <p className="text-muted-foreground leading-relaxed">{description}</p>
+    </div>
+  );
 }
 
 function Step({
-	number,
-	title,
-	description,
+  number,
+  title,
+  description,
 }: {
-	number: string;
-	title: string;
-	description: string;
+  number: string;
+  title: string;
+  description: string;
 }) {
-	return (
-		<div className="flex gap-6">
-			<div className="flex-shrink-0 w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center text-lg font-bold text-primary">
-				{number}
-			</div>
-			<div>
-				<h4 className="text-xl font-bold text-foreground mb-2">{title}</h4>
-				<p className="text-muted-foreground">{description}</p>
-			</div>
-		</div>
-	);
+  return (
+    <div className="flex gap-6 group">
+      <div className="flex-shrink-0 w-14 h-14 rounded-2xl border-2 border-primary/20 bg-primary/5 flex items-center justify-center text-xl font-bold text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+        {number}
+      </div>
+      <div>
+        <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+          {title}
+        </h4>
+        <p className="text-muted-foreground leading-relaxed">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function UseCaseCard({
+  title,
+  description,
+  icon,
+}: {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="p-8 rounded-2xl bg-card border border-border shadow-sm flex flex-col items-center text-center">
+      <div className="mb-6 p-4 rounded-full bg-primary/10 text-primary">{icon}</div>
+      <h3 className="text-xl font-bold text-foreground mb-3">{title}</h3>
+      <p className="text-muted-foreground leading-relaxed">{description}</p>
+    </div>
+  );
 }

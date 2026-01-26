@@ -1,13 +1,16 @@
 import type {
-	TransactionQuery,
-	TransactionQueryVariables,
+  TransactionQuery,
+  TransactionQueryVariables,
+  TransactionsQuery,
+  TransactionsQueryVariables,
+  CreateTransactionMutation,
+  CreateTransactionMutationVariables,
+  AddWitnessMutation,
+  AddWitnessMutationVariables,
 } from "@/types/__generated__/graphql";
 import { gql, type TypedDocumentNode } from "@apollo/client";
 
-export const GET_TRANSACTION: TypedDocumentNode<
-	TransactionQuery,
-	TransactionQueryVariables
-> = gql`
+export const GET_TRANSACTION: TypedDocumentNode<TransactionQuery, TransactionQueryVariables> = gql`
   query Transaction($id: ID!) {
     transaction(id: $id) {
       id
@@ -50,7 +53,55 @@ export const GET_TRANSACTION: TypedDocumentNode<
   }
 `;
 
-export const ADD_WITNESS = gql`
+export const GET_TRANSACTIONS: TypedDocumentNode<TransactionsQuery, TransactionsQueryVariables> =
+  gql`
+  query Transactions($filter: FilterTransactionInput) {
+    transactions(filter: $filter) {
+      items {
+        id
+        amount
+        category
+        type
+        date
+        description
+        itemName
+        quantity
+        createdAt
+        contact {
+          id
+          name
+        }
+        witnesses {
+          id
+          status
+        }
+      }
+      summary {
+        totalGiven
+        totalReceived
+        totalCollected
+        netBalance
+      }
+    }
+  }
+`;
+
+export const CREATE_TRANSACTION: TypedDocumentNode<
+  CreateTransactionMutation,
+  CreateTransactionMutationVariables
+> = gql`
+  mutation CreateTransaction($input: CreateTransactionInput!) {
+    createTransaction(input: $input) {
+      id
+      amount
+      type
+      description
+      date
+    }
+  }
+`;
+
+export const ADD_WITNESS: TypedDocumentNode<AddWitnessMutation, AddWitnessMutationVariables> = gql`
   mutation AddWitness($input: AddWitnessInput!) {
     addWitness(input: $input) {
       id
