@@ -38,6 +38,11 @@ jobs:
       contents: read
       id-token: write # For Workload Identity Federation
 
+    env:
+      GAR_LOCATION: us-central1
+      REPOSITORY: wathiqah
+      IMAGE_NAME: wathiqah-api
+
     steps:
       - uses: actions/checkout@v4
 
@@ -54,25 +59,25 @@ jobs:
 
       # 3. Configure Docker
       - name: Configure Docker
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev
 
       # 4. Build Docker Image
       - name: Build Container
         run: |
           docker build \
             -f apps/api/Dockerfile \
-            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api:${{ github.sha }} \
+            -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             .
 
       # 5. Push Docker Image
       - name: Push Container
-        run: docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api/api-image:${{ github.sha }}
+        run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
       # 6. Deploy to Cloud Run
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: wathiqah-api
-          image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api/api-image:${{ github.sha }}
+          service: ${{ env.IMAGE_NAME }}
+          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           region: us-central1
           env_vars: |
             NODE_ENV=production
