@@ -11,7 +11,7 @@ import { useSharedAccess } from "@/hooks/useSharedAccess";
 import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/settings")({
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
   component: SettingsPage,
 });
 

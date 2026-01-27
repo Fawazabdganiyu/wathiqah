@@ -59,7 +59,7 @@ function SharedAccessView() {
             <p className="text-sm opacity-90">
               You are viewing{" "}
               <span className="font-bold">
-                {user.firstName} {user.lastName}
+                {user?.firstName} {user?.lastName}
               </span>
               's shared data.
             </p>
@@ -89,7 +89,7 @@ function SharedAccessView() {
                   Full Name
                 </div>
                 <div className="text-lg font-medium mt-1">
-                  {user.firstName} {user.lastName}
+                  {user?.firstName} {user?.lastName}
                 </div>
               </div>
 
@@ -97,7 +97,7 @@ function SharedAccessView() {
                 <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">
                   Email
                 </div>
-                <div className="text-base mt-1 break-all">{user.email}</div>
+                <div className="text-base mt-1 break-all">{user?.email}</div>
               </div>
 
               <div className="pt-4 border-t">
@@ -120,7 +120,7 @@ function SharedAccessView() {
               >
                 Transactions
                 <Badge variant="secondary" className="ml-2">
-                  {transactions.length}
+                  {transactions?.length}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger
@@ -129,7 +129,7 @@ function SharedAccessView() {
               >
                 Promises
                 <Badge variant="secondary" className="ml-2">
-                  {promises.length}
+                  {promises?.length}
                 </Badge>
               </TabsTrigger>
             </TabsList>
@@ -151,7 +151,7 @@ function SharedAccessView() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {transactions.length === 0 ? (
+                      {transactions?.length === 0 ? (
                         <TableRow>
                           <TableCell
                             colSpan={5}
@@ -161,7 +161,7 @@ function SharedAccessView() {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        transactions.map((tx) => (
+                        transactions?.map((tx) => (
                           <TableRow key={tx.id}>
                             <TableCell>{formatDate(tx.date as string)}</TableCell>
                             <TableCell>
@@ -223,7 +223,7 @@ function SharedAccessView() {
 
             <TabsContent value="promises" className="mt-6">
               <div className="grid gap-4 md:grid-cols-2">
-                {promises.map((p) => (
+                {promises?.map((p) => (
                   <Card key={p.id} className="border-l-4 border-l-primary">
                     <CardContent className="pt-6">
                       <div className="flex justify-between items-start mb-2">
@@ -256,7 +256,7 @@ function SharedAccessView() {
                     </CardContent>
                   </Card>
                 ))}
-                {promises.length === 0 && (
+                {promises?.length === 0 && (
                   <div className="col-span-full text-center py-12 text-muted-foreground bg-muted/30 rounded-lg border border-dashed">
                     No promises shared.
                   </div>

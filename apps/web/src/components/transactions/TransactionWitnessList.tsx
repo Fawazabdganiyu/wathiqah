@@ -29,10 +29,10 @@ export function TransactionWitnessList({ witnesses }: { witnesses: Witness[] }) 
                 <User size={20} />
               </div>
               <div className="flex flex-col">
-                <span className="font-medium text-foreground">{witness.user.name}</span>
+                <span className="font-medium text-foreground">{witness.user?.name}</span>
                 <div className="flex items-center gap-3 mt-0.5">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Mail size={12} /> {witness.user.email}
+                    <Mail size={12} /> {witness.user?.email}
                   </span>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Calendar size={12} /> Invited{" "}

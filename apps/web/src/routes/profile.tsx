@@ -14,7 +14,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/profile")({
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
   component: ProfilePage,
 });
 

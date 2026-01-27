@@ -11,7 +11,7 @@ import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/change-password")({
   component: ChangePasswordPage,
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
 });
 
 function ChangePasswordPage() {

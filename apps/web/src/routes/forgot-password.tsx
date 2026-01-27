@@ -62,7 +62,9 @@ function ForgotPasswordPage() {
             asChild
             className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            <Link to="/login">Return to Sign In</Link>
+            <Link to="/login" search={{ redirectTo: undefined }}>
+              Return to Sign In
+            </Link>
           </Button>
         </div>
       </div>
@@ -75,6 +77,7 @@ function ForgotPasswordPage() {
         <div>
           <Link
             to="/login"
+            search={{ redirectTo: undefined }}
             className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-1" /> Back to Sign In

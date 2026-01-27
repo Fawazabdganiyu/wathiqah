@@ -63,7 +63,9 @@ function SignupComponent() {
             asChild
             className="w-full mt-6 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            <Link to="/login">Go to Login</Link>
+            <Link to="/login" search={{ redirectTo: undefined }}>
+              Go to Login
+            </Link>
           </Button>
         </div>
       </div>
@@ -77,7 +79,11 @@ function SignupComponent() {
           <h2 className="text-3xl font-bold tracking-tight text-foreground">Create an account</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-primary hover:text-primary/90">
+            <Link
+              to="/login"
+              search={{ redirectTo: undefined }}
+              className="font-medium text-primary hover:text-primary/90"
+            >
               Sign in
             </Link>
           </p>

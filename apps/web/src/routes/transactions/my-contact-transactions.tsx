@@ -20,7 +20,7 @@ import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/transactions/my-contact-transactions")({
   component: MyContactTransactionsPage,
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
 });
 
 function MyContactTransactionsPage() {
@@ -89,8 +89,8 @@ function MyContactTransactionsPage() {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{tx.createdBy.name}</div>
-                          <div className="text-xs text-muted-foreground">{tx.createdBy.email}</div>
+                          <div className="font-medium">{tx.createdBy?.name}</div>
+                          <div className="text-xs text-muted-foreground">{tx.createdBy?.email}</div>
                         </div>
                       </TableCell>
                       <TableCell>

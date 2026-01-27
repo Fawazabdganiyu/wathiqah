@@ -38,14 +38,14 @@ function LandingPage() {
               Now with Verified Witness Invitations
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-8 leading-[1.1]">
-              The Digital Ledger for <br />
+              The Ledger of Trust for <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-500">
-                Personal Trust.
+                People and Items
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-              Document loans, track promises, and verify shared expenses with friends and family. No
-              awkward conversations, just clear records.
+              Track funds given and owed, manage lent or borrowed items, and verify records with
+              witnesses.
             </p>
             {!user && !loading && (
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -54,7 +54,7 @@ function LandingPage() {
                   className="h-14 px-8 text-lg rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all"
                   asChild
                 >
-                  <Link to="/signup">Start Documenting Free</Link>
+                  <Link to="/signup">Start Your Trust Ledger</Link>
                 </Button>
                 <Button
                   size="lg"
@@ -62,8 +62,21 @@ function LandingPage() {
                   className="h-14 px-8 text-lg rounded-full border-2 hover:bg-muted/50"
                   asChild
                 >
-                  <Link to="/login">Sign In</Link>
+                  <Link to="/login" search={{ redirectTo: undefined }}>
+                    Sign In
+                  </Link>
                 </Button>
+                <div className="sm:ml-2 mt-2 sm:mt-0 text-sm text-muted-foreground">
+                  Returning user?
+                  <Link
+                    to="/transactions"
+                    search={{ tab: "funds" }}
+                    className="inline-flex items-center ml-2 font-medium text-primary hover:underline"
+                  >
+                    Explore transactions
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             )}
           </div>

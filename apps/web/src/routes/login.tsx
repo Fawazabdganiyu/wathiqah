@@ -9,10 +9,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { isAuthenticated } from "@/utils/auth";
 
 export const Route = createFileRoute("/login")({
-  beforeLoad: () => {
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirectTo: (search.redirectTo as string) || undefined,
+  }),
+  beforeLoad: ({ search }) => {
     if (isAuthenticated()) {
       throw redirect({
-        to: "/",
+        to: search.redirectTo ?? "/",
       });
     }
   },
@@ -22,6 +25,7 @@ export const Route = createFileRoute("/login")({
 function LoginComponent() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { redirectTo } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +36,7 @@ function LoginComponent() {
     try {
       await login({ email, password });
       toast.success("Welcome back!");
-      navigate({ to: "/" });
+      navigate({ to: redirectTo ?? "/" });
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message || "Failed to login");

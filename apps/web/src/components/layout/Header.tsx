@@ -21,7 +21,7 @@ export default function Header() {
                 Wathȋqah
               </span>
               <span className="col-start-1 row-start-1 self-end text-[0.6rem] font-medium tracking-normal text-muted-foreground uppercase opacity-0 translate-y-full group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out text-nowrap">
-                Trusted Ledger
+                Ledger of Trust
               </span>
             </div>
           </Link>

@@ -44,7 +44,7 @@ import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/transactions/")({
   component: TransactionsPage,
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
   validateSearch: (search: Record<string, unknown>) => ({
     tab: (search.tab as string) || "funds",
   }),

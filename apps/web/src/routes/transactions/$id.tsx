@@ -14,7 +14,7 @@ import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/transactions/$id")({
   component: TransactionDetailPage,
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
 });
 
 function TransactionDetailPage() {
@@ -40,14 +40,17 @@ function TransactionDetailPage() {
   }
 
   const currentTransaction = transaction;
+  const conversions = currentTransaction.conversions ?? [];
+  const witnesses = currentTransaction.witnesses ?? [];
+  const history = currentTransaction.history ?? [];
 
   const canConvertToGift =
     currentTransaction.category === AssetCategory.Funds &&
     (currentTransaction.type === TransactionType.Given ||
       currentTransaction.type === TransactionType.Received);
 
-  const totalConverted = (currentTransaction.conversions || []).reduce(
-    (sum, conv) => sum + (conv?.amount || 0),
+  const totalConverted = conversions.reduce(
+    (sum, conversion) => sum + (conversion?.amount || 0),
     0,
   );
 
@@ -173,21 +176,21 @@ function TransactionDetailPage() {
         </div>
 
         {/* Conversions Section if applicable */}
-        {(currentTransaction.conversions || []).length > 0 && (
+        {conversions.length > 0 && (
           <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-neutral-900 dark:text-white">
               <Gift size={20} className="text-orange-600" />
               Gift Conversions
             </h3>
             <div className="space-y-3">
-              {currentTransaction.conversions.map((conv) => (
+              {conversions.map((conversion) => (
                 <div
-                  key={conv?.id}
+                  key={conversion?.id}
                   className="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-800"
                 >
                   <div>
                     <p className="text-sm font-medium">
-                      {format(new Date(conv?.date as string), "MMM d, yyyy")}
+                      {format(new Date(conversion?.date as string), "MMM d, yyyy")}
                     </p>
                     <p className="text-xs text-neutral-500">Gifted back</p>
                   </div>
@@ -195,7 +198,7 @@ function TransactionDetailPage() {
                     {new Intl.NumberFormat("en-NG", {
                       style: "currency",
                       currency: "NGN",
-                    }).format(conv?.amount || 0)}
+                    }).format(conversion?.amount || 0)}
                   </div>
                 </div>
               ))}
@@ -215,11 +218,7 @@ function TransactionDetailPage() {
             </Button>
           </div>
           <TransactionWitnessList
-            witnesses={
-              currentTransaction.witnesses.filter(
-                (w): w is NonNullable<typeof w> => w !== null,
-              ) as Witness[]
-            }
+            witnesses={witnesses.filter((w): w is NonNullable<typeof w> => w !== null) as Witness[]}
           />
         </div>
 
@@ -245,12 +244,20 @@ function TransactionDetailPage() {
         {/* History Section */}
         <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <HistoryViewer
-            history={
-              currentTransaction.history.filter(
-                (h): h is NonNullable<typeof h> => h !== null,
-                // biome-ignore lint/suspicious/noExplicitAny: JSON type mismatch
-              ) as any
-            }
+            history={history
+              .filter((h): h is NonNullable<typeof h> => h !== null)
+              .map((h) => ({
+                id: h.id,
+                changeType: h.changeType,
+                createdAt: String(h.createdAt),
+                user: {
+                  id: h.user?.id ?? "unknown",
+                  name: h.user?.name ?? "Unknown",
+                  email: h.user?.email ?? "unknown@example.com",
+                },
+                previousState: (h.previousState ?? null) as Record<string, unknown> | null,
+                newState: (h.newState ?? null) as Record<string, unknown> | null,
+              }))}
           />
         </div>
       </div>

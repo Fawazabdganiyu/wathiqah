@@ -133,7 +133,9 @@ export default function HeaderUser() {
   return (
     <div className="flex items-center gap-2">
       <Button asChild variant="ghost" size="sm">
-        <Link to="/login">Sign in</Link>
+        <Link to="/login" search={{ redirectTo: undefined }}>
+          Sign in
+        </Link>
       </Button>
       <Button asChild size="sm">
         <Link to="/signup">Sign up</Link>

@@ -7,7 +7,7 @@ import { authGuard } from "@/utils/auth";
 
 export const Route = createFileRoute("/witnesses/")({
   component: WitnessRequestsPage,
-  beforeLoad: authGuard,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
 });
 
 function WitnessRequestsPage() {
