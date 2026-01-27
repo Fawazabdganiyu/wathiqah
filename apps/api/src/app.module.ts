@@ -102,6 +102,7 @@ import { v4 as uuidv4 } from 'uuid';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
+      useGlobalPrefix: true,
     }),
     PrismaModule,
     TransactionsModule,
