@@ -6,7 +6,6 @@ import {
   Handshake,
   History,
   Lock,
-  ShieldCheck,
   Users,
   Wallet,
 } from "lucide-react";
@@ -291,7 +290,7 @@ function LandingPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg">
-                  <ShieldCheck className="h-6 w-6" strokeWidth={2.5} />
+                  <img src="/favicon.svg" alt="Wathȋqah" className="h-6 w-6" />
                 </div>
                 <span className="font-bold text-2xl tracking-tight text-foreground">Wathȋqah</span>
               </div>

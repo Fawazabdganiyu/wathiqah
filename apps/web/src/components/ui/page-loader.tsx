@@ -1,4 +1,4 @@
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BrandLoaderProps {
@@ -18,7 +18,7 @@ export function BrandLoader({ className, size = "lg" }: BrandLoaderProps) {
   return (
     <div className={cn("relative flex items-center justify-center", className)}>
       <Loader2 className={cn("animate-spin text-primary/50", outer)} />
-      <ShieldCheck className={cn("absolute text-primary animate-pulse", inner)} strokeWidth={2.5} />
+      <img src="/favicon.svg" alt="Wathȋqah" className={cn("absolute animate-pulse", inner)} />
     </div>
   );
 }
