@@ -39,7 +39,8 @@ WORKDIR /app
 RUN pnpm build --filter api
 
 # Clean up dev dependencies to reduce image size
-RUN pnpm prune --prod
+# pnpm requires CI=true to prune without TTY in container builds
+RUN CI=true pnpm prune --prod
 
 # 3. Production Runner
 FROM base AS runner
