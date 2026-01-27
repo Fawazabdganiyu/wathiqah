@@ -89,11 +89,11 @@ jobs:
             API_PREFIX=api
             API_PORT=3001
             APP_EMAIL=wathiqah@akanors.com
-            REDIS_URL=redis://localhost:6379
+            
             REDIS_HOST=${{ secrets.REDIS_HOST }}
             REDIS_PORT=${{ secrets.REDIS_PORT }}
             REDIS_USERNAME=${{ secrets.REDIS_USERNAME }}
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-            REDIS_DB=${{ secrets.REDIS_DB }}
+            REDIS_DB=0
             MAILTRAP_TOKEN=${{ secrets.MAILTRAP_TOKEN }}
             EMAIL_FROM=${{ secrets.EMAIL_FROM }}
