@@ -78,16 +78,24 @@ import { v4 as uuidv4 } from 'uuid';
       useFactory: async (configService: ConfigService) => {
         const redisHost = configService.getOrThrow<string>('redis.host');
         const redisPort = configService.getOrThrow<number>('redis.port');
-        const redisUsername =
-          configService.getOrThrow<string>('redis.username');
+        const redisUsername = configService.get<string>('redis.username');
         const redisPassword =
           configService.getOrThrow<string>('redis.password');
-        const redisDb = configService.getOrThrow<number>('redis.db');
+        const redisDb = configService.get<number>('redis.db') ?? 0;
+
+        const credentials =
+          redisUsername && redisPassword
+            ? `${redisUsername}:${redisPassword}@`
+            : redisPassword
+              ? `:${redisPassword}@`
+              : '';
+
+        const redisUrl = `redis://${credentials}${redisHost}:${redisPort}/${redisDb}`;
+
         return {
           stores: [
             new KeyvRedis({
-              // redis[s]://[[username][:password]@][host][:port][/db-number]
-              url: `redis://${redisUsername}:${redisPassword}@${redisHost}:${redisPort}/${redisDb}`,
+              url: redisUrl,
             } as RedisClientOptions),
             new Keyv({
               store: new CacheableMemory({ ttl: 60000, lruSize: 5000 }),
