@@ -66,14 +66,13 @@ jobs:
 
       # 5. Push Docker Image
       - name: Push Container
-        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api:${{ github.sha }}
-
+        run: docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api/api-image:${{ github.sha }}
       # 6. Deploy to Cloud Run
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: wathiqah-api
-          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api:${{ github.sha }}
+          image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/wathiqah-api/api-image:${{ github.sha }}
           region: us-central1
           env_vars: |
             NODE_ENV=production
