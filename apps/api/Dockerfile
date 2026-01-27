@@ -32,7 +32,7 @@ COPY --from=pruner /app/out/full/ .
 # Generate Prisma Client
 # We run this explicitly to ensure the client is generated before build
 WORKDIR /app/apps/api
-RUN pnpm prisma generate
+RUN DATABASE_URL="postgresql://postgres:postgres@localhost:5432/wathiqah?schema=public" pnpm exec prisma generate
 WORKDIR /app
 
 # Build the API
