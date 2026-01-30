@@ -26,6 +26,6 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
-  await app.listen(configService.getOrThrow<number>('app.apiPort'));
+  await app.listen(configService.getOrThrow<number>('app.port'));
 }
 bootstrap();

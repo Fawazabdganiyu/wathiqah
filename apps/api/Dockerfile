@@ -57,11 +57,11 @@ COPY --from=builder --chown=nestjs:nodejs /app .
 # Set working directory to the api app
 WORKDIR /app/apps/api
 
-# Cloud Run injects the PORT environment variable, defaulting to 3000 here
-ENV API_PORT=${PORT}
+# Cloud Run will inject PORT; just set NODE_ENV
 ENV NODE_ENV=production
 
-EXPOSE ${API_PORT}
+# Optional: document port; Cloud Run still uses $PORT env
+EXPOSE 8080
 
-# Start the application
-CMD ["node", "dist/main"]
+# IMPORTANT: entry file must match your build output
+CMD ["node", "dist/src/main.js"]
