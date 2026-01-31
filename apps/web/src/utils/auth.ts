@@ -10,7 +10,7 @@ export const authGuard = (opts?: { location?: { pathname?: string; searchStr?: s
   if (typeof window !== "undefined" && !isAuthenticated()) {
     const pathname = opts?.location?.pathname ?? window.location.pathname ?? "/";
     const searchStr = opts?.location?.searchStr ?? window.location.search ?? "";
-    const redirectTo = `${pathname}${searchStr}`;
+    const redirectTo = encodeURIComponent(`${pathname}${searchStr}`);
     throw redirect({
       to: "/login",
       search: { redirectTo },

@@ -14,9 +14,15 @@ export const Route = createFileRoute("/login")({
   }),
   beforeLoad: ({ search }) => {
     if (isAuthenticated()) {
-      throw redirect({
-        to: search.redirectTo ?? "/",
-      });
+      let to = "/";
+      if (search.redirectTo) {
+        const decodedRedirect = decodeURIComponent(search.redirectTo);
+        if (decodedRedirect.startsWith("/") && !decodedRedirect.startsWith("//")) {
+          to = decodedRedirect;
+        }
+      }
+
+      throw redirect({ to });
     }
   },
   component: LoginComponent,
@@ -36,7 +42,17 @@ function LoginComponent() {
     try {
       await login({ email, password });
       toast.success("Welcome back!");
-      navigate({ to: redirectTo ?? "/" });
+
+      if (redirectTo) {
+        const decodedRedirect = decodeURIComponent(redirectTo);
+        // Ensure the redirect is to a local path to prevent open redirect vulnerabilities
+        if (decodedRedirect.startsWith("/") && !decodedRedirect.startsWith("//")) {
+          navigate({ to: decodedRedirect });
+          return;
+        }
+      }
+
+      navigate({ to: "/" });
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message || "Failed to login");
