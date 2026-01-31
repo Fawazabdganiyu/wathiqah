@@ -53,7 +53,7 @@ COPY --from=builder /app/apps/api/prisma ./prisma
 COPY --from=builder /app/apps/api/node_modules ./node_modules
 COPY --from=builder /app/apps/api/package.json ./package.json
 
-EXPOSE 3000
+EXPOSE ${PORT}
 
 ENV NODE_ENV=production
 
