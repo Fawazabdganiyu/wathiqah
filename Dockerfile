@@ -1,43 +1,60 @@
-FROM node:20-alpine AS builder
+# -------------------------
+# Base image with pnpm
+# -------------------------
+FROM node:20-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+RUN corepack prepare pnpm@10.28.1 --activate
 
+# -------------------------
+# Prune monorepo for api
+# -------------------------
+FROM base AS pruner
 WORKDIR /app
-
-RUN npm install -g pnpm --silent
-
-COPY pnpm-lock.yaml ./
-COPY package.json ./
-COPY turbo.json ./
-COPY pnpm-workspace.yaml ./
-COPY apps/api/package.json ./apps/api/
-
-RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
+RUN pnpm dlx turbo prune api --docker
 
-# Generate Prisma Client
-WORKDIR /app/apps/api
-RUN DATABASE_URL="postgresql://postgres:postgres@localhost:5432/wathiqah?schema=public" pnpm db:generate
-
-WORKDIR /app
-RUN pnpm build --filter=api --output-logs=errors-only
-
-# # Clean up dev dependencies to reduce image size
-WORKDIR /app/apps/api
-RUN CI=true pnpm prune --prod
-
-# Use the Google-maintained distroless Node.js image for production
-FROM gcr.io/distroless/nodejs20-debian11 AS runner
-
+# -------------------------
+# Install deps & build
+# -------------------------
+FROM base AS builder
 WORKDIR /app
 
-# Copy the built NestJS API application from the builder stage
-COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+# Install only pruned deps
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+
+RUN pnpm install --frozen-lockfile
+
+# Copy full pruned source
+COPY --from=pruner /app/out/full/ .
+
+# Generate Prisma client (no real DB needed)
+WORKDIR /app/apps/api
+ENV DATABASE_URL="file:./dev.db"
+RUN pnpm prisma generate
+
+# Build the api via Turbo (root)
+WORKDIR /app
+RUN pnpm build --filter api --output-logs=errors-only
+
+# -------------------------
+# Runtime image
+# -------------------------
+FROM gcr.io/distroless/nodejs20-debian12 AS runner
+
+WORKDIR /app/apps/api
+
+# Copy built app + prod deps + package.json
+COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/apps/api/prisma ./prisma
+COPY --from=builder /app/apps/api/node_modules ./node_modules
+COPY --from=builder /app/apps/api/package.json ./package.json
 
 EXPOSE 3000
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
-# The entry point for distroless Node.js images is typically 'node'.
-CMD [ "apps/api/dist/src/main.js" ]
+CMD ["dist/src/main.js"]
