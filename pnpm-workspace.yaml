@@ -12,4 +12,7 @@ onlyBuiltDependencies:
   - esbuild
   - prisma
 
+syncInjectedDepsAfterScripts:
+  - build
+
 injectWorkspacePackages: true
