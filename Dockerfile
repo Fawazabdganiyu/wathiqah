@@ -40,18 +40,21 @@ RUN pnpm prisma generate
 WORKDIR /app
 RUN pnpm build --filter api --output-logs=errors-only
 
+# Clean up dev dependencies to reduce image size
+RUN CI=true pnpm prune --prod
+
 # -------------------------
 # Runtime image
 # -------------------------
 FROM gcr.io/distroless/nodejs20-debian12 AS runner
 
-WORKDIR /app/apps/api
+WORKDIR /app
 
 # Copy built app + prod deps + package.json
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/prisma ./prisma
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/apps/api/package.json ./package.json
+COPY --from=builder /app .
+
+# Set working directory to the api app
+WORKDIR /app/apps/api
 
 EXPOSE ${PORT}
 
