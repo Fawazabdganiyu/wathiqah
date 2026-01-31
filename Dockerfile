@@ -57,4 +57,4 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["dist/src/main.js"]
+CMD ["./dist/src/main.js"]
