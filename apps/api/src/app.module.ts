@@ -111,6 +111,7 @@ import { v4 as uuidv4 } from 'uuid';
       sortSchema: true,
       playground: true,
       useGlobalPrefix: true,
+      context: ({ req, res }) => ({ req, res }),
     }),
     PrismaModule,
     TransactionsModule,

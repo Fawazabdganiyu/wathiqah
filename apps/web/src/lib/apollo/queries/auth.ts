@@ -47,6 +47,12 @@ export const LOGIN_MUTATION: TypedDocumentNode<LoginMutation, LoginMutationVaria
   }
 `;
 
+export const LOGOUT_MUTATION = gql`
+  mutation Logout {
+    logout
+  }
+`;
+
 export const SIGNUP_MUTATION: TypedDocumentNode<SignupMutation, SignupMutationVariables> = gql`
   mutation Signup($signupInput: SignupInput!) {
     signup(signupInput: $signupInput) {

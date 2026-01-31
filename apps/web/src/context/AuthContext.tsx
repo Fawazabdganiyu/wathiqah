@@ -6,6 +6,7 @@ import {
   CHANGE_PASSWORD_MUTATION,
   FORGOT_PASSWORD_MUTATION,
   LOGIN_MUTATION,
+  LOGOUT_MUTATION,
   ME_QUERY,
   RESEND_VERIFICATION_EMAIL_MUTATION,
   RESET_PASSWORD_MUTATION,
@@ -67,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const [loginMutation] = useMutation(LOGIN_MUTATION);
   const [signupMutation] = useMutation(SIGNUP_MUTATION);
+  const [logoutMutation] = useMutation(LOGOUT_MUTATION);
   const [acceptInvitationMutation] = useMutation(ACCEPT_INVITATION_MUTATION);
   const [forgotPasswordMutation] = useMutation(FORGOT_PASSWORD_MUTATION);
   const [resetPasswordMutation] = useMutation(RESET_PASSWORD_MUTATION);
@@ -81,8 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (data?.login) {
-        localStorage.setItem("accessToken", data.login.accessToken);
-        localStorage.setItem("refreshToken", data.login.refreshToken);
         await client.resetStore();
         if (data.login.user) {
           setUser(data.login.user as User);
@@ -108,15 +108,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
 
     try {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      await logoutMutation();
       await client.clearStore();
     } catch (error) {
       console.error("Error clearing store during logout:", error);
     } finally {
       navigate({ to: "/" });
     }
-  }, [client, navigate]);
+  }, [client, navigate, logoutMutation]);
 
   const acceptInvitation = useCallback(
     async (input: AcceptInvitationInput) => {
@@ -125,8 +124,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (data?.acceptInvitation) {
-        localStorage.setItem("accessToken", data.acceptInvitation.accessToken);
-        localStorage.setItem("refreshToken", data.acceptInvitation.refreshToken);
         await client.resetStore();
         if (data.acceptInvitation.user) {
           setUser(data.acceptInvitation.user as User);
@@ -174,8 +171,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (data?.verifyEmail) {
-        localStorage.setItem("accessToken", data.verifyEmail.accessToken);
-        localStorage.setItem("refreshToken", data.verifyEmail.refreshToken);
         await client.resetStore();
         if (data.verifyEmail.user) {
           setUser(data.verifyEmail.user as User);

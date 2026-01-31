@@ -15,7 +15,7 @@ const config = defineConfig({
     dedupe: ["react", "react-dom"],
   },
   server: {
-    allowedHosts: ["https://dev.akanors.com", "https://wathiqah.akanors.com"],
+    allowedHosts: ["dev.akanors.com", "wathiqah.akanors.com"],
   },
   plugins: [
     devtools(),

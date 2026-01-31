@@ -40,8 +40,8 @@ enum AssetCategory {
 }
 
 type AuthPayload {
-  accessToken: String!
-  refreshToken: String!
+  accessToken: String
+  refreshToken: String
   user: User!
 }
 
@@ -208,7 +208,7 @@ type Query {
 }
 
 input RefreshTokenInput {
-  refreshToken: String!
+  refreshToken: String
 }
 
 input ResetPasswordInput {

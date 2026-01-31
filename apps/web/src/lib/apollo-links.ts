@@ -21,11 +21,11 @@ const REFRESH_TOKEN_MUTATION = gql`
 const isClient = typeof window !== "undefined";
 
 export const authLink = new SetContextLink(({ headers }, _) => {
-  const token = isClient ? localStorage.getItem("accessToken") : null;
+  // Tokens are now handled via httpOnly cookies by the browser.
+  // We don't need to manually set the Authorization header anymore.
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : "",
     },
   };
 });
@@ -35,36 +35,23 @@ export const errorLink = (uri: string) =>
     if (CombinedGraphQLErrors.is(error)) {
       for (const err of error.errors) {
         if (err.extensions?.code === "UNAUTHENTICATED") {
-          const refreshToken = isClient ? localStorage.getItem("refreshToken") : null;
-
-          if (!refreshToken) {
-            // No refresh token, likely need to login
-            return;
-          }
-
+          // If unauthenticated, try to refresh.
+          // The refreshToken is in a httpOnly cookie, so the browser will send it.
           return new Observable((observer) => {
             fetch(uri, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include", // Crucial for cookies
               body: JSON.stringify({
                 query: print(REFRESH_TOKEN_MUTATION),
-                variables: { refreshToken },
+                variables: { refreshTokenInput: { refreshToken: "" } }, // Server will check cookie if empty
               }),
             })
               .then((res) => res.json())
               .then((res) => {
                 const data = res.data?.refreshToken;
                 if (data) {
-                  localStorage.setItem("accessToken", data.accessToken);
-                  localStorage.setItem("refreshToken", data.refreshToken);
-
-                  operation.setContext(({ headers = {} }) => ({
-                    headers: {
-                      ...headers,
-                      authorization: `Bearer ${data.accessToken}`,
-                    },
-                  }));
-
+                  // Server has already set new cookies via the response headers.
                   const subscriber = {
                     next: observer.next.bind(observer),
                     error: observer.error.bind(observer),
@@ -73,8 +60,6 @@ export const errorLink = (uri: string) =>
 
                   forward(operation).subscribe(subscriber);
                 } else {
-                  localStorage.removeItem("accessToken");
-                  localStorage.removeItem("refreshToken");
                   if (isClient) window.location.href = "/login";
                 }
               })

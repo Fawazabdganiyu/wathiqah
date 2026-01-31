@@ -18,7 +18,7 @@ function PasswordInput({ className, ...props }: React.ComponentProps<"input">) {
         type="button"
         variant="ghost"
         size="sm"
-        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent z-10"
         onClick={() => setShowPassword((prev) => !prev)}
         disabled={props.disabled}
       >

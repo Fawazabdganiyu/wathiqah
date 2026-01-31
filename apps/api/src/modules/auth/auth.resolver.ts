@@ -1,10 +1,10 @@
-import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { AuthPayload } from './entities/auth-payload.entity';
 import { SignupInput } from './dto/signup.input';
 import { LoginInput } from './dto/login.input';
 import { RefreshTokenInput } from './dto/refresh-token.input';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { GqlAuthGuard } from '../../common/guards/gql-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
@@ -13,45 +13,107 @@ import { ForgotPasswordInput } from './dto/forgot-password.input';
 import { ResetPasswordInput } from './dto/reset-password.input';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { Witness } from '../witnesses/entities/witness.entity';
+import { Request, Response } from 'express';
+import * as ms from 'ms';
 
 @Resolver(() => AuthPayload)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => AuthPayload)
-  signup(@Args('signupInput') signupInput: SignupInput) {
-    return this.authService.signup(signupInput);
+  private setCookies(res: Response, payload: AuthPayload) {
+    const isProd = process.env.NODE_ENV === 'production';
+
+    res.cookie('accessToken', payload.accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: ms('15m'),
+    });
+
+    res.cookie('refreshToken', payload.refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: ms('7d'),
+    });
+
+    res.cookie('isLoggedIn', 'true', {
+      httpOnly: false, // JS can read this to check auth status
+      secure: isProd,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: ms('7d'),
+    });
+  }
+
+  private clearCookies(res: Response) {
+    res.clearCookie('accessToken', { path: '/' });
+    res.clearCookie('refreshToken', { path: '/' });
+    res.clearCookie('isLoggedIn', { path: '/' });
   }
 
   @Mutation(() => AuthPayload)
-  verifyEmail(@Args('token') token: string) {
-    return this.authService.verifyEmail(token);
+  async signup(@Args('signupInput') signupInput: SignupInput) {
+    const user = await this.authService.signup(signupInput);
+    return { user };
   }
 
   @Mutation(() => AuthPayload)
-  login(@Args('loginInput') loginInput: LoginInput) {
-    return this.authService.login(loginInput);
-  }
-
-  @Mutation(() => AuthPayload)
-  refreshToken(
-    @Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput,
+  async verifyEmail(
+    @Args('token') token: string,
+    @Context('res') res: Response,
   ) {
-    return this.authService.refreshToken(refreshTokenInput.refreshToken);
+    const payload = await this.authService.verifyEmail(token);
+    this.setCookies(res, payload);
+    return payload;
+  }
+
+  @Mutation(() => AuthPayload)
+  async login(
+    @Args('loginInput') loginInput: LoginInput,
+    @Context('res') res: Response,
+  ) {
+    const payload = await this.authService.login(loginInput);
+    this.setCookies(res, payload);
+    return payload;
+  }
+
+  @Mutation(() => AuthPayload)
+  async refreshToken(
+    @Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput,
+    @Context('req') req: Request,
+    @Context('res') res: Response,
+  ) {
+    const refreshToken =
+      refreshTokenInput.refreshToken || req.cookies?.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+    const payload = await this.authService.refreshToken(refreshToken);
+    this.setCookies(res, payload);
+    return payload;
   }
 
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
-  async logout(@CurrentUser() user: User) {
+  async logout(@CurrentUser() user: User, @Context('res') res: Response) {
     await this.authService.logout(user.id);
+    this.clearCookies(res);
     return true;
   }
 
   @Mutation(() => AuthPayload)
-  acceptInvitation(
+  async acceptInvitation(
     @Args('acceptInvitationInput') acceptInvitationInput: AcceptInvitationInput,
+    @Context('res') res: Response,
   ) {
-    return this.authService.acceptInvitation(acceptInvitationInput);
+    const payload = await this.authService.acceptInvitation(
+      acceptInvitationInput,
+    );
+    this.setCookies(res, payload);
+    return payload;
   }
 
   @Query(() => Witness)

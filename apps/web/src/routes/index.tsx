@@ -315,9 +315,9 @@ function LandingPage() {
               <Link to="/" className="hover:text-primary transition-colors">
                 Features
               </Link>
-              <Link to="/" className="hover:text-primary transition-colors">
+              {/* <Link to="/" className="hover:text-primary transition-colors">
                 Pricing
-              </Link>
+              </Link> */}
               <a href="/legal/privacy.html" className="hover:text-primary transition-colors">
                 Privacy Policy
               </a>

@@ -36,6 +36,7 @@ function SignupComponent() {
       setIsSuccess(true);
       toast.success("Account created successfully!");
     } catch (err) {
+      console.error("Signup error:", err);
       if (err instanceof Error) {
         toast.error(err.message || "Failed to sign up");
       } else {

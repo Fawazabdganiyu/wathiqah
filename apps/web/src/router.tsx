@@ -19,7 +19,11 @@ export const getRouter = () => {
   // Configure Apollo Client
   const apolloClient = new ApolloClient({
     cache: new InMemoryCache(),
-    link: ApolloLink.from([authLink, errorLink(uri), new HttpLink({ uri })]),
+    link: ApolloLink.from([
+      authLink,
+      errorLink(uri),
+      new HttpLink({ uri, credentials: "include" }),
+    ]),
   });
 
   const rqContext = TanstackQuery.getContext();

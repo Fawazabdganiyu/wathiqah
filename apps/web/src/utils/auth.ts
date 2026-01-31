@@ -1,8 +1,9 @@
 import { redirect } from "@tanstack/react-router";
+import { getCookie } from "@/lib/cookies";
 
 export const isAuthenticated = () => {
-  if (typeof window === "undefined") return false;
-  return !!localStorage.getItem("accessToken");
+  const token = getCookie("isLoggedIn");
+  return !!token;
 };
 
 export const authGuard = (opts?: { location?: { pathname?: string; searchStr?: string } }) => {
