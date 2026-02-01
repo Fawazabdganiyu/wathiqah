@@ -110,6 +110,10 @@ apps/api/
    - `DTOs` validate input data
 3. **Shared Code**: Common utilities in `common/` folder
 4. **Configuration**: Centralized in `config/` folder
+5. **Audit Trail**: 
+   - Uses `TransactionHistory` model to track changes.
+   - Captures `previousState` and `newState` for all updates.
+   - Enforces immutability for witnessed transactions by using `CANCELLED` status instead of deletion.
 
 ---
 

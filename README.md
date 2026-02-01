@@ -20,6 +20,9 @@ Financial exchanges between people are often undocumented, leading to confusion 
 ## ✨ Features (MVP)
 
 - **Transaction Management**: Record funds (given, received, collected) or physical items (lent, borrowed, returned).
+- **Dual Balance Logic**:
+  - **Cash Position**: Dashboard balance reflects liquidity (Cash In vs. Cash Out).
+  - **Relationship Standing**: Contact view reflects net debt (who owes whom).
 - **Contact Balances**: Track balances per contact (both financial and item counts).
 - **Audit Logs**: Full transaction history with timestamps and "Before/After" diffs for every update.
 - **Witness System**: Add witnesses to transactions for accountability.
