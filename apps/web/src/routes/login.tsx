@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/use-auth";
-import { isAuthenticated } from "@/utils/auth";
+import { isAuthenticated, parseRedirect } from "@/utils/auth";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -14,15 +14,14 @@ export const Route = createFileRoute("/login")({
   }),
   beforeLoad: ({ search }) => {
     if (isAuthenticated()) {
-      let to = "/";
       if (search.redirectTo) {
         const decodedRedirect = decodeURIComponent(search.redirectTo);
         if (decodedRedirect.startsWith("/") && !decodedRedirect.startsWith("//")) {
-          to = decodedRedirect;
+          throw redirect(parseRedirect(decodedRedirect));
         }
       }
 
-      throw redirect({ to });
+      throw redirect({ to: "/" });
     }
   },
   component: LoginComponent,
@@ -47,7 +46,8 @@ function LoginComponent() {
         const decodedRedirect = decodeURIComponent(redirectTo);
         // Ensure the redirect is to a local path to prevent open redirect vulnerabilities
         if (decodedRedirect.startsWith("/") && !decodedRedirect.startsWith("//")) {
-          navigate({ to: decodedRedirect });
+          const { to, search } = parseRedirect(decodedRedirect);
+          navigate({ to, search });
           return;
         }
       }

@@ -17,3 +17,18 @@ export const authGuard = (opts?: { location?: { pathname?: string; searchStr?: s
     });
   }
 };
+
+/**
+ * Parses a redirect URL string into a TanStack Router friendly format
+ * @param url The URL string to parse (e.g. "/transactions?tab=funds")
+ * @returns An object with 'to' and 'search' properties
+ */
+export const parseRedirect = (url: string) => {
+  const [path, searchStr] = url.split("?");
+  const search = searchStr ? Object.fromEntries(new URLSearchParams(searchStr)) : undefined;
+
+  return {
+    to: path as any,
+    search: search as any,
+  };
+};
