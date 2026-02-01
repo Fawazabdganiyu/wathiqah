@@ -199,11 +199,13 @@ export function Dashboard() {
                       <div
                         className={`flex h-10 w-10 items-center justify-center rounded-full border ${
                           tx.type === "GIVEN"
-                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
-                            : "bg-red-500/10 border-red-500/20 text-red-500"
+                            ? "bg-blue-500/10 border-blue-500/20 text-blue-500"
+                            : tx.type === "RETURNED"
+                              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                              : "bg-red-500/10 border-red-500/20 text-red-500"
                         }`}
                       >
-                        {tx.type === "GIVEN" ? (
+                        {tx.type === "GIVEN" || tx.type === "RETURNED" ? (
                           <ArrowUpRight className="h-5 w-5" />
                         ) : (
                           <ArrowDownLeft className="h-5 w-5" />
@@ -235,15 +237,17 @@ export function Dashboard() {
                           tx.category === AssetCategory.Item
                             ? "text-muted-foreground"
                             : tx.type === "GIVEN"
-                              ? "text-emerald-500"
-                              : "text-red-500"
+                              ? "text-blue-500"
+                              : tx.type === "RETURNED"
+                                ? "text-emerald-500"
+                                : "text-red-500"
                         }`}
                       >
                         {tx.category === AssetCategory.Item ? (
                           <span className="text-xs italic font-normal">Physical Item</span>
                         ) : (
                           <>
-                            {tx.type === "GIVEN" ? "+" : "-"}
+                            {tx.type === "GIVEN" || tx.type === "RETURNED" ? "+" : "-"}
                             {formatCurrency(tx.amount)}
                           </>
                         )}

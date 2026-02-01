@@ -65,15 +65,30 @@ export function HistoryViewer({ history }: HistoryViewerProps) {
   const getChanges = (item: HistoryEntry) => {
     if (!item.newState) return [];
 
-    return Object.keys(item.newState).map((key) => {
-      const prev = item.previousState ? item.previousState[key] : undefined;
-      const current = item.newState?.[key];
-      return {
-        field: key,
-        oldValue: prev,
-        newValue: current,
-      };
-    });
+    const isFunds = item.newState.category === "FUNDS" || item.previousState?.category === "FUNDS";
+    const isItem = item.newState.category === "ITEM" || item.previousState?.category === "ITEM";
+
+    return Object.keys(item.newState)
+      .filter((key) => {
+        // Hide quantity and itemName for funds transactions
+        if (isFunds && (key === "quantity" || key === "itemName")) {
+          return false;
+        }
+        // Hide amount for item transactions
+        if (isItem && key === "amount") {
+          return false;
+        }
+        return true;
+      })
+      .map((key) => {
+        const prev = item.previousState ? item.previousState[key] : undefined;
+        const current = item.newState?.[key];
+        return {
+          field: key,
+          oldValue: prev,
+          newValue: current,
+        };
+      });
   };
 
   // Filter and sort history

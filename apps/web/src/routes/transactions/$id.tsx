@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { ArrowLeft, Calendar, FileText, Gift, Package, UserPlus } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, Gift, Package, UserPlus, Edit2 } from "lucide-react";
 import { useState } from "react";
 import { HistoryViewer } from "@/components/history/HistoryViewer";
 import { AddWitnessDialog } from "@/components/transactions/AddWitnessDialog";
 import { ConvertGiftDialog } from "@/components/transactions/ConvertGiftDialog";
+import { EditTransactionDialog } from "@/components/transactions/EditTransactionDialog";
 import { TransactionWitnessList } from "@/components/transactions/TransactionWitnessList";
 import { Button } from "@/components/ui/button";
 import { PageLoader } from "@/components/ui/page-loader";
@@ -21,6 +22,7 @@ function TransactionDetailPage() {
   const { id } = Route.useParams();
   const [isAddWitnessOpen, setIsAddWitnessOpen] = useState(false);
   const [isConvertGiftOpen, setIsConvertGiftOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const { transaction, loading, error, refetch } = useTransaction(id);
 
   if (loading) {
@@ -85,15 +87,33 @@ function TransactionDetailPage() {
               {format(new Date(currentTransaction.date as string), "MMMM d, yyyy")}
             </p>
           </div>
-          <div className="text-right">
-            {currentTransaction.amount && (
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                {new Intl.NumberFormat("en-NG", {
-                  style: "currency",
-                  currency: "NGN",
-                }).format(currentTransaction.amount)}
-              </div>
-            )}
+          <div className="text-right flex flex-col items-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1"
+              onClick={() => setIsEditOpen(true)}
+            >
+              <Edit2 size={14} />
+              Edit
+            </Button>
+            {currentTransaction.category === AssetCategory.Funds &&
+              currentTransaction.amount !== null && (
+                <div
+                  className={`text-2xl font-bold ${
+                    currentTransaction.type === "GIVEN"
+                      ? "text-blue-600 dark:text-blue-400"
+                      : currentTransaction.type === "RETURNED"
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {new Intl.NumberFormat("en-NG", {
+                    style: "currency",
+                    currency: "NGN",
+                  }).format(currentTransaction.amount)}
+                </div>
+              )}
             {totalConverted > 0 && (
               <div className="text-sm font-medium text-orange-600 dark:text-orange-400">
                 Converted to gift:{" "}
@@ -103,7 +123,7 @@ function TransactionDetailPage() {
                 }).format(totalConverted)}
               </div>
             )}
-            {currentTransaction.quantity && (
+            {currentTransaction.category === AssetCategory.Item && currentTransaction.quantity && (
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 {currentTransaction.quantity} x {currentTransaction.itemName || "Item"}
               </div>
@@ -151,7 +171,7 @@ function TransactionDetailPage() {
               </div>
             )}
 
-            {currentTransaction.itemName && (
+            {currentTransaction.category === AssetCategory.Item && currentTransaction.itemName && (
               <div>
                 <span className="block text-sm font-medium text-neutral-500">Item</span>
                 <div className="mt-1 flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
@@ -221,6 +241,12 @@ function TransactionDetailPage() {
             witnesses={witnesses.filter((w): w is NonNullable<typeof w> => w !== null) as Witness[]}
           />
         </div>
+
+        <EditTransactionDialog
+          transaction={currentTransaction}
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+        />
 
         <AddWitnessDialog
           isOpen={isAddWitnessOpen}

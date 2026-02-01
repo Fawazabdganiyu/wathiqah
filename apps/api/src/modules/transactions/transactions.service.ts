@@ -243,8 +243,8 @@ export class TransactionsService {
       const transaction = await prisma.transaction.create({
         data: {
           category,
-          amount,
-          itemName,
+          amount: category === AssetCategory.FUNDS ? amount : null,
+          itemName: category === AssetCategory.ITEM ? itemName : null,
           quantity: category === AssetCategory.ITEM ? quantity : null,
           createdById: userId,
           ...rest,
@@ -507,15 +507,30 @@ export class TransactionsService {
       changes.category = category;
       changeDescriptions.push(`Category changed to ${category}`);
     }
-    if (amount && Number(amount) !== Number(transaction.amount)) {
+    if (
+      amount &&
+      Number(amount) !== Number(transaction.amount) &&
+      (category === AssetCategory.FUNDS ||
+        (!category && transaction.category === AssetCategory.FUNDS))
+    ) {
       changes.amount = amount;
       changeDescriptions.push(`Amount changed to ${amount}`);
     }
-    if (itemName && itemName !== transaction.itemName) {
+    if (
+      itemName &&
+      itemName !== transaction.itemName &&
+      (category === AssetCategory.ITEM ||
+        (!category && transaction.category === AssetCategory.ITEM))
+    ) {
       changes.itemName = itemName;
       changeDescriptions.push(`Item Name changed to ${itemName}`);
     }
-    if (quantity && quantity !== transaction.quantity) {
+    if (
+      quantity &&
+      quantity !== transaction.quantity &&
+      (category === AssetCategory.ITEM ||
+        (!category && transaction.category === AssetCategory.ITEM))
+    ) {
       changes.quantity = quantity;
       changeDescriptions.push(`Quantity changed to ${quantity}`);
     }
@@ -595,9 +610,24 @@ export class TransactionsService {
         where: { id },
         data: {
           ...(category && { category }),
-          ...(amount && { amount }),
-          ...(itemName && { itemName }),
-          ...(quantity && { quantity }),
+          amount:
+            category === AssetCategory.FUNDS
+              ? amount
+              : category === AssetCategory.ITEM
+                ? null
+                : amount,
+          itemName:
+            category === AssetCategory.ITEM
+              ? itemName
+              : category === AssetCategory.FUNDS
+                ? null
+                : itemName,
+          quantity:
+            category === AssetCategory.ITEM
+              ? quantity
+              : category === AssetCategory.FUNDS
+                ? null
+                : quantity,
           ...rest,
         },
       }),

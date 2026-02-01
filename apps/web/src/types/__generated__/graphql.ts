@@ -58,8 +58,8 @@ export enum AssetCategory {
 
 export type AuthPayload = {
   __typename: 'AuthPayload';
-  accessToken: Scalars['String']['output'];
-  refreshToken: Scalars['String']['output'];
+  accessToken: Maybe<Scalars['String']['output']>;
+  refreshToken: Maybe<Scalars['String']['output']>;
   user: User;
 };
 
@@ -392,7 +392,7 @@ export type QueryWitnessInvitationArgs = {
 };
 
 export type RefreshTokenInput = {
-  refreshToken: Scalars['String']['input'];
+  refreshToken?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ResetPasswordInput = {
@@ -580,7 +580,7 @@ export type RefreshTokenMutationVariables = Exact<{
 }>;
 
 
-export type RefreshTokenMutation = { refreshToken: { __typename: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename: 'User', id: string, email: string, name: string } } };
+export type RefreshTokenMutation = { refreshToken: { __typename: 'AuthPayload', accessToken: string | null, refreshToken: string | null, user: { __typename: 'User', id: string, email: string, name: string } } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -592,21 +592,26 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { login: { __typename: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename: 'User', id: string, email: string, name: string } } };
+export type LoginMutation = { login: { __typename: 'AuthPayload', accessToken: string | null, refreshToken: string | null, user: { __typename: 'User', id: string, email: string, name: string } } };
+
+export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = { logout: boolean };
 
 export type SignupMutationVariables = Exact<{
   signupInput: SignupInput;
 }>;
 
 
-export type SignupMutation = { signup: { __typename: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename: 'User', id: string, email: string, name: string } } };
+export type SignupMutation = { signup: { __typename: 'AuthPayload', accessToken: string | null, refreshToken: string | null, user: { __typename: 'User', id: string, email: string, name: string } } };
 
 export type AcceptInvitationMutationVariables = Exact<{
   acceptInvitationInput: AcceptInvitationInput;
 }>;
 
 
-export type AcceptInvitationMutation = { acceptInvitation: { __typename: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename: 'User', id: string, email: string, name: string } } };
+export type AcceptInvitationMutation = { acceptInvitation: { __typename: 'AuthPayload', accessToken: string | null, refreshToken: string | null, user: { __typename: 'User', id: string, email: string, name: string } } };
 
 export type ForgotPasswordMutationVariables = Exact<{
   forgotPasswordInput: ForgotPasswordInput;
@@ -634,7 +639,7 @@ export type VerifyEmailMutationVariables = Exact<{
 }>;
 
 
-export type VerifyEmailMutation = { verifyEmail: { __typename: 'AuthPayload', accessToken: string, refreshToken: string, user: { __typename: 'User', id: string, email: string, name: string } } };
+export type VerifyEmailMutation = { verifyEmail: { __typename: 'AuthPayload', accessToken: string | null, refreshToken: string | null, user: { __typename: 'User', id: string, email: string, name: string } } };
 
 export type ResendVerificationEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -779,6 +784,13 @@ export type AddWitnessMutationVariables = Exact<{
 
 
 export type AddWitnessMutation = { addWitness: { __typename: 'Transaction', id: string, witnesses: Array<{ __typename: 'Witness', id: string, status: WitnessStatus, invitedAt: string, user: { __typename: 'User', id: string, name: string, email: string } | null }> | null } };
+
+export type UpdateTransactionMutationVariables = Exact<{
+  input: UpdateTransactionInput;
+}>;
+
+
+export type UpdateTransactionMutation = { updateTransaction: { __typename: 'Transaction', id: string, amount: number | null, category: AssetCategory, type: TransactionType, date: string, description: string | null, itemName: string | null, quantity: number | null, returnDirection: ReturnDirection | null, contact: { __typename: 'Contact', id: string, name: string } | null } };
 
 export type UpdateUserMutationVariables = Exact<{
   input: UpdateUserInput;

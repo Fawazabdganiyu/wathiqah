@@ -10,6 +10,8 @@ import type {
   TransactionQueryVariables,
   TransactionsQuery,
   TransactionsQueryVariables,
+  UpdateTransactionMutation,
+  UpdateTransactionMutationVariables,
 } from "@/types/__generated__/graphql";
 
 export const GET_TRANSACTION: TypedDocumentNode<TransactionQuery, TransactionQueryVariables> = gql`
@@ -170,6 +172,29 @@ export const ADD_WITNESS: TypedDocumentNode<AddWitnessMutation, AddWitnessMutati
           name
           email
         }
+      }
+    }
+  }
+`;
+
+export const UPDATE_TRANSACTION: TypedDocumentNode<
+  UpdateTransactionMutation,
+  UpdateTransactionMutationVariables
+> = gql`
+  mutation UpdateTransaction($input: UpdateTransactionInput!) {
+    updateTransaction(input: $input) {
+      id
+      amount
+      category
+      type
+      date
+      description
+      itemName
+      quantity
+      returnDirection
+      contact {
+        id
+        name
       }
     }
   }

@@ -25,7 +25,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { AssetCategory, ReturnDirection, TransactionType } from "@/types/__generated__/graphql";
 
 const formSchema = z.object({
-  amount: z.coerce.number().min(0.01, "Amount must be positive"),
+  amount: z.coerce.number<number>().min(0.01, "Amount must be positive"),
   description: z.string().optional(),
 });
 
@@ -51,8 +51,7 @@ export function ConvertGiftDialog({
   const { createTransaction, creating } = useTransactions();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // biome-ignore lint/suspicious/noExplicitAny: Complex type mismatch with zodResolver
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema),
     defaultValues: {
       amount: transaction.amount || 0,
       description: `Gift conversion from transaction: ${transaction.id}`,
