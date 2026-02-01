@@ -61,10 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data?.me) {
       setUser(data.me as User);
-    } else if (!loading && !data?.me) {
+    } else if (!loading && (error || !data?.me)) {
       setUser(null);
+      // If we thought we were logged in but the server says otherwise,
+      // we should clear the cookie to prevent redirect loops
+      // if (typeof document !== "undefined" && document.cookie.includes("isLoggedIn=")) {
+      //   document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      // }
     }
-  }, [data, loading]);
+  }, [data, loading, error]);
 
   const [loginMutation] = useMutation(LOGIN_MUTATION);
   const [signupMutation] = useMutation(SIGNUP_MUTATION);
@@ -106,6 +111,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     // Immediate UI update
     setUser(null);
+    // if (typeof document !== "undefined") {
+    //   document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    // }
 
     try {
       await logoutMutation();

@@ -60,7 +60,13 @@ export const errorLink = (uri: string) =>
 
                   forward(operation).subscribe(subscriber);
                 } else {
-                  if (isClient) window.location.href = "/login";
+                  if (
+                    isClient &&
+                    window.location.pathname !== "/login" &&
+                    window.location.pathname !== "/signup"
+                  ) {
+                    window.location.href = "/login";
+                  }
                 }
               })
               .catch((error) => {
