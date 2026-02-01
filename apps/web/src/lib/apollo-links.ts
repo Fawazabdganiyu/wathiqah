@@ -62,8 +62,14 @@ export const errorLink = (uri: string) =>
                 } else {
                   if (
                     isClient &&
+                    window.location.pathname !== "/" &&
                     window.location.pathname !== "/login" &&
-                    window.location.pathname !== "/signup"
+                    window.location.pathname !== "/signup" &&
+                    window.location.pathname !== "/forgot-password" &&
+                    window.location.pathname !== "/reset-password" &&
+                    window.location.pathname !== "/verify-email" &&
+                    !window.location.pathname.startsWith("/witnesses/invite/") &&
+                    !window.location.pathname.startsWith("/shared-access/view/")
                   ) {
                     window.location.href = "/login";
                   }
