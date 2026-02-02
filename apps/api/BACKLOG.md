@@ -25,18 +25,20 @@ Implement a system to create "Projects" that act as scoped ledgers for specific 
 
 ## Transaction Update & Witness Re-acknowledgement Workflow
 
-**Status:** Pending Implementation
+**Status:** Completed ✅
 **Priority:** High (Required for production witness system)
 
 ### Context
 
 When a transaction is updated _after_ witnesses have already acknowledged it, the integrity of the witness verification is compromised. The witness verified the _original_ state, not the _new_ state.
 
-### Current Implementation (MVP)
+### Implementation Details
 
 - **Transaction History**: The system now tracks all updates in a `TransactionHistory` table, recording the `previousState`, `newState`, `changeType`, and the user who made the change.
 - **Status Updates**: When a transaction with acknowledged witnesses is updated, the witnesses' status is changed to `MODIFIED` (instead of `PENDING`) to clearly indicate that a previously acknowledged transaction has changed.
 - **Audit Log**: Every update action creates an immutable history record.
+- **Removal Protection**: Transactions with witnesses use `CANCELLED` status instead of hard deletion to maintain the audit trail.
+- **Frontend History Viewer**: Implemented a timeline view in the transaction details page to show the lifecycle and changes.
 
 ### Future Requirements
 

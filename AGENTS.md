@@ -7,10 +7,16 @@
 ## Philosophy & Financial Logic
 
 - **Core Principle**: It is better to give out (be a creditor) than to owe people (be a debtor).
+- **Categories**:
+  - **FUNDS**: For monetary transactions (Cash, Bank transfers). Quantity and Item Name are excluded from UI and audit logs for this category.
+  - **PHYSICAL ITEMS**: For lending/borrowing physical objects (e.g., Tools, Books). Uses Quantity and Item Name.
 - **Color Coding Logic**:
   - **RECEIVED (Red)**: Marked as Red because it represents a liability/debt. It is better to avoid owing people.
   - **GIVEN (Blue/Emerald)**: Represented as Blue or Emerald because it represents an asset/credit. Giving out is viewed more favorably than receiving debt.
   - **RETURNED (Emerald)**: Represents the resolution of a transaction (money coming back or being paid back), which is a positive action.
+- **Balance Logic**:
+  - **Cash Position (Dashboard)**: Uses Liquidity logic. `Balance = (Income + Received + ReturnedToMe + GiftReceived) - (Expense + Given + ReturnedToOther + GiftGiven)`. A negative balance indicates a cash deficit (spending/lending more than received).
+  - **Relationship Standing (Contact View)**: Uses Net Debt logic. `Standing = Assets (Given) - Liabilities (Received)`. A positive standing means the contact owes you.
 
 ## Tech Stack
 
@@ -66,7 +72,11 @@
   1.  Creator adds witness (User ID or Email).
   2.  System creates `Witness` record (Status: `PENDING`).
   3.  Witness views and actions (Acknowledge/Decline).
-  4.  **Update Logic**: If a witnessed transaction is modified, witness status must reset or change to `MODIFIED` (See `apps/api/BACKLOG.md`).
+  4.  **Update Logic**: If a witnessed transaction is modified, witness status must reset to `MODIFIED`.
+  5.  **Removal Logic**:
+      - Transactions with **NO witnesses**: Can be permanently deleted from the database.
+      - Transactions with **witnesses**: Cannot be deleted. They must be marked as `CANCELLED` to preserve the audit trail.
+      - Every update or cancellation creates an entry in `TransactionHistory` with a snapshot of `previousState` and `newState`.
 
 ## Reference Files
 
@@ -98,4 +108,9 @@ This project is built using a collaborative AI workflow, leveraging advanced too
 1.  **Context-Aware Coding**: Agents are provided with deep context from the monorepo structure, Prisma schemas, and GraphQL definitions before any code change.
 2.  **Iterative Refinement**: Code is generated, tested, and linted in a loop. Discrepancies are identified and fixed proactively.
 3.  **Consistency First**: All AI-generated code must adhere to the established tech stack (TanStack Start, NestJS, Prisma, GraphQL) and naming conventions.
-4.  **Documentation as Truth**: Architectural decisions are documented in `.md` files, which serve as the primary source of truth for both human developers and AI agents.
+4.  **Quality of Delivery**:
+    - **No Placeholders**: Never use TODOs or placeholders in production-ready code.
+    - **Verification**: Always verify changes through manual review or automated tests.
+    - **Clean Code**: Prioritize maintainability, proper naming, and adherence to DRY principles.
+    - **Self-Correction**: Proactively identify and fix potential side effects or linter errors introduced by changes.
+5.  **Documentation as Truth**: Architectural decisions are documented in `.md` files, which serve as the primary source of truth for both human developers and AI agents.

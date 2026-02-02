@@ -37,8 +37,18 @@ PENDING → User creates transaction with witnesses
     ↓
     ├─→ ACKNOWLEDGED → Witness confirms the transaction
     │
-    └─→ DECLINED → Witness disputes the transaction
+    ├─→ DECLINED → Witness disputes the transaction
+    │
+    └─→ MODIFIED → Transaction was edited after acknowledgement (Requires re-review)
 ```
+
+## 🛡️ Data Integrity & Immutability
+
+To ensure that verified records remain trustworthy:
+
+1. **No Deletion**: Transactions with witnesses cannot be hard-deleted. If a user wants to remove one, it is marked as `CANCELLED`.
+2. **Audit History**: All changes to witnessed transactions (Amount, Date, Description, Status) are recorded in the `TransactionHistory` with a before/after diff.
+3. **Status Reset**: Any update to an `ACKNOWLEDGED` transaction automatically resets witness statuses to `MODIFIED`, alerting witnesses that the record they verified has changed.
 
 ## 🎨 User Experience
 
