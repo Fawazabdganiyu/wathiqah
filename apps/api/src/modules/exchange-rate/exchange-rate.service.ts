@@ -44,7 +44,10 @@ export class ExchangeRateService implements OnModuleInit {
   }
 
   /**
-   * Fetches latest rates from provider and updates database & cache
+   * Updates rates from configured providers with fallback logic.
+   * Priority:
+   * 1. Open Exchange Rates (Hourly updates)
+   * 2. ExchangeRate-API (Fallback)
    */
   async updateRates() {
     const providers = [
@@ -110,18 +113,17 @@ export class ExchangeRateService implements OnModuleInit {
     };
   }
 
-  private async processRates(rates: any, provider: string) {
+  private async processRates(rates: Record<string, number>, provider: string) {
     for (const currency of this.supportedCurrencies) {
       if (rates[currency]) {
         const rateValue = new Prisma.Decimal(rates[currency]);
 
-        // Update current rates
+        // Upsert rate in database
         await this.prisma.exchangeRate.upsert({
-          where: { from_to: { from: this.baseCurrency, to: currency } },
-          update: {
-            rate: rateValue,
-            provider,
+          where: {
+            from_to: { from: this.baseCurrency, to: currency },
           },
+          update: { rate: rateValue, provider },
           create: {
             from: this.baseCurrency,
             to: currency,
@@ -130,7 +132,7 @@ export class ExchangeRateService implements OnModuleInit {
           },
         });
 
-        // Log history
+        // Archive history
         await this.prisma.exchangeRateHistory.create({
           data: {
             from: this.baseCurrency,
@@ -140,10 +142,10 @@ export class ExchangeRateService implements OnModuleInit {
           },
         });
 
-        // Cache the rate (TTL 1 hour)
+        // Update cache
         await this.cacheManager.set(
           `rate:${this.baseCurrency}:${currency}`,
-          rateValue.toNumber(),
+          rates[currency],
           3600000,
         );
       }
@@ -152,7 +154,9 @@ export class ExchangeRateService implements OnModuleInit {
   }
 
   /**
-   * Converts an amount from one currency to another
+   * Converts an amount from one currency to another using USD as a cross-rate base.
+   * Formula: (Amount / Rate_From) * Rate_To
+   * Precision: 2 decimal places using ROUND_HALF_UP
    */
   async convert(
     amount: number | Prisma.Decimal,
@@ -162,7 +166,7 @@ export class ExchangeRateService implements OnModuleInit {
     if (from === to)
       return typeof amount === 'number' ? amount : amount.toNumber();
 
-    const rate = await this.getRate(from, to);
+    const rate = await this.getExchangeRate(from, to);
     const result = new Prisma.Decimal(amount.toString()).mul(rate);
 
     // Financial rounding (2 decimal places for most currencies)
@@ -170,9 +174,9 @@ export class ExchangeRateService implements OnModuleInit {
   }
 
   /**
-   * Gets exchange rate between two currencies (uses USD as base if needed)
+   * Calculates the cross-rate between two currencies using USD as the base.
    */
-  private async getRate(from: string, to: string): Promise<number> {
+  private async getExchangeRate(from: string, to: string): Promise<number> {
     if (from === to) return 1;
 
     // 1. Check direct rate from USD base

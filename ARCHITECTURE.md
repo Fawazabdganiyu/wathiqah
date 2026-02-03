@@ -115,8 +115,15 @@ apps/api/
    - Captures `previousState` and `newState` for all updates.
    - Enforces immutability for witnessed transactions by using `CANCELLED` status instead of deletion.
 6. **Error Handling & Resilience**:
-   - **Database Pool Tuning**: Uses optimized `pg` pool settings (`idleTimeoutMillis: 30000`, `keepAlive: true`) to prevent "Server has closed the connection" errors common with managed databases.
-   - **GraphQL Error Masking**: Implements a global `formatError` in `AppModule` to mask technical Prisma or database-specific error messages with user-friendly text while preserving technical logs on the server.
+   - **Error Handling & Resilience**:
+    - **Database Pool Tuning**: Uses optimized `pg` pool settings (`idleTimeoutMillis: 30000`, `keepAlive: true`) to prevent "Server has closed the connection" errors common with managed databases.
+    - **GraphQL Error Masking**: Implements a global `formatError` in `AppModule` to mask technical Prisma or database-specific error messages with user-friendly text while preserving technical logs on the server.
+  - **Exchange Rate Service**:
+    - **Dual-Provider Strategy**: Integrated with **Open Exchange Rates** (Primary, hourly updates) and **ExchangeRate-API** (Fallback) to ensure 24/7 reliability.
+    - **Intelligent Caching**: Uses a 1-hour TTL cache for rates, with a persistent database fallback (`ExchangeRate` table).
+    - **Automated Sync**: A cron job runs every other hour to fetch the latest rates and archive history in `ExchangeRateHistory`.
+    - **Precision**: Uses `Prisma.Decimal` for all financial calculations to prevent floating-point errors.
+    - **Base Currency**: Uses a USD-base cross-conversion logic to allow any-to-any currency conversion efficiently.
 
 ---
 
@@ -256,7 +263,15 @@ packages/
 - ✅ Keep components small and focused
 - ✅ Use custom hooks for reusable logic
 - ✅ Use Shadcn for consistent UI
-- ✅ Use Biome for linting and formatting
+  - ✅ Use Biome for linting and formatting
+
+### User Experience & Personalization
+
+- **Preferred Currency**: Users can set a persistent preferred currency in **Account Settings > Preferences**. This currency is used globally for:
+  - Total Balance calculation on the Dashboard.
+  - Default view for financial summaries.
+  - Consistency across devices.
+- **Dynamic Conversion**: The Dashboard allows temporary currency switching for quick reference, while respecting the user's saved preference as the default state.
 
 ### Monorepo
 

@@ -21,6 +21,8 @@ Financial exchanges between people are often undocumented, leading to confusion 
 
 - **Transaction Management**: Record funds (given, received, collected) or physical items (lent, borrowed, returned).
 - **Multi-currency Support**: Track fund transactions in multiple currencies (NGN, USD, EUR, GBP, CAD, AED, SAR).
+  - **High-Performance Exchange Rates**: Real-time rate updates with dual-provider fallback (Open Exchange Rates & ExchangeRate-API).
+  - **User-Preferred Base Currency**: Set a persistent preferred currency for global balance aggregation.
 - **Dual Balance Logic**:
   - **Cash Position**: Dashboard balance reflects liquidity (Cash In vs. Cash Out).
   - **Relationship Standing**: Contact view reflects net debt (who owes whom).
