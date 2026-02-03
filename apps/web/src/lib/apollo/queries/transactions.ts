@@ -15,7 +15,28 @@ import type {
   RemoveTransactionMutation,
   RemoveTransactionMutationVariables,
   TransactionsGroupedByContactQuery,
+  TotalBalanceQuery,
+  TotalBalanceQueryVariables,
 } from "@/types/__generated__/graphql";
+
+export const GET_TOTAL_BALANCE: TypedDocumentNode<TotalBalanceQuery, TotalBalanceQueryVariables> =
+  gql`
+  query TotalBalance($currency: String) {
+    totalBalance(currency: $currency) {
+      totalGiven
+      totalReceived
+      totalReturned
+      totalReturnedToMe
+      totalReturnedToOther
+      totalIncome
+      totalExpense
+      totalGiftGiven
+      totalGiftReceived
+      netBalance
+      currency
+    }
+  }
+`;
 
 export const GET_TRANSACTION: TypedDocumentNode<TransactionQuery, TransactionQueryVariables> = gql`
   query Transaction($id: ID!) {
@@ -117,6 +138,7 @@ export const GET_TRANSACTIONS: TypedDocumentNode<TransactionsQuery, Transactions
         totalGiftGiven
         totalGiftReceived
         netBalance
+        currency
       }
     }
   }
@@ -184,6 +206,7 @@ export const GET_TRANSACTIONS_GROUPED_BY_CONTACT: TypedDocumentNode<
         totalGiftGiven
         totalGiftReceived
         netBalance
+        currency
       }
     }
   }

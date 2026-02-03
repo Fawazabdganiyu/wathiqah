@@ -23,6 +23,7 @@ model User {
   passwordHash     String? // Null for invited witnesses who haven't set password
   refreshTokenHash String?
   isEmailVerified  Boolean  @default(false)
+  preferredCurrency String  @default("NGN")
   createdAt        DateTime @default(now())
 
   // Relations
@@ -195,6 +196,30 @@ model AccessGrant {
   granter   User     @relation(fields: [granterId], references: [id])
 
   @@map("access_grants")
+}
+
+model ExchangeRate {
+  id          String   @id @default(uuid())
+  from        String   // Source currency code (e.g., "USD")
+  to          String   // Target currency code (e.g., "NGN")
+  rate        Decimal  @db.Decimal(18, 8)
+  provider    String   // Provider name (e.g., "ExchangeRate-API")
+  lastUpdated DateTime @default(now())
+
+  @@unique([from, to])
+  @@map("exchange_rates")
+}
+
+model ExchangeRateHistory {
+  id          String   @id @default(uuid())
+  from        String
+  to          String
+  rate        Decimal  @db.Decimal(18, 8)
+  provider    String
+  createdAt   DateTime @default(now())
+
+  @@index([from, to, createdAt])
+  @@map("exchange_rate_history")
 }
 
 model ContactInvitation {

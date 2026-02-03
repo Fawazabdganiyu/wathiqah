@@ -137,6 +137,7 @@ export type FilterTransactionInput = {
   search?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   status?: InputMaybe<TransactionStatus>;
+  summaryCurrency?: InputMaybe<Scalars['String']['input']>;
   types?: InputMaybe<Array<TransactionType>>;
 };
 
@@ -345,6 +346,7 @@ export type Query = {
   checkContactOnPlatform: ContactPlatformStatus;
   contact: Contact;
   contacts: Array<Contact>;
+  convertCurrency: Scalars['Float']['output'];
   me: User;
   myAccessGrants: Array<AccessGrant>;
   myContactTransactions: Array<Transaction>;
@@ -354,6 +356,7 @@ export type Query = {
   receivedAccessGrants: Array<AccessGrant>;
   searchWitness: Maybe<WitnessCandidate>;
   sharedData: SharedDataEntity;
+  totalBalance: TransactionsSummary;
   transaction: Transaction;
   transactions: TransactionsResponse;
   transactionsGroupedByContact: Array<ContactGroupedSummary>;
@@ -369,6 +372,13 @@ export type QueryCheckContactOnPlatformArgs = {
 
 export type QueryContactArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryConvertCurrencyArgs = {
+  amount: Scalars['Float']['input'];
+  from: Scalars['String']['input'];
+  to: Scalars['String']['input'];
 };
 
 
@@ -389,6 +399,11 @@ export type QuerySearchWitnessArgs = {
 
 export type QuerySharedDataArgs = {
   grantId: Scalars['String']['input'];
+};
+
+
+export type QueryTotalBalanceArgs = {
+  currency?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -513,6 +528,7 @@ export type TransactionsResponse = {
 
 export type TransactionsSummary = {
   __typename: 'TransactionsSummary';
+  currency: Scalars['String']['output'];
   netBalance: Scalars['Float']['output'];
   totalExpense: Scalars['Float']['output'];
   totalGiftGiven: Scalars['Float']['output'];
@@ -564,6 +580,7 @@ export type UpdateUserInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  preferredCurrency?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -577,6 +594,7 @@ export type User = {
   name: Scalars['String']['output'];
   passwordHash: Maybe<Scalars['String']['output']>;
   phoneNumber: Maybe<Scalars['String']['output']>;
+  preferredCurrency: Scalars['String']['output'];
 };
 
 export type Witness = {
@@ -788,6 +806,13 @@ export type SharedDataQueryVariables = Exact<{
 
 export type SharedDataQuery = { sharedData: { __typename: 'SharedDataEntity', user: { __typename: 'User', id: string, firstName: string, lastName: string, email: string } | null, transactions: Array<{ __typename: 'Transaction', id: string, amount: number | null, currency: string, type: TransactionType, date: string, description: string | null, category: AssetCategory, itemName: string | null, quantity: number | null, contact: { __typename: 'Contact', name: string } | null, witnesses: Array<{ __typename: 'Witness', id: string, status: WitnessStatus, user: { __typename: 'User', name: string } | null }> | null }> | null, promises: Array<{ __typename: 'Promise', id: string, description: string, promiseTo: string, dueDate: string, priority: Priority, status: PromiseStatus, notes: string | null }> | null } };
 
+export type TotalBalanceQueryVariables = Exact<{
+  currency?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type TotalBalanceQuery = { totalBalance: { __typename: 'TransactionsSummary', totalGiven: number, totalReceived: number, totalReturned: number, totalReturnedToMe: number, totalReturnedToOther: number, totalIncome: number, totalExpense: number, totalGiftGiven: number, totalGiftReceived: number, netBalance: number, currency: string } };
+
 export type TransactionQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -807,7 +832,7 @@ export type TransactionsQueryVariables = Exact<{
 }>;
 
 
-export type TransactionsQuery = { transactions: { __typename: 'TransactionsResponse', items: Array<{ __typename: 'Transaction', id: string, amount: number | null, category: AssetCategory, type: TransactionType, currency: string, date: string, description: string | null, itemName: string | null, quantity: number | null, returnDirection: ReturnDirection | null, createdAt: string | null, contact: { __typename: 'Contact', id: string, name: string } | null, witnesses: Array<{ __typename: 'Witness', id: string, status: WitnessStatus }> | null }>, summary: { __typename: 'TransactionsSummary', totalGiven: number, totalReceived: number, totalReturned: number, totalReturnedToMe: number, totalReturnedToOther: number, totalIncome: number, totalExpense: number, totalGiftGiven: number, totalGiftReceived: number, netBalance: number } } };
+export type TransactionsQuery = { transactions: { __typename: 'TransactionsResponse', items: Array<{ __typename: 'Transaction', id: string, amount: number | null, category: AssetCategory, type: TransactionType, currency: string, date: string, description: string | null, itemName: string | null, quantity: number | null, returnDirection: ReturnDirection | null, createdAt: string | null, contact: { __typename: 'Contact', id: string, name: string } | null, witnesses: Array<{ __typename: 'Witness', id: string, status: WitnessStatus }> | null }>, summary: { __typename: 'TransactionsSummary', totalGiven: number, totalReceived: number, totalReturned: number, totalReturnedToMe: number, totalReturnedToOther: number, totalIncome: number, totalExpense: number, totalGiftGiven: number, totalGiftReceived: number, netBalance: number, currency: string } } };
 
 export type MyContactTransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -819,7 +844,7 @@ export type TransactionsGroupedByContactQueryVariables = Exact<{
 }>;
 
 
-export type TransactionsGroupedByContactQuery = { transactionsGroupedByContact: Array<{ __typename: 'ContactGroupedSummary', contact: { __typename: 'Contact', id: string, name: string } | null, summary: { __typename: 'TransactionsSummary', totalGiven: number, totalReceived: number, totalReturned: number, totalReturnedToMe: number, totalReturnedToOther: number, totalIncome: number, totalExpense: number, totalGiftGiven: number, totalGiftReceived: number, netBalance: number } }> };
+export type TransactionsGroupedByContactQuery = { transactionsGroupedByContact: Array<{ __typename: 'ContactGroupedSummary', contact: { __typename: 'Contact', id: string, name: string } | null, summary: { __typename: 'TransactionsSummary', totalGiven: number, totalReceived: number, totalReturned: number, totalReturnedToMe: number, totalReturnedToOther: number, totalIncome: number, totalExpense: number, totalGiftGiven: number, totalGiftReceived: number, netBalance: number, currency: string } }> };
 
 export type CreateTransactionMutationVariables = Exact<{
   input: CreateTransactionInput;

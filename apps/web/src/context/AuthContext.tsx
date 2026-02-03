@@ -81,10 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (data.login.user) {
             setUser(data.login.user as User);
           }
-          // Don't await resetStore to avoid hanging the UI.
-          // It will refetch active queries in the background.
-          client.resetStore().catch((err) => {
-            console.error("Error resetting store after login:", err);
+          // Use clearStore instead of resetStore to avoid "Invariant Violation: Store reset while query was in flight"
+          // clearStore wipes the cache without attempting to refetch active queries immediately.
+          client.clearStore().catch((err) => {
+            console.error("Error clearing store after login:", err);
           });
         }
         return data?.login;
@@ -139,12 +139,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data?.me) {
       setUser(data.me as User);
-    } else if (!loading && (error || !data?.me)) {
-      const wasAuthenticated = user !== null && user !== undefined;
-      setUser(null);
+    } else if (!loading) {
+      // If we have an explicit authentication error, or if we thought we were
+      // authenticated but the session cookie is gone, trigger a full logout.
 
-      // If we thought we were logged in but the server says otherwise,
-      // or if we have an unauthenticated error, trigger a full logout cleanup.
       let hasAuthError = false;
       if (CombinedGraphQLErrors.is(error)) {
         hasAuthError = error.errors.some(
@@ -155,8 +153,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      if (hasAuthError || (!data?.me && wasAuthenticated)) {
+      const wasAuthenticated = user !== null && user !== undefined;
+      const hasCookie = isAuthenticated();
+
+      if (hasAuthError || (wasAuthenticated && !hasCookie)) {
         console.debug("[AuthContext] Unauthenticated state detected, triggering logout cleanup");
+        setUser(null);
         logout();
       }
     }
@@ -173,8 +175,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (data.acceptInvitation.user) {
             setUser(data.acceptInvitation.user as User);
           }
-          client.resetStore().catch((err) => {
-            console.error("Error resetting store after accept invitation:", err);
+          client.clearStore().catch((err) => {
+            console.error("Error clearing store after accept invitation:", err);
           });
         }
         return data?.acceptInvitation;
@@ -242,8 +244,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (data.verifyEmail.user) {
             setUser(data.verifyEmail.user as User);
           }
-          client.resetStore().catch((err) => {
-            console.error("Error resetting store after verify email:", err);
+          client.clearStore().catch((err) => {
+            console.error("Error clearing store after verify email:", err);
           });
         }
         return data?.verifyEmail;

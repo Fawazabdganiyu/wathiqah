@@ -41,6 +41,7 @@ function LoginComponent() {
     setIsLoading(true);
     try {
       const result = await login({ email, password });
+      console.log("Login result", result);
 
       if (!result) {
         toast.error("Invalid credentials");

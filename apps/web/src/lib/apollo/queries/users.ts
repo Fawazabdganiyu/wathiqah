@@ -15,6 +15,7 @@ export const UPDATE_USER_MUTATION: TypedDocumentNode<
       lastName
       phoneNumber
       email
+      preferredCurrency
     }
   }
 `;

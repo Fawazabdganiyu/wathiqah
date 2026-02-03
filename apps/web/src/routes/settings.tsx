@@ -1,14 +1,32 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ExternalLink, Eye, Key, Plus, Trash2, UserPlus } from "lucide-react";
-import { useId, useState } from "react";
+import { Coins, ExternalLink, Eye, Key, Plus, Trash2, UserPlus } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrandLoader, PageLoader } from "@/components/ui/page-loader";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
+import { useProfile } from "@/hooks/useProfile";
 import { useSharedAccess } from "@/hooks/useSharedAccess";
 import { authGuard } from "@/utils/auth";
+
+const SUPPORTED_CURRENCIES = [
+  { code: "NGN", name: "Nigerian Naira", symbol: "₦" },
+  { code: "USD", name: "US Dollar", symbol: "$" },
+  { code: "EUR", name: "Euro", symbol: "€" },
+  { code: "GBP", name: "British Pound", symbol: "£" },
+  { code: "CAD", name: "Canadian Dollar", symbol: "C$" },
+  { code: "AED", name: "UAE Dirham", symbol: "د.إ" },
+  { code: "SAR", name: "Saudi Riyal", symbol: "﷼" },
+];
 
 export const Route = createFileRoute("/settings")({
   beforeLoad: (ctx) => authGuard({ location: ctx.location }),
@@ -26,6 +44,7 @@ function SettingsPage() {
       <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
 
       <div className="grid gap-8">
+        <PreferencesSection />
         <SharedAccessSection />
 
         <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
@@ -37,6 +56,77 @@ function SettingsPage() {
           <Button asChild variant="outline">
             <Link to="/change-password">Change Password</Link>
           </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PreferencesSection() {
+  const { user } = useAuth();
+  const { updateUser, updating } = useProfile();
+  const [preferredCurrency, setPreferredCurrency] = useState("NGN");
+  const currencyId = useId();
+
+  useEffect(() => {
+    if (user?.preferredCurrency) {
+      setPreferredCurrency(user.preferredCurrency);
+    }
+  }, [user?.preferredCurrency]);
+
+  const handleUpdateCurrency = async (currency: string) => {
+    try {
+      setPreferredCurrency(currency);
+      await updateUser({
+        preferredCurrency: currency,
+      });
+      toast.success("Preferred currency updated");
+    } catch (error) {
+      console.error("Error updating currency:", error);
+      toast.error("Failed to update currency");
+    }
+  };
+
+  return (
+    <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <Coins className="w-5 h-5" />
+        Preferences
+      </h2>
+      <p className="text-muted-foreground mb-6">
+        Customize how the application behaves for your account.
+      </p>
+
+      <div className="max-w-md space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor={currencyId}>Preferred Currency</Label>
+          <div className="relative">
+            <Coins className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground z-10" />
+            <Select
+              value={preferredCurrency}
+              onValueChange={handleUpdateCurrency}
+              disabled={updating}
+            >
+              <SelectTrigger id={currencyId} className="w-full pl-9">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                {SUPPORTED_CURRENCIES.map((currency) => (
+                  <SelectItem key={currency.code} value={currency.code}>
+                    <span className="flex items-center gap-2">
+                      <span className="font-mono font-medium">{currency.symbol}</span>
+                      <span>
+                        {currency.name} ({currency.code})
+                      </span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            This currency will be used for your total balance calculation and dashboard overview.
+          </p>
         </div>
       </div>
     </div>

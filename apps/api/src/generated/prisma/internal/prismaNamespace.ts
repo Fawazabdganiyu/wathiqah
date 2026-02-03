@@ -393,6 +393,8 @@ export const ModelName = {
   ProjectTransaction: 'ProjectTransaction',
   Promise: 'Promise',
   AccessGrant: 'AccessGrant',
+  ExchangeRate: 'ExchangeRate',
+  ExchangeRateHistory: 'ExchangeRateHistory',
   ContactInvitation: 'ContactInvitation'
 } as const
 
@@ -409,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "contact" | "transaction" | "transactionHistory" | "witness" | "project" | "projectTransaction" | "promise" | "accessGrant" | "contactInvitation"
+    modelProps: "user" | "contact" | "transaction" | "transactionHistory" | "witness" | "project" | "projectTransaction" | "promise" | "accessGrant" | "exchangeRate" | "exchangeRateHistory" | "contactInvitation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1079,6 +1081,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ExchangeRate: {
+      payload: Prisma.$ExchangeRatePayload<ExtArgs>
+      fields: Prisma.ExchangeRateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExchangeRateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExchangeRateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+        }
+        findFirst: {
+          args: Prisma.ExchangeRateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExchangeRateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+        }
+        findMany: {
+          args: Prisma.ExchangeRateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+        }
+        create: {
+          args: Prisma.ExchangeRateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+        }
+        createMany: {
+          args: Prisma.ExchangeRateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExchangeRateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+        }
+        delete: {
+          args: Prisma.ExchangeRateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+        }
+        update: {
+          args: Prisma.ExchangeRateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+        }
+        deleteMany: {
+          args: Prisma.ExchangeRateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExchangeRateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExchangeRateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+        }
+        upsert: {
+          args: Prisma.ExchangeRateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+        }
+        aggregate: {
+          args: Prisma.ExchangeRateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExchangeRate>
+        }
+        groupBy: {
+          args: Prisma.ExchangeRateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExchangeRateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExchangeRateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExchangeRateCountAggregateOutputType> | number
+        }
+      }
+    }
+    ExchangeRateHistory: {
+      payload: Prisma.$ExchangeRateHistoryPayload<ExtArgs>
+      fields: Prisma.ExchangeRateHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExchangeRateHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExchangeRateHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.ExchangeRateHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExchangeRateHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.ExchangeRateHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.ExchangeRateHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.ExchangeRateHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExchangeRateHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.ExchangeRateHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>
+        }
+        update: {
+          args: Prisma.ExchangeRateHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExchangeRateHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExchangeRateHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExchangeRateHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExchangeRateHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExchangeRateHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.ExchangeRateHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExchangeRateHistory>
+        }
+        groupBy: {
+          args: Prisma.ExchangeRateHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExchangeRateHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExchangeRateHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExchangeRateHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
     ContactInvitation: {
       payload: Prisma.$ContactInvitationPayload<ExtArgs>
       fields: Prisma.ContactInvitationFieldRefs
@@ -1201,6 +1351,7 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   refreshTokenHash: 'refreshTokenHash',
   isEmailVerified: 'isEmailVerified',
+  preferredCurrency: 'preferredCurrency',
   createdAt: 'createdAt'
 } as const
 
@@ -1325,6 +1476,30 @@ export const AccessGrantScalarFieldEnum = {
 } as const
 
 export type AccessGrantScalarFieldEnum = (typeof AccessGrantScalarFieldEnum)[keyof typeof AccessGrantScalarFieldEnum]
+
+
+export const ExchangeRateScalarFieldEnum = {
+  id: 'id',
+  from: 'from',
+  to: 'to',
+  rate: 'rate',
+  provider: 'provider',
+  lastUpdated: 'lastUpdated'
+} as const
+
+export type ExchangeRateScalarFieldEnum = (typeof ExchangeRateScalarFieldEnum)[keyof typeof ExchangeRateScalarFieldEnum]
+
+
+export const ExchangeRateHistoryScalarFieldEnum = {
+  id: 'id',
+  from: 'from',
+  to: 'to',
+  rate: 'rate',
+  provider: 'provider',
+  createdAt: 'createdAt'
+} as const
+
+export type ExchangeRateHistoryScalarFieldEnum = (typeof ExchangeRateHistoryScalarFieldEnum)[keyof typeof ExchangeRateHistoryScalarFieldEnum]
 
 
 export const ContactInvitationScalarFieldEnum = {
@@ -1722,6 +1897,8 @@ export type GlobalOmitConfig = {
   projectTransaction?: Prisma.ProjectTransactionOmit
   promise?: Prisma.PromiseOmit
   accessGrant?: Prisma.AccessGrantOmit
+  exchangeRate?: Prisma.ExchangeRateOmit
+  exchangeRateHistory?: Prisma.ExchangeRateHistoryOmit
   contactInvitation?: Prisma.ContactInvitationOmit
 }
 

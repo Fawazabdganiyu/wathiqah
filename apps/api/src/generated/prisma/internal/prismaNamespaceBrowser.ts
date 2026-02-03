@@ -60,6 +60,8 @@ export const ModelName = {
   ProjectTransaction: 'ProjectTransaction',
   Promise: 'Promise',
   AccessGrant: 'AccessGrant',
+  ExchangeRate: 'ExchangeRate',
+  ExchangeRateHistory: 'ExchangeRateHistory',
   ContactInvitation: 'ContactInvitation'
 } as const
 
@@ -88,6 +90,7 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   refreshTokenHash: 'refreshTokenHash',
   isEmailVerified: 'isEmailVerified',
+  preferredCurrency: 'preferredCurrency',
   createdAt: 'createdAt'
 } as const
 
@@ -212,6 +215,30 @@ export const AccessGrantScalarFieldEnum = {
 } as const
 
 export type AccessGrantScalarFieldEnum = (typeof AccessGrantScalarFieldEnum)[keyof typeof AccessGrantScalarFieldEnum]
+
+
+export const ExchangeRateScalarFieldEnum = {
+  id: 'id',
+  from: 'from',
+  to: 'to',
+  rate: 'rate',
+  provider: 'provider',
+  lastUpdated: 'lastUpdated'
+} as const
+
+export type ExchangeRateScalarFieldEnum = (typeof ExchangeRateScalarFieldEnum)[keyof typeof ExchangeRateScalarFieldEnum]
+
+
+export const ExchangeRateHistoryScalarFieldEnum = {
+  id: 'id',
+  from: 'from',
+  to: 'to',
+  rate: 'rate',
+  provider: 'provider',
+  createdAt: 'createdAt'
+} as const
+
+export type ExchangeRateHistoryScalarFieldEnum = (typeof ExchangeRateHistoryScalarFieldEnum)[keyof typeof ExchangeRateHistoryScalarFieldEnum]
 
 
 export const ContactInvitationScalarFieldEnum = {

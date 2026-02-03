@@ -192,7 +192,7 @@ function TransactionsPage() {
                 <CardContent>
                   <BalanceIndicator
                     amount={summary.netBalance}
-                    currency={currencyFilter === "ALL" ? "NGN" : currencyFilter}
+                    currency={summary.currency}
                     className="text-2xl px-3 py-1 h-auto"
                   />
                 </CardContent>
@@ -204,10 +204,7 @@ function TransactionsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-600">
-                    {formatCurrency(
-                      summary.totalGiven,
-                      currencyFilter === "ALL" ? "NGN" : currencyFilter,
-                    )}
+                    {formatCurrency(summary.totalGiven, summary.currency)}
                   </div>
                   <p className="text-xs text-muted-foreground">You lent out</p>
                 </CardContent>
@@ -219,10 +216,7 @@ function TransactionsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-red-600">
-                    {formatCurrency(
-                      summary.totalReceived,
-                      currencyFilter === "ALL" ? "NGN" : currencyFilter,
-                    )}
+                    {formatCurrency(summary.totalReceived, summary.currency)}
                   </div>
                   <p className="text-xs text-muted-foreground">You borrowed</p>
                 </CardContent>
@@ -234,10 +228,7 @@ function TransactionsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-emerald-600">
-                    {formatCurrency(
-                      summary.totalReturned,
-                      currencyFilter === "ALL" ? "NGN" : currencyFilter,
-                    )}
+                    {formatCurrency(summary.totalReturned, summary.currency)}
                   </div>
                   <p className="text-xs text-muted-foreground">Repayments</p>
                 </CardContent>

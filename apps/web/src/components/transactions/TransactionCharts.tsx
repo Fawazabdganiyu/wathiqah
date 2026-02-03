@@ -61,6 +61,7 @@ export function TransactionCharts() {
   const startDateId = useId();
   const endDateId = useId();
   const currencyId = useId();
+  const summaryCurrencyId = useId();
   const minAmountId = useId();
   const typeId = useId();
 
@@ -249,7 +250,7 @@ export function TransactionCharts() {
             </div>
             <div className="space-y-2">
               <label htmlFor={currencyId} className="text-sm font-medium">
-                Currency
+                Filter Currency
               </label>
               <Select
                 value={filter.currency || "ALL"}
@@ -262,6 +263,28 @@ export function TransactionCharts() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Currencies</SelectItem>
+                  <SelectItem value="NGN">NGN (₦)</SelectItem>
+                  <SelectItem value="USD">USD ($)</SelectItem>
+                  <SelectItem value="EUR">EUR (€)</SelectItem>
+                  <SelectItem value="GBP">GBP (£)</SelectItem>
+                  <SelectItem value="CAD">CAD ($)</SelectItem>
+                  <SelectItem value="AED">AED (د.إ)</SelectItem>
+                  <SelectItem value="SAR">SAR (ر.س)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor={summaryCurrencyId} className="text-sm font-medium">
+                Summary Currency
+              </label>
+              <Select
+                value={filter.summaryCurrency || "NGN"}
+                onValueChange={(value) => setFilter({ ...filter, summaryCurrency: value })}
+              >
+                <SelectTrigger id={summaryCurrencyId}>
+                  <SelectValue placeholder="Summary Currency" />
+                </SelectTrigger>
+                <SelectContent>
                   <SelectItem value="NGN">NGN (₦)</SelectItem>
                   <SelectItem value="USD">USD ($)</SelectItem>
                   <SelectItem value="EUR">EUR (€)</SelectItem>

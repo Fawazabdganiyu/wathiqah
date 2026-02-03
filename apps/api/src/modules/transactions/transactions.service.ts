@@ -26,6 +26,7 @@ import { WitnessInviteInput } from '../witnesses/dto/witness-invite.input';
 import { NotificationService } from '../notifications/notification.service';
 import { splitName } from '../../common/utils/string.utils';
 import { FilterTransactionInput } from './dto/filter-transaction.input';
+import { ExchangeRateService } from '../exchange-rate/exchange-rate.service';
 
 @Injectable()
 export class TransactionsService {
@@ -34,6 +35,7 @@ export class TransactionsService {
     private configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly notificationService: NotificationService,
+    private readonly exchangeRateService: ExchangeRateService,
   ) {}
 
   private async processWitnesses(
@@ -388,14 +390,31 @@ export class TransactionsService {
       },
     });
 
-    // Calculate summary respecting all filters
-    const summaryWhere: Prisma.TransactionWhereInput = {
-      ...where,
-    };
+    // Determine target currency for summary
+    let targetCurrency = filter?.summaryCurrency || filter?.currency;
+    if (!targetCurrency) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { preferredCurrency: true },
+      });
+      targetCurrency = user?.preferredCurrency || 'NGN';
+    }
 
+    const summary = await this.calculateConvertedSummary(where, targetCurrency);
+
+    return {
+      items,
+      summary,
+    };
+  }
+
+  private async calculateConvertedSummary(
+    where: Prisma.TransactionWhereInput,
+    targetCurrency: string,
+  ) {
     const aggregations = await this.prisma.transaction.groupBy({
-      by: ['type', 'returnDirection'],
-      where: summaryWhere,
+      by: ['type', 'returnDirection', 'currency'],
+      where,
       _sum: {
         amount: true,
       },
@@ -412,33 +431,42 @@ export class TransactionsService {
       totalGiftGiven: 0,
       totalGiftReceived: 0,
       netBalance: 0,
+      currency: targetCurrency,
     };
 
-    aggregations.forEach((agg) => {
+    for (const agg of aggregations) {
       const amount = Number(agg._sum.amount) || 0;
+      if (amount === 0) continue;
+
+      const convertedAmount = await this.exchangeRateService.convert(
+        amount,
+        agg.currency,
+        targetCurrency,
+      );
+
       if (agg.type === 'GIVEN') {
-        summary.totalGiven += amount;
+        summary.totalGiven += convertedAmount;
       } else if (agg.type === 'RECEIVED') {
-        summary.totalReceived += amount;
+        summary.totalReceived += convertedAmount;
       } else if (agg.type === 'RETURNED') {
-        summary.totalReturned += amount;
+        summary.totalReturned += convertedAmount;
         if (agg.returnDirection === 'TO_ME') {
-          summary.totalReturnedToMe += amount;
+          summary.totalReturnedToMe += convertedAmount;
         } else {
-          summary.totalReturnedToOther += amount;
+          summary.totalReturnedToOther += convertedAmount;
         }
       } else if (agg.type === 'EXPENSE') {
-        summary.totalExpense += amount;
+        summary.totalExpense += convertedAmount;
       } else if (agg.type === 'INCOME') {
-        summary.totalIncome += amount;
+        summary.totalIncome += convertedAmount;
       } else if (agg.type === 'GIFT') {
         if (agg.returnDirection === 'TO_ME') {
-          summary.totalGiftReceived += amount;
+          summary.totalGiftReceived += convertedAmount;
         } else {
-          summary.totalGiftGiven += amount;
+          summary.totalGiftGiven += convertedAmount;
         }
       }
-    });
+    }
 
     summary.netBalance =
       summary.totalIncome -
@@ -450,10 +478,7 @@ export class TransactionsService {
       summary.totalGiftReceived -
       summary.totalGiftGiven;
 
-    return {
-      items,
-      summary,
-    };
+    return summary;
   }
 
   async groupByContact(userId: string, filter?: FilterTransactionInput) {
@@ -487,8 +512,18 @@ export class TransactionsService {
       ];
     }
 
+    // Determine target currency for summary
+    let targetCurrency = filter?.summaryCurrency || filter?.currency;
+    if (!targetCurrency) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { preferredCurrency: true },
+      });
+      targetCurrency = user?.preferredCurrency || 'NGN';
+    }
+
     const aggregations = await this.prisma.transaction.groupBy({
-      by: ['contactId', 'type', 'returnDirection'],
+      by: ['contactId', 'type', 'returnDirection', 'currency'],
       where: summaryWhere,
       _sum: {
         amount: true,
@@ -505,7 +540,7 @@ export class TransactionsService {
     // Group aggregations by contactId
     const groupedByContact = new Map<string | null, any>();
 
-    aggregations.forEach((agg) => {
+    for (const agg of aggregations) {
       const contactId = agg.contactId;
       if (!groupedByContact.has(contactId)) {
         groupedByContact.set(contactId, {
@@ -519,35 +554,43 @@ export class TransactionsService {
           totalGiftGiven: 0,
           totalGiftReceived: 0,
           netBalance: 0,
+          currency: targetCurrency,
         });
       }
 
       const summary = groupedByContact.get(contactId);
       const amount = Number(agg._sum.amount) || 0;
+      if (amount === 0) continue;
+
+      const convertedAmount = await this.exchangeRateService.convert(
+        amount,
+        agg.currency,
+        targetCurrency,
+      );
 
       if (agg.type === 'GIVEN') {
-        summary.totalGiven += amount;
+        summary.totalGiven += convertedAmount;
       } else if (agg.type === 'RECEIVED') {
-        summary.totalReceived += amount;
+        summary.totalReceived += convertedAmount;
       } else if (agg.type === 'RETURNED') {
-        summary.totalReturned += amount;
+        summary.totalReturned += convertedAmount;
         if (agg.returnDirection === 'TO_ME') {
-          summary.totalReturnedToMe += amount;
+          summary.totalReturnedToMe += convertedAmount;
         } else {
-          summary.totalReturnedToOther += amount;
+          summary.totalReturnedToOther += convertedAmount;
         }
       } else if (agg.type === 'EXPENSE') {
-        summary.totalExpense += amount;
+        summary.totalExpense += convertedAmount;
       } else if (agg.type === 'INCOME') {
-        summary.totalIncome += amount;
+        summary.totalIncome += convertedAmount;
       } else if (agg.type === 'GIFT') {
         if (agg.returnDirection === 'TO_ME') {
-          summary.totalGiftReceived += amount;
+          summary.totalGiftReceived += convertedAmount;
         } else {
-          summary.totalGiftGiven += amount;
+          summary.totalGiftGiven += convertedAmount;
         }
       }
-    });
+    }
 
     // Calculate net balance for each contact and format result
     const result = Array.from(groupedByContact.entries()).map(

@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -13,29 +14,51 @@ import { BalanceIndicator } from "@/components/ui/balance-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useAuth } from "@/hooks/use-auth";
 import { useContacts } from "@/hooks/useContacts";
 import { usePromises } from "@/hooks/usePromises";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useMyWitnessRequests } from "@/hooks/useWitnesses";
+import { useBalance } from "@/hooks/useBalance";
 import { formatCurrency } from "@/lib/utils/formatters";
 import { AssetCategory } from "@/types/__generated__/graphql";
 import { LedgerPhilosophy } from "./LedgerPhilosophy";
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { transactions, loading: loadingTx, summary } = useTransactions();
+  const { user } = useAuth();
+  const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (user?.preferredCurrency) {
+      setSelectedCurrency(user.preferredCurrency);
+    }
+  }, [user?.preferredCurrency]);
+
+  const { transactions, loading: loadingTx } = useTransactions();
   const { contacts, loading: loadingContacts } = useContacts();
+  const { balance, loading: loadingBalance } = useBalance(selectedCurrency);
   const { requests: witnessRequests, loading: loadingWitnesses } = useMyWitnessRequests();
   const { promises, loading: loadingPromises } = usePromises();
 
-  const loading = loadingTx || loadingContacts || loadingWitnesses || loadingPromises;
+  const loading =
+    loadingTx || loadingContacts || loadingWitnesses || loadingPromises || loadingBalance;
 
   // Calculate Stats
-  const totalBalance = summary?.netBalance || 0;
+  const totalBalance = balance?.netBalance || 0;
+  const balanceCurrency = balance?.currency || "NGN";
   const isDebtByRule = totalBalance < 0;
   const activePromises = promises.filter((p) => p.status === "PENDING").length;
   const pendingWitnessRequests = witnessRequests.length;
   const totalContacts = contacts.length;
+  const currencies = ["NGN", "USD", "EUR", "GBP", "CAD", "AED", "SAR"];
 
   const recentTransactions = transactions.slice(0, 5);
 
@@ -70,10 +93,27 @@ export function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Balance"
+          extra={
+            <Select
+              value={selectedCurrency || balanceCurrency}
+              onValueChange={(v) => setSelectedCurrency(v)}
+            >
+              <SelectTrigger className="h-7 w-[80px] text-[10px] font-medium border-none bg-muted/50 hover:bg-muted transition-colors focus:ring-0">
+                <SelectValue placeholder="NGN" />
+              </SelectTrigger>
+              <SelectContent>
+                {currencies.map((c) => (
+                  <SelectItem key={c} value={c} className="text-xs">
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          }
           value={
             <BalanceIndicator
               amount={totalBalance}
-              currency="NGN"
+              currency={balanceCurrency}
               overrideColor={isDebtByRule ? "red" : "green"}
               className="text-2xl h-auto px-2 py-0 border-0 bg-transparent"
             />
@@ -267,17 +307,22 @@ function StatsCard({
   icon,
   description,
   link,
+  extra,
 }: {
   title: string;
   value: string | React.ReactNode;
   icon: React.ReactNode;
   description: string;
   link?: string;
+  extra?: React.ReactNode;
 }) {
   const content = (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <div className="flex flex-col gap-1">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          {extra}
+        </div>
         {icon}
       </CardHeader>
       <CardContent>
