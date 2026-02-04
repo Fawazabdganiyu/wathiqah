@@ -26,7 +26,7 @@ The **Witness System** adds accountability and trust to financial transactions b
    - Immediate access to witness the transaction
 
 2. **Acknowledge Transactions**:
-   - View transaction details (amount, date, description)
+   - View transaction details (amount, date, description, and direction-aware type)
    - Choose to Acknowledge or Decline
    - See all pending witness requests in one place
 

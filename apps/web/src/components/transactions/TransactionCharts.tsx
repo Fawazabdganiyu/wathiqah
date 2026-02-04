@@ -103,25 +103,25 @@ export function TransactionCharts() {
       {
         name: "Gift Given",
         value: totalSummary.totalGiftGiven,
-        fill: "#8b5cf6",
+        fill: "#ec4899",
         gradientId: "colorGiftGiven",
       },
       {
         name: "Gift Received",
         value: totalSummary.totalGiftReceived,
-        fill: "#ec4899",
+        fill: "#8b5cf6",
         gradientId: "colorGiftReceived",
       },
       {
         name: "Returned (Me)",
         value: totalSummary.totalReturnedToMe,
-        fill: "#059669",
+        fill: "#10b981",
         gradientId: "colorRetMe",
       },
       {
         name: "Returned (Other)",
         value: totalSummary.totalReturnedToOther,
-        fill: "#be123c",
+        fill: "#3b82f6",
         gradientId: "colorRetOther",
       },
     ]

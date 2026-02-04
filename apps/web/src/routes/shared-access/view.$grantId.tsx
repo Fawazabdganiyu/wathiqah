@@ -169,10 +169,20 @@ function SharedAccessView() {
                                 variant="outline"
                                 className={
                                   tx.type === "GIVEN"
-                                    ? "text-red-600 border-red-200 bg-red-50"
-                                    : tx.type === "RECEIVED"
-                                      ? "text-green-600 border-green-200 bg-green-50"
-                                      : "text-blue-600 border-blue-200 bg-blue-50"
+                                    ? "text-blue-600 border-blue-200 bg-blue-50"
+                                    : tx.type === "RECEIVED" || tx.type === "EXPENSE"
+                                      ? "text-red-600 border-red-200 bg-red-50"
+                                      : tx.type === "RETURNED"
+                                        ? tx.returnDirection === "TO_ME"
+                                          ? "text-emerald-600 border-emerald-200 bg-emerald-50"
+                                          : "text-blue-600 border-blue-200 bg-blue-50"
+                                        : tx.type === "INCOME"
+                                          ? "text-emerald-600 border-emerald-200 bg-emerald-50"
+                                          : tx.type === "GIFT"
+                                            ? tx.returnDirection === "TO_ME"
+                                              ? "text-purple-600 border-purple-200 bg-purple-50"
+                                              : "text-pink-600 border-pink-200 bg-pink-50"
+                                            : "text-blue-600 border-blue-200 bg-blue-50"
                                 }
                               >
                                 {tx.type}
@@ -198,16 +208,33 @@ function SharedAccessView() {
                               className={`text-right font-bold ${
                                 tx.category === AssetCategory.Item
                                   ? "text-muted-foreground font-normal italic text-xs"
-                                  : tx.type === "GIVEN"
+                                  : tx.type === "RECEIVED" || tx.type === "EXPENSE"
                                     ? "text-red-600"
-                                    : "text-green-600"
+                                    : tx.type === "GIVEN"
+                                      ? "text-blue-600"
+                                      : tx.type === "RETURNED"
+                                        ? tx.returnDirection === "TO_ME"
+                                          ? "text-emerald-600"
+                                          : "text-blue-600"
+                                        : tx.type === "INCOME"
+                                          ? "text-emerald-600"
+                                          : tx.type === "GIFT"
+                                            ? tx.returnDirection === "TO_ME"
+                                              ? "text-purple-600"
+                                              : "text-pink-600"
+                                            : ""
                               }`}
                             >
                               {tx.category === AssetCategory.Item ? (
                                 "Physical Item"
                               ) : (
                                 <>
-                                  {tx.type === "GIVEN" ? "-" : "+"}
+                                  {tx.type === "GIVEN" ||
+                                  (tx.type === "RETURNED" && tx.returnDirection === "TO_ME") ||
+                                  tx.type === "INCOME" ||
+                                  (tx.type === "GIFT" && tx.returnDirection === "TO_ME")
+                                    ? "+"
+                                    : "-"}
                                   {formatCurrency(tx.amount, tx.currency)}
                                 </>
                               )}

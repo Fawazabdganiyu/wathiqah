@@ -57,7 +57,10 @@ export function LedgerPhilosophy() {
                 Settlement (Returned)
               </div>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                Repayments that clear your standing.
+                Repayments clearing standing.{" "}
+                <span className="text-emerald-600 font-medium">To Me</span> (Emerald) for money
+                coming back. <span className="text-blue-600 font-medium">To Contact</span> (Blue)
+                for paying back.
               </p>
             </div>
           </div>
@@ -71,7 +74,10 @@ export function LedgerPhilosophy() {
                 Goodwill (Gift)
               </div>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                Contributions that don't affect net debt.
+                Non-balance transactions.{" "}
+                <span className="text-purple-600 font-medium">Received</span> (Purple) for gifts
+                obtained. <span className="text-pink-600 font-medium">Given</span> (Pink) for gifts
+                shared.
               </p>
             </div>
           </div>

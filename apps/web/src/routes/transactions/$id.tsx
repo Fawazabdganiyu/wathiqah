@@ -113,13 +113,17 @@ function TransactionDetailPage() {
                 : currentTransaction.type === TransactionType.Received
                   ? "Received from"
                   : currentTransaction.type === TransactionType.Returned
-                    ? "Returned"
+                    ? currentTransaction.returnDirection === "TO_ME"
+                      ? "Returned to me by"
+                      : "Returned to"
                     : currentTransaction.type === TransactionType.Gift
-                      ? "Gift"
+                      ? currentTransaction.returnDirection === "TO_ME"
+                        ? "Gift received from"
+                        : "Gift given to"
                       : currentTransaction.type === TransactionType.Income
-                        ? "Income"
+                        ? "Income from"
                         : currentTransaction.type === TransactionType.Expense
-                          ? "Expense"
+                          ? "Expense to"
                           : "Collected from"}{" "}
               {currentTransaction.contact?.name || "Personal"}
             </h1>
@@ -155,18 +159,25 @@ function TransactionDetailPage() {
                   className={`text-2xl font-bold ${
                     currentTransaction.type === "GIVEN"
                       ? "text-blue-600 dark:text-blue-400"
-                      : currentTransaction.type === "RETURNED" ||
-                          currentTransaction.type === "INCOME"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : currentTransaction.type === "GIFT"
-                          ? "text-purple-600 dark:text-purple-400"
-                          : "text-red-600 dark:text-red-400"
+                      : currentTransaction.type === "RETURNED"
+                        ? currentTransaction.returnDirection === "TO_ME"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-blue-600 dark:text-blue-400"
+                        : currentTransaction.type === "INCOME"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : currentTransaction.type === "GIFT"
+                            ? currentTransaction.returnDirection === "TO_ME"
+                              ? "text-purple-600 dark:text-purple-400"
+                              : "text-pink-600 dark:text-pink-400"
+                            : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {currentTransaction.type === "GIVEN" ||
-                  currentTransaction.type === "RETURNED" ||
+                  (currentTransaction.type === "RETURNED" &&
+                    currentTransaction.returnDirection === "TO_ME") ||
                   currentTransaction.type === "INCOME" ||
-                  currentTransaction.type === "GIFT"
+                  (currentTransaction.type === "GIFT" &&
+                    currentTransaction.returnDirection === "TO_ME")
                     ? "+"
                     : "-"}
                   {formatCurrency(currentTransaction.amount, currentTransaction.currency)}

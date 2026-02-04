@@ -62,12 +62,12 @@ export function ConvertGiftDialog({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       // Determine returnDirection based on parent type
-      // GIVEN -> GIFT TO_ME (Contact gifted back to me)
-      // RECEIVED -> GIFT TO_CONTACT (I gifted back to contact)
+      // GIVEN (I lent) -> GIFT TO_CONTACT (I gifted it out)
+      // RECEIVED (I borrowed) -> GIFT TO_ME (Contact gifted it to me)
       const returnDirection =
         transaction.type === TransactionType.Given
-          ? ReturnDirection.ToMe
-          : ReturnDirection.ToContact;
+          ? ReturnDirection.ToContact
+          : ReturnDirection.ToMe;
 
       await createTransaction({
         category: AssetCategory.Funds,

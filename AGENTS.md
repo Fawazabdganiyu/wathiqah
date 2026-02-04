@@ -16,10 +16,20 @@
   - History snapshots preserve the currency active at the time of the change for accurate audit trails.
 - **Color Coding Logic**:
   - **RECEIVED (Red)**: Marked as Red because it represents a liability/debt. It is better to avoid owing people.
-  - **GIVEN (Blue/Emerald)**: Represented as Blue or Emerald because it represents an asset/credit. Giving out is viewed more favorably than receiving debt.
-  - **RETURNED (Emerald)**: Represents the resolution of a transaction (money coming back or being paid back), which is a positive action.
+  - **GIVEN (Blue)**: Represented as Blue because it represents an asset/credit. Giving out is viewed more favorably than receiving debt.
+  - **RETURNED**: Represents the resolution of a transaction (repayments). Relies on `returnDirection` for UI representation.
+    - **To Me (Emerald)**: Positive action (money coming back).
+    - **To Contact (Blue)**: Neutral/Resolution (paying back debt).
+  - **GIFT**: Non-balance affecting transactions. Relies on `returnDirection` for UI representation.
+    - **Received (Purple)**: Gift obtained from a contact (`TO_ME`).
+    - **Given (Pink)**: Gift given to a contact (`TO_CONTACT`).
+- **Transaction Conversion Logic**:
+  - Transactions can be converted to **GIFT** type (e.g., when a debt is forgiven).
+  - **Mapping Rule**:
+    - Parent `GIVEN` (I lent) → Gift `TO_CONTACT` (I gifted it out/forgave debt).
+    - Parent `RECEIVED` (I borrowed) → Gift `TO_ME` (Contact gifted it to me/forgave my debt).
 - **Balance Logic**:
-  - **Cash Position (Dashboard)**: Uses Liquidity logic. `Balance = (Income + Received + ReturnedToMe + GiftReceived) - (Expense + Given + ReturnedToOther + GiftGiven)`. A negative balance indicates a cash deficit (spending/lending more than received).
+  - **Cash Position (Dashboard)**: Uses Liquidity logic. `Balance = (Income + Received + ReturnedToMe + GiftReceived) - (Expense + Given + ReturnedToContact + GiftGiven)`. A negative balance indicates a cash deficit (spending/lending more than received).
   - **Relationship Standing (Contact View)**: Uses Net Debt logic. `Standing = Assets (Given) - Liabilities (Received)`. A positive standing means the contact owes you.
 - **Analytics & Reporting**:
   - **Context**: Visualizes financial trends and contact activity.

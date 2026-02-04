@@ -236,14 +236,28 @@ function ContactDetailsPage() {
                             ? "text-blue-600 border-blue-200 bg-blue-50"
                             : tx.type === "RECEIVED" || tx.type === "EXPENSE"
                               ? "text-red-600 border-red-200 bg-red-50"
-                              : tx.type === "RETURNED" || tx.type === "INCOME"
-                                ? "text-green-600 border-green-200 bg-green-50"
-                                : tx.type === "GIFT"
-                                  ? "text-purple-600 border-purple-200 bg-purple-50"
-                                  : "text-gray-600 border-gray-200 bg-gray-50"
+                              : tx.type === "RETURNED"
+                                ? tx.returnDirection === "TO_ME"
+                                  ? "text-green-600 border-green-200 bg-green-50"
+                                  : "text-blue-600 border-blue-200 bg-blue-50"
+                                : tx.type === "INCOME"
+                                  ? "text-green-600 border-green-200 bg-green-50"
+                                  : tx.type === "GIFT"
+                                    ? tx.returnDirection === "TO_ME"
+                                      ? "text-purple-600 border-purple-200 bg-purple-50"
+                                      : "text-pink-600 border-pink-200 bg-pink-50"
+                                    : "text-gray-600 border-gray-200 bg-gray-50"
                         }
                       >
-                        {tx.type}
+                        {tx.type === "RETURNED"
+                          ? tx.returnDirection === "TO_ME"
+                            ? "RETURNED TO ME"
+                            : "RETURNED TO CONTACT"
+                          : tx.type === "GIFT"
+                            ? tx.returnDirection === "TO_ME"
+                              ? "GIFT RECEIVED"
+                              : "GIFT GIVEN"
+                            : tx.type}
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-[300px] truncate" title={tx.description as string}>
@@ -266,11 +280,17 @@ function ContactDetailsPage() {
                             ? "text-blue-600"
                             : tx.type === "RECEIVED" || tx.type === "EXPENSE"
                               ? "text-red-600"
-                              : tx.type === "RETURNED" || tx.type === "INCOME"
-                                ? "text-green-600"
-                                : tx.type === "GIFT"
-                                  ? "text-purple-600"
-                                  : "text-emerald-600"
+                              : tx.type === "RETURNED"
+                                ? tx.returnDirection === "TO_ME"
+                                  ? "text-green-600"
+                                  : "text-blue-600"
+                                : tx.type === "INCOME"
+                                  ? "text-green-600"
+                                  : tx.type === "GIFT"
+                                    ? tx.returnDirection === "TO_ME"
+                                      ? "text-purple-600"
+                                      : "text-pink-600"
+                                    : "text-emerald-600"
                       }`}
                     >
                       {tx.category === AssetCategory.Item ? (
@@ -278,9 +298,9 @@ function ContactDetailsPage() {
                       ) : (
                         <>
                           {tx.type === "GIVEN" ||
+                          (tx.type === "RETURNED" && tx.returnDirection === "TO_ME") ||
                           tx.type === "INCOME" ||
-                          tx.type === "RETURNED" ||
-                          tx.type === "GIFT"
+                          (tx.type === "GIFT" && tx.returnDirection === "TO_ME")
                             ? "+"
                             : "-"}
                           {formatCurrency(tx.amount, tx.currency)}

@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
+import { ContactFormDialog } from "@/components/contacts/ContactFormDialog";
 import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
 import { Button } from "@/components/ui/button";
 import {
@@ -134,6 +137,7 @@ export function EditTransactionDialog({
 }: EditTransactionDialogProps) {
   const { updateTransaction, updating } = useTransaction(transaction.id);
   const { contacts } = useContacts();
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
 
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(formSchema),
@@ -190,7 +194,19 @@ export function EditTransactionDialog({
               name="contactId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Contact</FormLabel>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                      onClick={() => setIsContactDialogOpen(true)}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      New Contact
+                    </Button>
+                  </div>
                   <Select
                     onValueChange={(value) => {
                       const hasContact = value !== "none";
@@ -416,6 +432,10 @@ export function EditTransactionDialog({
           </form>
         </Form>
       </DialogContent>
+      <ContactFormDialog
+        isOpen={isContactDialogOpen}
+        onClose={() => setIsContactDialogOpen(false)}
+      />
     </Dialog>
   );
 }

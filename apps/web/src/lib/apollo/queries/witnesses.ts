@@ -24,6 +24,7 @@ export const MY_WITNESS_REQUESTS: TypedDocumentNode<
         type
         description
         date
+        returnDirection
         createdBy {
           name
           email
@@ -60,6 +61,7 @@ export const GET_WITNESS_INVITATION: TypedDocumentNode<
         type
         description
         date
+        returnDirection
         createdBy {
           name
         }

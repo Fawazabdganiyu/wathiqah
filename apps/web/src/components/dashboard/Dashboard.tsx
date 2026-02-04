@@ -237,14 +237,23 @@ export function Dashboard() {
                         className={`flex h-10 w-10 items-center justify-center rounded-full border ${
                           tx.type === "GIVEN"
                             ? "bg-blue-500/10 border-blue-500/20 text-blue-500"
-                            : tx.type === "RETURNED" || tx.type === "INCOME"
-                              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
-                              : tx.type === "GIFT"
-                                ? "bg-purple-500/10 border-purple-500/20 text-purple-500"
-                                : "bg-red-500/10 border-red-500/20 text-red-500"
+                            : tx.type === "RETURNED"
+                              ? tx.returnDirection === "TO_ME"
+                                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                                : "bg-blue-500/10 border-blue-500/20 text-blue-500"
+                              : tx.type === "INCOME"
+                                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                                : tx.type === "GIFT"
+                                  ? tx.returnDirection === "TO_ME"
+                                    ? "bg-purple-500/10 border-purple-500/20 text-purple-500"
+                                    : "bg-pink-500/10 border-pink-500/20 text-pink-500"
+                                  : "bg-red-500/10 border-red-500/20 text-red-500"
                         }`}
                       >
-                        {tx.type === "GIVEN" || tx.type === "RETURNED" || tx.type === "INCOME" ? (
+                        {tx.type === "GIVEN" ||
+                        (tx.type === "RETURNED" && tx.returnDirection === "TO_ME") ||
+                        tx.type === "INCOME" ||
+                        (tx.type === "GIFT" && tx.returnDirection === "TO_ME") ? (
                           <ArrowUpRight className="h-5 w-5" />
                         ) : (
                           <ArrowDownLeft className="h-5 w-5" />
@@ -277,11 +286,17 @@ export function Dashboard() {
                             ? "text-muted-foreground"
                             : tx.type === "GIVEN"
                               ? "text-blue-500"
-                              : tx.type === "RETURNED" || tx.type === "INCOME"
-                                ? "text-emerald-500"
-                                : tx.type === "GIFT"
-                                  ? "text-purple-500"
-                                  : "text-red-500"
+                              : tx.type === "RETURNED"
+                                ? tx.returnDirection === "TO_ME"
+                                  ? "text-emerald-500"
+                                  : "text-blue-500"
+                                : tx.type === "INCOME"
+                                  ? "text-emerald-500"
+                                  : tx.type === "GIFT"
+                                    ? tx.returnDirection === "TO_ME"
+                                      ? "text-purple-500"
+                                      : "text-pink-500"
+                                    : "text-red-500"
                         }`}
                       >
                         {tx.category === AssetCategory.Item ? (
@@ -289,9 +304,9 @@ export function Dashboard() {
                         ) : (
                           <>
                             {tx.type === "GIVEN" ||
-                            tx.type === "RETURNED" ||
+                            (tx.type === "RETURNED" && tx.returnDirection === "TO_ME") ||
                             tx.type === "INCOME" ||
-                            tx.type === "GIFT"
+                            (tx.type === "GIFT" && tx.returnDirection === "TO_ME")
                               ? "+"
                               : "-"}
                             {formatCurrency(tx.amount, tx.currency)}
