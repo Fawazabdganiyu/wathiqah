@@ -2,9 +2,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import * as z from "zod";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
 import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
+import { ContactFormDialog } from "@/components/contacts/ContactFormDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -125,6 +128,7 @@ function NewTransactionPage() {
   const search = useSearch({ from: "/transactions/new" });
   const { createTransaction, creating } = useTransactions();
   const { contacts, loading: loadingContacts } = useContacts();
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     // biome-ignore lint/suspicious/noExplicitAny: Complex type mismatch with zodResolver
@@ -198,7 +202,19 @@ function NewTransactionPage() {
                   name="contactId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Contact</FormLabel>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Contact</FormLabel>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                          onClick={() => setIsContactDialogOpen(true)}
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          New Contact
+                        </Button>
+                      </div>
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value === "none" ? undefined : value);
@@ -223,10 +239,6 @@ function NewTransactionPage() {
                               <div className="flex items-center justify-center gap-2">
                                 <BrandLoader size="sm" />
                               </div>
-                            </SelectItem>
-                          ) : contacts.length === 0 ? (
-                            <SelectItem value="none" disabled>
-                              No contacts found
                             </SelectItem>
                           ) : (
                             contacts.map((contact) => (
@@ -428,6 +440,10 @@ function NewTransactionPage() {
           </Form>
         </CardContent>
       </Card>
+      <ContactFormDialog
+        isOpen={isContactDialogOpen}
+        onClose={() => setIsContactDialogOpen(false)}
+      />
     </div>
   );
 }
