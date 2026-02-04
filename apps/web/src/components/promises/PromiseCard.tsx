@@ -17,13 +17,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePromises } from "@/hooks/usePromises";
+import { cn } from "@/lib/utils";
 import {
   Priority,
   PromiseStatus,
   type Promise as PromiseType,
 } from "@/types/__generated__/graphql";
 import { PromiseFormDialog } from "./PromiseFormDialog";
-import { cn } from "@/lib/utils";
 
 interface PromiseCardProps {
   promise: PromiseType;

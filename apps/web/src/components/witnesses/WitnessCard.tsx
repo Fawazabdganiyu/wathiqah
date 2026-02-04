@@ -1,10 +1,10 @@
 import { format } from "date-fns";
 import { ArrowDownLeft, ArrowUpRight, Calendar, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { type MyWitnessRequestsQuery, WitnessStatus } from "@/types/__generated__/graphql";
-import { WitnessStatusBadge } from "./WitnessStatusBadge";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils/formatters";
+import { type MyWitnessRequestsQuery, WitnessStatus } from "@/types/__generated__/graphql";
+import { WitnessStatusBadge } from "./WitnessStatusBadge";
 
 interface WitnessCardProps {
   request: MyWitnessRequestsQuery["myWitnessRequests"][0];

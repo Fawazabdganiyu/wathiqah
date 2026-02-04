@@ -26,8 +26,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useProfile } from "@/hooks/useProfile";
 import { useSharedAccess } from "@/hooks/useSharedAccess";
-import { authGuard } from "@/utils/auth";
 import { cn } from "@/lib/utils";
+import { authGuard } from "@/utils/auth";
 
 const SUPPORTED_CURRENCIES = [
   { code: "NGN", name: "Nigerian Naira", symbol: "₦" },

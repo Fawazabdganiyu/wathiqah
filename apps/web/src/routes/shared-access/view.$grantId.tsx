@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Eye, History, Lock, Package, User } from "lucide-react";
+import { PromiseCard } from "@/components/promises/PromiseCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageLoader } from "@/components/ui/page-loader";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PromiseCard } from "@/components/promises/PromiseCard";
 import { useSharedData } from "@/hooks/useSharedData";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDate } from "@/lib/utils/formatters";

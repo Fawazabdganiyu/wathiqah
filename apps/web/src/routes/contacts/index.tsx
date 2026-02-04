@@ -14,12 +14,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageLoader } from "@/components/ui/page-loader";
 import { useContacts } from "@/hooks/useContacts";
-import { useItems } from "@/hooks/useItems"; // Import useItems
+import { useItems } from "@/hooks/useItems";
 import { GET_CONTACTS, INVITE_CONTACT } from "@/lib/apollo/queries/contacts";
 import type { GetContactsQuery } from "@/types/__generated__/graphql";
 import { authGuard } from "@/utils/auth";
@@ -31,7 +30,7 @@ export const Route = createFileRoute("/contacts/")({
 
 function ContactsPage() {
   const { contacts: allContacts, loading, error, deleteContact } = useContacts();
-  const { items } = useItems(); // Fetch items
+  const { items } = useItems();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -64,44 +63,6 @@ function ContactsPage() {
         (contact.phoneNumber?.includes(searchQuery) ?? false),
     );
   }, [allContacts, searchQuery]);
-
-  const [_copiedId, _setCopiedId] = useState<string | null>(null);
-
-  const _copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    _setCopiedId(id);
-    setTimeout(() => _setCopiedId(null), 2000);
-  };
-
-  // Helper to get item status for a contact
-  const _getContactItemsStatus = (contactId: string) => {
-    const contactItems = items.filter((item) => item.contactId === contactId);
-    const lentCount = contactItems.filter((i) => i.status === "LENT").length;
-    const borrowedCount = contactItems.filter((i) => i.status === "BORROWED").length;
-
-    if (lentCount === 0 && borrowedCount === 0) return null;
-
-    return (
-      <div className="flex flex-wrap gap-1.5 mt-1">
-        {lentCount > 0 && (
-          <Badge
-            variant="outline"
-            className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-[10px] px-2 py-0 h-5 font-semibold"
-          >
-            Lent: {lentCount}
-          </Badge>
-        )}
-        {borrowedCount > 0 && (
-          <Badge
-            variant="outline"
-            className="bg-red-500/10 text-red-600 border-red-500/20 text-[10px] px-2 py-0 h-5 font-semibold"
-          >
-            Borrowed: {borrowedCount}
-          </Badge>
-        )}
-      </div>
-    );
-  };
 
   const handleEdit = (contact: GetContactsQuery["contacts"][number]) => {
     setEditingContact(contact);
@@ -176,15 +137,25 @@ function ContactsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {contacts.map((contact) => (
-            <ContactCard
-              key={contact.id}
-              contact={contact}
-              onEdit={handleEdit}
-              onDelete={setDeletingContact}
-              onInvite={handleInvite}
-            />
-          ))}
+          {contacts.map((contact) => {
+            const contactItems = items.filter((item) => item.contactId === contact.id);
+            const lentCount = contactItems.filter((i) => i.status === "LENT").length;
+            const borrowedCount = contactItems.filter((i) => i.status === "BORROWED").length;
+
+            return (
+              <ContactCard
+                key={contact.id}
+                contact={{
+                  ...contact,
+                  lentCount,
+                  borrowedCount,
+                }}
+                onEdit={handleEdit}
+                onDelete={(c) => setDeletingContact(c as GetContactsQuery["contacts"][number])}
+                onInvite={handleInvite}
+              />
+            );
+          })}
         </div>
       )}
 

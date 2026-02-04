@@ -1,13 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import * as z from "zod";
-import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 import { ContactFormDialog } from "@/components/contacts/ContactFormDialog";
+import { TransactionTypeHelp } from "@/components/transactions/TransactionTypeHelp";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { type SelectedWitness, WitnessSelector } from "@/components/witnesses/WitnessSelector";
 import { useContacts } from "@/hooks/useContacts";
 import { useTransactions } from "@/hooks/useTransactions";
 import { AssetCategory, ReturnDirection, TransactionType } from "@/types/__generated__/graphql";
@@ -60,6 +61,16 @@ const formSchema = z
     category: z.enum([AssetCategory.Funds, AssetCategory.Item]).default(AssetCategory.Funds),
     returnDirection: z.enum([ReturnDirection.ToMe, ReturnDirection.ToContact]).optional(),
     currency: z.string().min(1, "Currency is required").default("NGN"),
+    witnessUserIds: z.array(z.string()).optional(),
+    witnessInvites: z
+      .array(
+        z.object({
+          name: z.string(),
+          email: z.string().email(),
+          phoneNumber: z.string().optional(),
+        }),
+      )
+      .optional(),
   })
   .refine(
     (data) => {
@@ -129,6 +140,7 @@ function NewTransactionPage() {
   const { createTransaction, creating } = useTransactions();
   const { contacts, loading: loadingContacts } = useContacts();
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const [selectedWitnesses, setSelectedWitnesses] = useState<SelectedWitness[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     // biome-ignore lint/suspicious/noExplicitAny: Complex type mismatch with zodResolver
@@ -147,6 +159,13 @@ function NewTransactionPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      const witnessUserIds = selectedWitnesses
+        .filter((w) => w.userId)
+        .map((w) => w.userId as string);
+      const witnessInvites = selectedWitnesses
+        .filter((w) => w.invite)
+        .map((w) => w.invite as NonNullable<typeof w.invite>);
+
       await createTransaction({
         ...values,
         amount: values.category === AssetCategory.Funds ? values.amount : undefined,
@@ -154,6 +173,8 @@ function NewTransactionPage() {
         quantity: values.category === AssetCategory.Item ? values.quantity : undefined,
         contactId: values.contactId || undefined,
         date: new Date(values.date).toISOString(),
+        witnessUserIds,
+        witnessInvites,
       });
       toast.success("Transaction created successfully");
       navigate({
@@ -411,10 +432,10 @@ function NewTransactionPage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Description (Optional)</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="What was this for?"
+                        placeholder="Add some details about this transaction..."
                         className="resize-none"
                         {...field}
                       />
@@ -424,18 +445,23 @@ function NewTransactionPage() {
                 )}
               />
 
-              <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate({ to: "/transactions", search: { tab: "funds" } })}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" isLoading={creating}>
-                  Create Transaction
-                </Button>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-base font-semibold">Witnesses (Optional)</FormLabel>
+                </div>
+                <p className="text-sm text-neutral-500">
+                  Add people to witness this transaction. They will receive an invitation to
+                  acknowledge it.
+                </p>
+                <WitnessSelector
+                  selectedWitnesses={selectedWitnesses}
+                  onChange={setSelectedWitnesses}
+                />
               </div>
+
+              <Button type="submit" className="w-full h-12 rounded-full" isLoading={creating}>
+                Create Transaction
+              </Button>
             </form>
           </Form>
         </CardContent>

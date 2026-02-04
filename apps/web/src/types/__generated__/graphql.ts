@@ -874,6 +874,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { updateUser: { __typename: 'User', id: string, firstName: string, lastName: string, phoneNumber: string | null, email: string, preferredCurrency: string } };
 
+export type SearchWitnessQueryVariables = Exact<{
+  input: SearchWitnessInput;
+}>;
+
+
+export type SearchWitnessQuery = { searchWitness: { __typename: 'WitnessCandidate', id: string, firstName: string, lastName: string } | null };
+
 export type MyWitnessRequestsQueryVariables = Exact<{
   status?: InputMaybe<WitnessStatus>;
 }>;

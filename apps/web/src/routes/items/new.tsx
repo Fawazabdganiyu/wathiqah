@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useTransactions } from "@/hooks/useTransactions";
 import type { CreateTransactionInput } from "@/types/__generated__/graphql";
 
+import { authGuard } from "@/utils/auth";
+
 export const Route = createFileRoute("/items/new")({
   component: NewItemPage,
+  beforeLoad: (ctx) => authGuard({ location: ctx.location }),
 });
 
 function NewItemPage() {

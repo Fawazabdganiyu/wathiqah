@@ -146,10 +146,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Only attempt mutation if we thought we were authenticated
       if (wasAuthenticated) await logoutMutation();
-      await client.clearStore();
     } catch (error) {
-      console.error("Error clearing store during logout:", error);
+      console.error("Error during logout mutation:", error);
     } finally {
+      await client.clearStore();
       navigate({ to: "/" });
     }
   }, [client, navigate, logoutMutation, user]);

@@ -10,31 +10,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-interface ContactCardProps {
-  contact: {
-    id: string;
-    name?: string | null;
-    balance: number;
-    email?: string | null;
-    phoneNumber?: string | null;
-    isOnPlatform?: boolean;
-    hasPendingInvitation?: boolean;
-  };
-  onEdit?: (contact: ContactCardProps["contact"]) => void;
-  onDelete?: (contact: ContactCardProps["contact"]) => void;
+export interface ContactSummary {
+  id: string;
+  name?: string | null;
+  balance: number;
+  email?: string | null;
+  phoneNumber?: string | null;
+  isOnPlatform?: boolean;
+  hasPendingInvitation?: boolean;
+  lentCount?: number;
+  borrowedCount?: number;
+}
+
+interface ContactCardProps<T extends ContactSummary = ContactSummary> {
+  contact: T;
+  onEdit?: (contact: T) => void;
+  onDelete?: (contact: T) => void;
   onInvite?: (id: string) => void;
   className?: string;
   showActions?: boolean;
 }
 
-export function ContactCard({
+export function ContactCard<T extends ContactSummary>({
   contact,
   onEdit,
   onDelete,
   onInvite,
   className,
   showActions = true,
-}: ContactCardProps) {
+}: ContactCardProps<T>) {
   return (
     <div
       className={cn(
@@ -72,6 +76,20 @@ export function ContactCard({
               <p className="text-[11px] text-muted-foreground truncate opacity-70">
                 {contact.email || contact.phoneNumber || "No contact info"}
               </p>
+              {(contact.lentCount ?? 0) > 0 || (contact.borrowedCount ?? 0) > 0 ? (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {(contact.lentCount ?? 0) > 0 && (
+                    <div className="bg-blue-500/10 text-blue-600 border border-blue-500/20 text-[9px] px-2 py-0.5 rounded-lg font-bold">
+                      Lent: {contact.lentCount}
+                    </div>
+                  )}
+                  {(contact.borrowedCount ?? 0) > 0 && (
+                    <div className="bg-rose-500/10 text-rose-600 border border-rose-500/20 text-[9px] px-2 py-0.5 rounded-lg font-bold">
+                      Borrowed: {contact.borrowedCount}
+                    </div>
+                  )}
+                </div>
+              ) : null}
             </div>
           </div>
 

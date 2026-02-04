@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { ArrowDownLeft, ArrowUpRight, Package, ArrowRight } from "lucide-react";
-import { AssetCategory } from "@/types/__generated__/graphql";
-import { formatCurrency } from "@/lib/utils/formatters";
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils/formatters";
+import { AssetCategory } from "@/types/__generated__/graphql";
 
 interface TransactionCardProps {
   transaction: {

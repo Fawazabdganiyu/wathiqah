@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { usePromises } from "@/hooks/usePromises";
 import { Priority, type Promise as PromiseType } from "@/types/__generated__/graphql";
 

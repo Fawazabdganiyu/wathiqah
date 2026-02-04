@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { CalendarClock, CreditCard, FileCheck, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TransactionCard } from "@/components/transactions/TransactionCard";
 import { BalanceIndicator } from "@/components/ui/balance-indicator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +22,6 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useMyWitnessRequests } from "@/hooks/useWitnesses";
 import { LedgerPhilosophy } from "./LedgerPhilosophy";
 import { StatsCard } from "./StatsCard";
-import { TransactionCard } from "@/components/transactions/TransactionCard";
 
 export function Dashboard() {
   const { user } = useAuth();
