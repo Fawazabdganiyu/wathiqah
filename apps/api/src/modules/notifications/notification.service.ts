@@ -299,7 +299,7 @@ export class NotificationService {
     const templateData = {
       ...data,
       appUrl,
-      logoUrl: `${appUrl}/favicon.svg`,
+      logoUrl: `${appUrl}/appLogo.png`,
       year: new Date().getFullYear(),
     };
 

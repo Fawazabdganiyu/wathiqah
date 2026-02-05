@@ -31,9 +31,9 @@ function VerifyEmailPage() {
   const { token } = useSearch({ from: "/verify-email" });
   const { verifyEmail, resendVerificationEmail } = useAuth();
 
-  const [status, setStatus] = useState<
-    "verifying" | "success" | "error" | "already-verified"
-  >("verifying");
+  const [status, setStatus] = useState<"verifying" | "success" | "error" | "already-verified">(
+    "verifying",
+  );
   const [error, setError] = useState("");
 
   // Resend logic
