@@ -403,16 +403,30 @@ export class AuthService {
   async verifyEmail(token: string): Promise<AuthPayload> {
     const hashedToken = hashToken(token);
     const redisKey = `verify:${hashedToken}`;
+    const verifiedKey = `verified:${hashedToken}`;
 
     const userId = await this.cacheManager.get<string>(redisKey);
 
     if (!userId) {
+      const alreadyVerifiedUserId =
+        await this.cacheManager.get<string>(verifiedKey);
+      if (alreadyVerifiedUserId) {
+        throw new ConflictException('Account already verified');
+      }
       throw new BadRequestException('Invalid or expired verification token');
     }
 
     const user = await this.usersService.findOne(userId);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    if (user.isEmailVerified) {
+      // Clear verification token if it somehow still exists
+      await this.cacheManager.del(redisKey);
+      // Ensure we have the verified record
+      await this.cacheManager.set(verifiedKey, user.id, ms('24h'));
+      throw new ConflictException('Account already verified');
     }
 
     // Generate tokens
@@ -423,6 +437,10 @@ export class AuthService {
 
     // Clear verification token
     await this.cacheManager.del(redisKey);
+
+    // Store a temporary record that this token was used to verify an account
+    // This allows us to show a better message if the user clicks the link again
+    await this.cacheManager.set(verifiedKey, user.id, ms('24h'));
 
     // Update user status
     await this.prisma.user.update({

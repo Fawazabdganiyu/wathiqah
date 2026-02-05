@@ -31,7 +31,9 @@ function VerifyEmailPage() {
   const { token } = useSearch({ from: "/verify-email" });
   const { verifyEmail, resendVerificationEmail } = useAuth();
 
-  const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
+  const [status, setStatus] = useState<
+    "verifying" | "success" | "error" | "already-verified"
+  >("verifying");
   const [error, setError] = useState("");
 
   // Resend logic
@@ -53,11 +55,15 @@ function VerifyEmailPage() {
         }
       } catch (err) {
         if (mounted) {
-          setStatus("error");
-          if (err instanceof Error) {
-            setError(err.message || "Failed to verify email. The link may have expired.");
+          if (err instanceof Error && err.message.includes("already verified")) {
+            setStatus("already-verified");
           } else {
-            setError("Failed to verify email. The link may have expired.");
+            setStatus("error");
+            if (err instanceof Error) {
+              setError(err.message || "Failed to verify email. The link may have expired.");
+            } else {
+              setError("Failed to verify email. The link may have expired.");
+            }
           }
         }
       }
@@ -126,6 +132,44 @@ function VerifyEmailPage() {
               <p className="text-lg text-muted-foreground">
                 Your account is now fully activated. You can now log in and start tracking your
                 finances.
+              </p>
+            </div>
+
+            <Button
+              asChild
+              size="lg"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-lg rounded-xl shadow-lg transition-all hover:scale-[1.02]"
+            >
+              <Link to="/login" search={{ redirectTo: undefined }}>
+                Go to Dashboard
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        )}
+
+        {status === "already-verified" && (
+          <motion.div
+            key="already-verified"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md space-y-8 bg-card p-8 sm:p-10 rounded-2xl shadow-xl border border-border text-center"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 10 }}
+              className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6"
+            >
+              <CheckCircle2 className="w-10 h-10 text-primary" />
+            </motion.div>
+
+            <div className="space-y-4">
+              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+                Already Verified!
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Your account has already been verified. You can log in to access your dashboard.
               </p>
             </div>
 
