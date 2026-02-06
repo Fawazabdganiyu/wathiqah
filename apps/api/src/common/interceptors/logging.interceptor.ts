@@ -25,7 +25,7 @@ export class LoggingInterceptor implements NestInterceptor {
     'newPassword',
   ];
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const gqlContext = GqlExecutionContext.create(context);
     const info = gqlContext.getInfo();
     const request = gqlContext.getContext().req;
@@ -39,7 +39,7 @@ export class LoggingInterceptor implements NestInterceptor {
       const requestId = request?.id || 'unknown';
       const ip = request?.ip || 'unknown';
       const user = request?.user ? request.user.id : 'anonymous';
-      const args = gqlContext.getArgs();
+      const args = gqlContext.getArgs() as Record<string, unknown>;
 
       // Redact sensitive variables
       const redactedArgs = this.redactVariables(args);
@@ -71,7 +71,9 @@ export class LoggingInterceptor implements NestInterceptor {
     return next.handle();
   }
 
-  private redactVariables(args: any): any {
+  private redactVariables(
+    args: Record<string, unknown>,
+  ): Record<string, unknown> {
     if (!args || typeof args !== 'object') return args;
 
     const redacted = { ...args };
@@ -79,7 +81,9 @@ export class LoggingInterceptor implements NestInterceptor {
       if (this.sensitiveFields.includes(key)) {
         redacted[key] = '***';
       } else if (typeof redacted[key] === 'object' && redacted[key] !== null) {
-        redacted[key] = this.redactVariables(redacted[key]);
+        redacted[key] = this.redactVariables(
+          redacted[key] as Record<string, unknown>,
+        );
       }
     }
     return redacted;

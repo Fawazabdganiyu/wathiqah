@@ -77,17 +77,74 @@ export class AuthService {
       throw new ConflictException('Email already in use');
     }
 
+    // If token provided, validate invitation
+    let invitation;
+    if (signupInput.token) {
+      invitation = await this.prisma.contactInvitation.findUnique({
+        where: { token: signupInput.token },
+        include: { contact: true },
+      });
+
+      if (!invitation) {
+        throw new BadRequestException('Invalid invitation token');
+      }
+
+      if (invitation.status !== 'PENDING') {
+        throw new BadRequestException(
+          'Invitation has already been used or cancelled',
+        );
+      }
+
+      if (new Date() > invitation.expiresAt) {
+        throw new BadRequestException('Invitation has expired');
+      }
+
+      // Optional: Verify email matches if invitation email exists
+      if (
+        invitation.contact.email &&
+        normalizeEmail(invitation.contact.email) !== email
+      ) {
+        throw new BadRequestException(
+          'Invitation was sent to a different email address',
+        );
+      }
+    }
+
     const passwordHash = await bcrypt.hash(signupInput.password, 10);
     const { firstName, lastName } = splitName(signupInput.name);
     if (!firstName || !lastName) {
       throw new BadRequestException('First name and last name are required');
     }
 
-    const user = await this.usersService.create({
-      email,
-      firstName,
-      lastName,
-      passwordHash,
+    const user = await this.prisma.$transaction(async (prisma) => {
+      const newUser = await prisma.user.create({
+        data: {
+          email,
+          firstName,
+          lastName,
+          passwordHash,
+        },
+      });
+
+      // If invitation exists, mark as accepted and link user
+      if (invitation) {
+        await prisma.contactInvitation.update({
+          where: { id: invitation.id },
+          data: {
+            status: 'ACCEPTED',
+            acceptedAt: new Date(),
+            invitedUserId: newUser.id,
+          },
+        });
+
+        // Also link the contact record to the new user immediately
+        await prisma.contact.update({
+          where: { id: invitation.contactId },
+          data: { linkedUserId: newUser.id },
+        });
+      }
+
+      return newUser;
     });
 
     // Generate verification token

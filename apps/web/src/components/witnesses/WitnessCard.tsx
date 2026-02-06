@@ -3,7 +3,11 @@ import { ArrowDownLeft, ArrowUpRight, Calendar, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils/formatters";
-import { type MyWitnessRequestsQuery, WitnessStatus } from "@/types/__generated__/graphql";
+import {
+  type MyWitnessRequestsQuery,
+  WitnessStatus,
+  AssetCategory,
+} from "@/types/__generated__/graphql";
 import { WitnessStatusBadge } from "./WitnessStatusBadge";
 
 interface WitnessCardProps {
@@ -53,7 +57,8 @@ export function WitnessCard({ request, onAcknowledge, onDecline, isLoading }: Wi
                 </h3>
               </div>
               <p className="text-[11px] text-muted-foreground font-medium opacity-70 leading-tight">
-                Invited you to witness a transaction with <strong>{(transaction as any).contact?.name || "N/A"}</strong>
+                Invited you to witness a transaction with{" "}
+                <strong>{transaction.contact?.name || "N/A"}</strong>
               </p>
             </div>
           </div>
@@ -81,8 +86,8 @@ export function WitnessCard({ request, onAcknowledge, onDecline, isLoading }: Wi
                 )}
               </div>
               <span className="text-base font-bold tracking-tight text-foreground">
-                {(transaction as any).category === "PHYSICAL_ITEMS" 
-                  ? `${transaction.amount} ${(transaction as any).itemName || "items"}`
+                {transaction.category === AssetCategory.Item
+                  ? `${transaction.amount} ${transaction.itemName || "items"}`
                   : formatCurrency(transaction.amount || 0, transaction.currency)}
               </span>
             </div>

@@ -258,6 +258,7 @@ input SignupInput {
   email: String!
   name: String!
   password: String!
+  token: String
 }
 
 type Transaction {

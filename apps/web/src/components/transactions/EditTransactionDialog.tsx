@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { ContactFormDialog } from "@/components/contacts/ContactFormDialog";
@@ -156,8 +156,7 @@ export function EditTransactionDialog({
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
 
   const form = useForm<TransactionFormValues>({
-    // biome-ignore lint/suspicious/noExplicitAny: Complex type mismatch with zodResolver
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema) as Resolver<TransactionFormValues>,
     defaultValues: {
       type: transaction.type,
       contactId: transaction.contact?.id ?? undefined,

@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import axios from 'axios';
 import { Prisma } from '../../generated/prisma/client';
+import { Logger } from '@nestjs/common';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -161,7 +162,10 @@ describe('ExchangeRateService', () => {
     });
 
     it('should log error if all providers fail', async () => {
-      const loggerSpy = jest.spyOn((service as any).logger, 'error');
+      const loggerSpy = jest.spyOn(
+        (service as unknown as { logger: Logger }).logger,
+        'error',
+      );
       mockedAxios.get.mockRejectedValue(new Error('All Down'));
 
       await service.updateRates();

@@ -9,7 +9,12 @@ import { PageLoader } from "@/components/ui/page-loader";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/use-auth";
 import { useAcknowledgeWitness, useWitnessInvitation } from "@/hooks/useWitnesses";
-import { ReturnDirection, TransactionType, WitnessStatus } from "@/types/__generated__/graphql";
+import {
+  AssetCategory,
+  ReturnDirection,
+  TransactionType,
+  WitnessStatus,
+} from "@/types/__generated__/graphql";
 import { formatDate, formatCurrency } from "@/lib/utils/formatters";
 
 export const Route = createFileRoute("/witnesses/invite/$token")({
@@ -103,8 +108,8 @@ function InviteComponent() {
   };
 
   const getTypeStyles = () => {
-    const type = transaction.type as TransactionType;
-    const returnDirection = transaction.returnDirection as ReturnDirection;
+    const type = transaction.type;
+    const returnDirection = transaction.returnDirection;
 
     switch (type) {
       case TransactionType.Received:
@@ -125,8 +130,8 @@ function InviteComponent() {
   };
 
   const getTypeLabel = () => {
-    const type = transaction.type as TransactionType;
-    const returnDirection = transaction.returnDirection as ReturnDirection;
+    const type = transaction.type;
+    const returnDirection = transaction.returnDirection;
 
     if (type === TransactionType.Gift) {
       return returnDirection === ReturnDirection.ToMe ? "Gift Received" : "Gift Given";
@@ -145,7 +150,8 @@ function InviteComponent() {
             Witness Invitation
           </h2>
           <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-            <strong>{transaction.createdBy?.name}</strong> has invited you to witness a transaction between them and <strong>{(transaction as any).contact?.name || "N/A"}</strong>.
+            <strong>{transaction.createdBy?.name}</strong> has invited you to witness a transaction
+            between them and <strong>{transaction.contact?.name || "N/A"}</strong>.
           </p>
         </div>
 
@@ -153,13 +159,13 @@ function InviteComponent() {
         <div className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-md space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-neutral-500">
-              {(transaction as any).category === "PHYSICAL_ITEMS" ? "Quantity" : "Amount"}
+              {transaction.category === AssetCategory.Item ? "Quantity" : "Amount"}
             </span>
             <span className="font-bold text-lg text-neutral-900 dark:text-neutral-50">
-              {transaction.amount 
-                ? ((transaction as any).category === "PHYSICAL_ITEMS" 
-                    ? `${transaction.amount} ${(transaction as any).itemName || "items"}` 
-                    : formatCurrency(transaction.amount, transaction.currency))
+              {transaction.amount
+                ? transaction.category === AssetCategory.Item
+                  ? `${transaction.amount} ${transaction.itemName || "items"}`
+                  : formatCurrency(transaction.amount, transaction.currency)
                 : "N/A"}
             </span>
           </div>

@@ -466,6 +466,7 @@ export type SignupInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  token?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Transaction = {
@@ -886,7 +887,7 @@ export type MyWitnessRequestsQueryVariables = Exact<{
 }>;
 
 
-export type MyWitnessRequestsQuery = { myWitnessRequests: Array<{ __typename: 'Witness', id: string, status: WitnessStatus, invitedAt: string, acknowledgedAt: string | null, transaction: { __typename: 'Transaction', id: string, amount: number | null, currency: string, type: TransactionType, description: string | null, date: string, returnDirection: ReturnDirection | null, createdBy: { __typename: 'User', name: string, email: string } | null } | null }> };
+export type MyWitnessRequestsQuery = { myWitnessRequests: Array<{ __typename: 'Witness', id: string, status: WitnessStatus, invitedAt: string, acknowledgedAt: string | null, transaction: { __typename: 'Transaction', id: string, amount: number | null, currency: string, type: TransactionType, category: AssetCategory, itemName: string | null, description: string | null, date: string, returnDirection: ReturnDirection | null, createdBy: { __typename: 'User', name: string, email: string } | null, contact: { __typename: 'Contact', id: string, firstName: string, lastName: string, name: string } | null } | null }> };
 
 export type AcknowledgeWitnessRequestMutationVariables = Exact<{
   input: AcknowledgeWitnessInput;
@@ -900,4 +901,4 @@ export type GetWitnessInvitationQueryVariables = Exact<{
 }>;
 
 
-export type GetWitnessInvitationQuery = { witnessInvitation: { __typename: 'Witness', id: string, status: WitnessStatus, transaction: { __typename: 'Transaction', id: string, amount: number | null, currency: string, type: TransactionType, description: string | null, date: string, returnDirection: ReturnDirection | null, createdBy: { __typename: 'User', name: string } | null } | null, user: { __typename: 'User', id: string, email: string, name: string, passwordHash: string | null } | null } };
+export type GetWitnessInvitationQuery = { witnessInvitation: { __typename: 'Witness', id: string, status: WitnessStatus, transaction: { __typename: 'Transaction', id: string, amount: number | null, currency: string, type: TransactionType, category: AssetCategory, itemName: string | null, description: string | null, date: string, returnDirection: ReturnDirection | null, createdBy: { __typename: 'User', name: string } | null, contact: { __typename: 'Contact', id: string, firstName: string, lastName: string, name: string } | null } | null, user: { __typename: 'User', id: string, email: string, name: string, passwordHash: string | null } | null } };

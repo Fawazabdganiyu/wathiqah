@@ -126,7 +126,9 @@ import { GraphQLError } from 'graphql';
       useGlobalPrefix: true,
       context: ({ req, res }) => ({ req, res }),
       formatError: (error) => {
-        const originalError = error.extensions?.originalError as any;
+        const originalError = error.extensions?.originalError as {
+          message?: string | string[];
+        };
         let message = error.message;
 
         if (originalError?.message) {

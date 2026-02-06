@@ -22,18 +22,24 @@ export class SendGridEmailProvider implements EmailProvider {
   async sendEmail(payload: EmailPayload): Promise<void> {
     const { to, subject, html, text, templateId, templateData } = payload;
 
-    const msg: any = {
-      to,
-      from: this.defaultFrom,
-      subject,
-    };
+    let msg: sgMail.MailDataRequired;
 
     if (templateId) {
-      msg.templateId = templateId;
-      msg.dynamicTemplateData = templateData ?? {};
+      msg = {
+        to,
+        from: this.defaultFrom,
+        subject,
+        templateId,
+        dynamicTemplateData: templateData ?? {},
+      };
     } else {
-      msg.html = html;
-      msg.text = text ?? '';
+      msg = {
+        to,
+        from: this.defaultFrom,
+        subject,
+        html: html ?? '',
+        text: text ?? '',
+      };
     }
 
     try {

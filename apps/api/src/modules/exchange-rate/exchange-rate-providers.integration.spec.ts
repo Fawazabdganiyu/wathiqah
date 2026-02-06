@@ -4,6 +4,11 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
+interface ExchangeRateResponse {
+  rates: Record<string, number>;
+  provider: string;
+}
+
 describe('ExchangeRateProvider Integration', () => {
   let service: ExchangeRateService;
   let configService: ConfigService;
@@ -44,7 +49,11 @@ describe('ExchangeRateProvider Integration', () => {
     }
 
     try {
-      const result = await (service as any).fetchFromExchangeRateApi();
+      const result = await (
+        service as unknown as {
+          fetchFromExchangeRateApi: () => Promise<ExchangeRateResponse>;
+        }
+      ).fetchFromExchangeRateApi();
       expect(result.provider).toBe('ExchangeRate-API');
       expect(result.rates).toBeDefined();
       expect(result.rates['USD']).toBe(1);
@@ -63,7 +72,11 @@ describe('ExchangeRateProvider Integration', () => {
     }
 
     try {
-      const result = await (service as any).fetchFromOpenExchangeRates();
+      const result = await (
+        service as unknown as {
+          fetchFromOpenExchangeRates: () => Promise<ExchangeRateResponse>;
+        }
+      ).fetchFromOpenExchangeRates();
       expect(result.provider).toBe('Open Exchange Rates');
       expect(result.rates).toBeDefined();
       expect(result.rates['USD']).toBe(1);

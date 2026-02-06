@@ -17,4 +17,8 @@ export class SignupInput {
   @IsString()
   @MinLength(8)
   password: string;
+
+  @Field({ nullable: true })
+  @IsString()
+  token?: string;
 }

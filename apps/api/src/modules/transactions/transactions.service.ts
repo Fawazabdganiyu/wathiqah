@@ -28,6 +28,37 @@ import { normalizeEmail, splitName } from '../../common/utils/string.utils';
 import { FilterTransactionInput } from './dto/filter-transaction.input';
 import { ExchangeRateService } from '../exchange-rate/exchange-rate.service';
 
+interface WitnessNotification {
+  witnessId: string;
+  email: string;
+  firstName: string;
+  rawToken: string;
+  phoneNumber?: string;
+  transactionDetails: {
+    creatorName: string;
+    contactName: string;
+    amount: string;
+    itemName?: string;
+    currency?: string;
+    category: AssetCategory;
+    type: TransactionType;
+  };
+}
+
+interface TransactionSummary {
+  totalGiven: number;
+  totalReceived: number;
+  totalReturned: number;
+  totalReturnedToMe: number;
+  totalReturnedToOther: number;
+  totalExpense: number;
+  totalIncome: number;
+  totalGiftGiven: number;
+  totalGiftReceived: number;
+  netBalance?: number;
+  currency: string;
+}
+
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -43,8 +74,8 @@ export class TransactionsService {
     witnessUserIds: string[] | undefined,
     witnessInvites: WitnessInviteInput[] | undefined,
     prisma: Prisma.TransactionClient,
-  ): Promise<any[]> {
-    const notifications: any[] = [];
+  ): Promise<WitnessNotification[]> {
+    const notifications: WitnessNotification[] = [];
 
     // Fetch transaction details for the notification
     const transaction = await prisma.transaction.findUnique({
@@ -182,7 +213,7 @@ export class TransactionsService {
     return notifications;
   }
 
-  private async notifyWitnesses(notifications: any[]) {
+  private async notifyWitnesses(notifications: WitnessNotification[]) {
     for (const notification of notifications) {
       const {
         witnessId,
@@ -241,7 +272,7 @@ export class TransactionsService {
     }
 
     // Start a transaction to ensure all witness records are created or nothing is
-    let notifications: any[] = [];
+    let notifications: WitnessNotification[] = [];
     const transaction = await this.prisma.$transaction(async (prisma) => {
       let parentTransaction = null;
       // If this is a GIFT conversion, validate parent existence and ownership
@@ -366,7 +397,7 @@ export class TransactionsService {
 
     const transaction = await this.findOne(transactionId, userId);
 
-    let notifications: any[] = [];
+    let notifications: WitnessNotification[] = [];
     const updatedTransaction = await this.prisma.$transaction(
       async (prisma) => {
         notifications = await this.processWitnesses(
@@ -476,7 +507,10 @@ export class TransactionsService {
         delete where.createdById;
         delete where.contactId;
 
-        where.AND = [existingWhere, searchFilter as any];
+        where.AND = [
+          existingWhere,
+          searchFilter as Prisma.TransactionWhereInput,
+        ];
       }
     }
 
@@ -651,7 +685,7 @@ export class TransactionsService {
   }
 
   private updateSummaryWithTransaction(
-    summary: any,
+    summary: TransactionSummary,
     type: TransactionType,
     returnDirection: string,
     amount: number,
@@ -755,9 +789,9 @@ export class TransactionsService {
     );
 
     // Group aggregations by contactId
-    const groupedByContact = new Map<string | null, any>();
+    const groupedByContact = new Map<string | null, TransactionSummary>();
 
-    const getInitialSummary = () => ({
+    const getInitialSummary = (): TransactionSummary => ({
       totalGiven: 0,
       totalReceived: 0,
       totalReturned: 0,
@@ -943,7 +977,7 @@ export class TransactionsService {
     }
 
     // Determine what actually changed for the history log
-    const changes: any = {};
+    const changes: Prisma.TransactionUncheckedUpdateInput = {};
     const changeDescriptions: string[] = [];
 
     if (category && category !== transaction.category) {
@@ -1120,8 +1154,8 @@ export class TransactionsService {
             transactionId: id,
             userId,
             changeType: hasAcknowledgedWitness ? 'UPDATE_POST_ACK' : 'UPDATE',
-            previousState: previousState as any,
-            newState: changes,
+            previousState: previousState as Prisma.InputJsonValue,
+            newState: changes as Prisma.InputJsonValue,
           },
         });
 
@@ -1130,7 +1164,7 @@ export class TransactionsService {
             id,
             witnessUserIds,
             witnessInvites,
-            prisma as any,
+            prisma as Prisma.TransactionClient,
           );
         }
 
@@ -1165,10 +1199,10 @@ export class TransactionsService {
           changeType: 'CANCELLED',
           previousState: {
             status: transaction.status,
-          } as any,
+          } as Prisma.InputJsonValue,
           newState: {
             status: TransactionStatus.CANCELLED,
-          },
+          } as Prisma.InputJsonValue,
         },
       }),
     ]);

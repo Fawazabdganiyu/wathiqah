@@ -1,6 +1,7 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
-import { useId, useState } from "react";
+import { useId, useState, useEffect } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +10,14 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/use-auth";
 import { isAuthenticated } from "@/utils/auth";
 
+const signupSearchSchema = z.object({
+  email: z.string().optional(),
+  name: z.string().optional(),
+  token: z.string().optional(),
+});
+
 export const Route = createFileRoute("/signup")({
+  validateSearch: (search) => signupSearchSchema.parse(search),
   beforeLoad: () => {
     if (isAuthenticated()) {
       throw redirect({
@@ -23,16 +31,24 @@ export const Route = createFileRoute("/signup")({
 function SignupComponent() {
   const { signup, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const { email: searchEmail, name: searchName, token: searchToken } = Route.useSearch();
+
+  const [name, setName] = useState(searchName || "");
+  const [email, setEmail] = useState(searchEmail || "");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Update state if search params change
+  useEffect(() => {
+    if (searchEmail) setEmail(searchEmail);
+    if (searchName) setName(searchName);
+  }, [searchEmail, searchName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const result = await signup({ name, email, password });
+      const result = await signup({ name, email, password, token: searchToken });
       if (!result) {
         toast.error("Failed to sign up. Please try again.");
         setIsLoading(false);

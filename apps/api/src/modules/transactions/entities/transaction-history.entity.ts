@@ -17,10 +17,10 @@ export class TransactionHistory {
   user?: User;
 
   @Field(() => GraphQLJSON)
-  previousState: any;
+  previousState: Record<string, unknown>;
 
   @Field(() => GraphQLJSON)
-  newState: any;
+  newState: Record<string, unknown>;
 
   @Field()
   changeType: string;

@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { ContactFormDialog } from "@/components/contacts/ContactFormDialog";
@@ -143,8 +143,7 @@ function NewTransactionPage() {
   const [selectedWitnesses, setSelectedWitnesses] = useState<SelectedWitness[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // biome-ignore lint/suspicious/noExplicitAny: Complex type mismatch with zodResolver
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema) as Resolver<z.infer<typeof formSchema>>,
     defaultValues: {
       type: search.contactId ? TransactionType.Given : TransactionType.Expense,
       contactId: search.contactId,
