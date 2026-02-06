@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards, BadRequestException } from '@nestjs/common';
 import { WitnessesService } from './witnesses.service';
 import { Witness } from './entities/witness.entity';
@@ -36,6 +36,22 @@ export class WitnessesResolver {
     }
 
     return this.witnessesService.acknowledge(witnessId, input.status, user.id);
+  }
+
+  @Mutation(() => Witness)
+  resendWitnessInvitation(
+    @Args('witnessId', { type: () => ID }) witnessId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.witnessesService.resendInvitation(witnessId, user.id);
+  }
+
+  @Mutation(() => Witness)
+  removeWitness(
+    @Args('witnessId', { type: () => ID }) witnessId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.witnessesService.removeWitness(witnessId, user.id);
   }
 
   @Query(() => [Witness], { name: 'myWitnessRequests' })

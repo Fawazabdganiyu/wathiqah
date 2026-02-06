@@ -167,7 +167,10 @@ type Mutation {
   removeContact(id: ID!): Contact!
   removePromise(id: String!): Promise!
   removeTransaction(id: ID!): Transaction!
+  removeWitness(witnessId: ID!): Witness!
+  resendContactInvitation(contactId: ID!): InviteContactResponse!
   resendVerificationEmail(email: String!): Boolean!
+  resendWitnessInvitation(witnessId: ID!): Witness!
   resetPassword(resetPasswordInput: ResetPasswordInput!): Boolean!
   revokeAccess(id: String!): AccessGrant!
   signup(signupInput: SignupInput!): AuthPayload!

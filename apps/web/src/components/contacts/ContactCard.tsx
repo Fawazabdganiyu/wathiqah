@@ -162,9 +162,21 @@ export function ContactCard<T extends ContactSummary>({
                 <span className="text-[10px] font-bold text-emerald-600">On Platform</span>
               </div>
             ) : contact.hasPendingInvitation ? (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/5 border border-amber-500/10">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span className="text-[10px] font-bold text-amber-600">Invited</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/5 border border-amber-500/10">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span className="text-[10px] font-bold text-amber-600">Invited</span>
+                </div>
+                {onInvite && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onInvite(contact.id)}
+                    className="h-7 px-2 rounded-lg text-[9px] font-black uppercase tracking-wider text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-all"
+                  >
+                    Resend
+                  </Button>
+                )}
               </div>
             ) : onInvite && contact.email ? (
               <Button

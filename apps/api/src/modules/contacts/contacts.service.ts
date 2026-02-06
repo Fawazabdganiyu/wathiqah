@@ -258,22 +258,38 @@ export class ContactsService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
-    // Create or update invitation
-    const invitation = await this.prisma.contactInvitation.upsert({
-      where: { token }, // This is a bit weird for upsert but token is unique
-      create: {
-        token,
-        expiresAt,
+    // Check if there's already a pending invitation for this contact and inviter
+    const existingInvitation = await this.prisma.contactInvitation.findFirst({
+      where: {
         contactId: id,
         inviterId: userId,
         status: InvitationStatus.PENDING,
       },
-      update: {
-        token,
-        expiresAt,
-        status: InvitationStatus.PENDING,
-      },
     });
+
+    let invitation;
+    if (existingInvitation) {
+      // Update existing invitation
+      invitation = await this.prisma.contactInvitation.update({
+        where: { id: existingInvitation.id },
+        data: {
+          token,
+          expiresAt,
+          status: InvitationStatus.PENDING,
+        },
+      });
+    } else {
+      // Create new invitation
+      invitation = await this.prisma.contactInvitation.create({
+        data: {
+          token,
+          expiresAt,
+          contactId: id,
+          inviterId: userId,
+          status: InvitationStatus.PENDING,
+        },
+      });
+    }
 
     // Send email
     await this.notificationService.sendContactInvitationEmail(
@@ -285,9 +301,29 @@ export class ContactsService {
 
     return {
       success: true,
-      message: 'Invitation sent successfully',
+      message: existingInvitation
+        ? 'Invitation resent successfully'
+        : 'Invitation sent successfully',
       invitation,
     };
+  }
+
+  async resendContactInvitation(contactId: string, userId: string) {
+    const invitation = await this.prisma.contactInvitation.findFirst({
+      where: {
+        contactId,
+        inviterId: userId,
+        status: InvitationStatus.PENDING,
+      },
+    });
+
+    if (!invitation) {
+      throw new NotFoundException(
+        'No pending invitation found for this contact',
+      );
+    }
+
+    return this.inviteContactToPlatform(contactId, userId);
   }
 
   async linkContactsForUser(userId: string, email: string) {

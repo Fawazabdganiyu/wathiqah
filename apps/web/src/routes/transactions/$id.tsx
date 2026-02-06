@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button";
 import { PageLoader } from "@/components/ui/page-loader";
 import { useTransaction } from "@/hooks/useTransaction";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useRemoveWitness, useResendWitnessInvitation } from "@/hooks/useWitnesses";
 import { formatCurrency } from "@/lib/utils/formatters";
 import { AssetCategory, TransactionType, type Witness } from "@/types/__generated__/graphql";
 import { authGuard } from "@/utils/auth";
@@ -47,8 +48,42 @@ function TransactionDetailPage() {
   const [isConvertGiftOpen, setIsConvertGiftOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const [resendingId, setResendingId] = useState<string | null>(null);
+  const [removingWitnessId, setRemovingWitnessId] = useState<string | null>(null);
+
   const { transaction, loading, error, refetch } = useTransaction(id);
   const { removeTransaction, removing } = useTransactions();
+
+  const { resend } = useResendWitnessInvitation(() => {
+    toast.success("Invitation resent successfully");
+    setResendingId(null);
+  });
+
+  const { remove: removeWitness } = useRemoveWitness(() => {
+    toast.success("Witness removed successfully");
+    setRemovingWitnessId(null);
+    refetch();
+  });
+
+  const handleResendWitness = async (witnessId: string) => {
+    setResendingId(witnessId);
+    try {
+      await resend(witnessId);
+    } catch (_err) {
+      toast.error("Failed to resend invitation");
+      setResendingId(null);
+    }
+  };
+
+  const handleRemoveWitness = async (witnessId: string) => {
+    setRemovingWitnessId(witnessId);
+    try {
+      await removeWitness(witnessId);
+    } catch (_err) {
+      toast.error("Failed to remove witness");
+      setRemovingWitnessId(null);
+    }
+  };
 
   const handleRemove = async () => {
     try {
@@ -304,6 +339,10 @@ function TransactionDetailPage() {
           </div>
           <TransactionWitnessList
             witnesses={witnesses.filter((w): w is NonNullable<typeof w> => w !== null) as Witness[]}
+            onResend={handleResendWitness}
+            onRemove={handleRemoveWitness}
+            isResendingId={resendingId}
+            isRemovingId={removingWitnessId}
           />
         </div>
 

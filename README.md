@@ -34,6 +34,7 @@ Financial exchanges between people are often undocumented, leading to confusion 
   - Add existing users or invite new users via email.
   - Witnesses receive notifications to acknowledge transactions.
   - Easy onboarding for new witnesses via invitation link.
+  - **Invitation Management**: Resend pending invitations and manage witness lists (add/remove).
   - Track witness acknowledgment status (Pending, Acknowledged, Declined, Modified).
   - View all witnessed transactions.
 - **Privacy-Preserving Witness Search**: Search existing users by exact email or phone and only receive the user ID with masked names (no email/phone exposure).

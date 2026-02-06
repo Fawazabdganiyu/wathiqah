@@ -3,9 +3,16 @@ import { WitnessesService } from './witnesses.service';
 import { WitnessesResolver } from './witnesses.resolver';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    NotificationsModule,
+    CacheModule.register(),
+  ],
   providers: [WitnessesResolver, WitnessesService],
   exports: [WitnessesService],
 })

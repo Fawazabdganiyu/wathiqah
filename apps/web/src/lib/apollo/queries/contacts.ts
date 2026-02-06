@@ -12,6 +12,8 @@ import type {
   InviteContactMutationVariables,
   UpdateContactMutation,
   UpdateContactMutationVariables,
+  ResendContactInvitationMutation,
+  ResendContactInvitationMutationVariables,
 } from "@/types/__generated__/graphql";
 
 export const GET_CONTACTS: TypedDocumentNode<GetContactsQuery, GetContactsQueryVariables> = gql`
@@ -50,6 +52,18 @@ export const INVITE_CONTACT: TypedDocumentNode<
 > = gql`
   mutation InviteContact($contactId: ID!) {
     inviteContactToPlatform(contactId: $contactId) {
+      success
+      message
+    }
+  }
+`;
+
+export const RESEND_CONTACT_INVITATION: TypedDocumentNode<
+  ResendContactInvitationMutation,
+  ResendContactInvitationMutationVariables
+> = gql`
+  mutation ResendContactInvitation($contactId: ID!) {
+    resendContactInvitation(contactId: $contactId) {
       success
       message
     }

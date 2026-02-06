@@ -108,6 +108,14 @@ export class ContactsResolver {
     return this.contactsService.inviteContactToPlatform(contactId, user.id);
   }
 
+  @Mutation(() => InviteContactResponse)
+  resendContactInvitation(
+    @Args('contactId', { type: () => ID }) contactId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.contactsService.resendContactInvitation(contactId, user.id);
+  }
+
   @Query(() => ContactPlatformStatus)
   checkContactOnPlatform(
     @Args('contactId', { type: () => ID }) contactId: string,

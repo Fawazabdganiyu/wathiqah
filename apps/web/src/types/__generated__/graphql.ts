@@ -180,7 +180,10 @@ export type Mutation = {
   removeContact: Contact;
   removePromise: Promise;
   removeTransaction: Transaction;
+  removeWitness: Witness;
+  resendContactInvitation: InviteContactResponse;
   resendVerificationEmail: Scalars['Boolean']['output'];
+  resendWitnessInvitation: Witness;
   resetPassword: Scalars['Boolean']['output'];
   revokeAccess: AccessGrant;
   signup: AuthPayload;
@@ -272,8 +275,23 @@ export type MutationRemoveTransactionArgs = {
 };
 
 
+export type MutationRemoveWitnessArgs = {
+  witnessId: Scalars['ID']['input'];
+};
+
+
+export type MutationResendContactInvitationArgs = {
+  contactId: Scalars['ID']['input'];
+};
+
+
 export type MutationResendVerificationEmailArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationResendWitnessInvitationArgs = {
+  witnessId: Scalars['ID']['input'];
 };
 
 
@@ -729,6 +747,13 @@ export type InviteContactMutationVariables = Exact<{
 
 export type InviteContactMutation = { inviteContactToPlatform: { __typename: 'InviteContactResponse', success: boolean, message: string } };
 
+export type ResendContactInvitationMutationVariables = Exact<{
+  contactId: Scalars['ID']['input'];
+}>;
+
+
+export type ResendContactInvitationMutation = { resendContactInvitation: { __typename: 'InviteContactResponse', success: boolean, message: string } };
+
 export type CreateContactMutationVariables = Exact<{
   createContactInput: CreateContactInput;
 }>;
@@ -895,6 +920,20 @@ export type MyWitnessRequestsQueryVariables = Exact<{
 
 
 export type MyWitnessRequestsQuery = { myWitnessRequests: Array<{ __typename: 'Witness', id: string, status: WitnessStatus, invitedAt: string, acknowledgedAt: string | null, transaction: { __typename: 'Transaction', id: string, amount: number | null, currency: string, type: TransactionType, category: AssetCategory, itemName: string | null, description: string | null, date: string, returnDirection: ReturnDirection | null, createdBy: { __typename: 'User', name: string, email: string } | null, contact: { __typename: 'Contact', id: string, firstName: string, lastName: string, name: string } | null } | null }> };
+
+export type ResendWitnessInvitationMutationVariables = Exact<{
+  witnessId: Scalars['ID']['input'];
+}>;
+
+
+export type ResendWitnessInvitationMutation = { resendWitnessInvitation: { __typename: 'Witness', id: string, status: WitnessStatus, invitedAt: string } };
+
+export type RemoveWitnessMutationVariables = Exact<{
+  witnessId: Scalars['ID']['input'];
+}>;
+
+
+export type RemoveWitnessMutation = { removeWitness: { __typename: 'Witness', id: string } };
 
 export type AcknowledgeWitnessRequestMutationVariables = Exact<{
   input: AcknowledgeWitnessInput;

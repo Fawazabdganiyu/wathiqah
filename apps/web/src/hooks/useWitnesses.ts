@@ -3,6 +3,8 @@ import {
   ACKNOWLEDGE_WITNESS,
   GET_WITNESS_INVITATION,
   MY_WITNESS_REQUESTS,
+  REMOVE_WITNESS,
+  RESEND_WITNESS_INVITATION,
 } from "@/lib/apollo/queries/witnesses";
 import type { WitnessStatus } from "@/types/__generated__/graphql";
 
@@ -17,6 +19,42 @@ export function useMyWitnessRequests(status?: WitnessStatus) {
     loading,
     error,
     refetch,
+  };
+}
+
+export function useResendWitnessInvitation(onCompleted?: () => void) {
+  const [mutate, { loading, error }] = useMutation(RESEND_WITNESS_INVITATION, {
+    onCompleted,
+  });
+
+  const resend = async (witnessId: string) => {
+    return mutate({
+      variables: { witnessId },
+    });
+  };
+
+  return {
+    resend,
+    loading,
+    error,
+  };
+}
+
+export function useRemoveWitness(onCompleted?: () => void) {
+  const [mutate, { loading, error }] = useMutation(REMOVE_WITNESS, {
+    onCompleted,
+  });
+
+  const remove = async (witnessId: string) => {
+    return mutate({
+      variables: { witnessId },
+    });
+  };
+
+  return {
+    remove,
+    loading,
+    error,
   };
 }
 

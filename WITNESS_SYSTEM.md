@@ -13,7 +13,11 @@ The **Witness System** adds accountability and trust to financial transactions b
    - Invite new users via email (they'll receive an invitation link)
    - Add multiple witnesses to a single transaction
 
-2. **Track Witness Status**:
+2. **Manage Witnesses**:
+   - **Resend Invitation**: Resend invitation emails to pending witnesses (useful if tokens expire or emails are missed).
+   - **Remove Witness**: Remove a witness from a transaction before they have acknowledged it.
+
+3. **Track Witness Status**:
    - See which witnesses have acknowledged
    - See which witnesses are still pending
    - See if any witnesses declined
@@ -48,8 +52,9 @@ PENDING → User creates transaction with witnesses
 To ensure that verified records remain trustworthy:
 
 1. **No Deletion**: Transactions with witnesses cannot be hard-deleted. If a user wants to remove one, it is marked as `CANCELLED`.
-2. **Audit History**: All changes to witnessed transactions (Amount, Date, Description, Status) are recorded in the `TransactionHistory` with a before/after diff.
-3. **Status Reset**: Any update to an `ACKNOWLEDGED` transaction automatically resets witness statuses to `MODIFIED`, alerting witnesses that the record they verified has changed.
+2. **Witness Removal**: A witness can only be removed from a transaction if they have not yet acknowledged it. Once removed, the action is recorded in the audit history.
+3. **Audit History**: All changes to witnessed transactions (Amount, Date, Description, Status, and Witness list) are recorded in the `TransactionHistory` with a before/after diff.
+4. **Status Reset**: Any update to an `ACKNOWLEDGED` transaction automatically resets witness statuses to `MODIFIED`, alerting witnesses that the record they verified has changed.
 
 ## 🎨 User Experience
 
@@ -115,6 +120,8 @@ To ensure that verified records remain trustworthy:
 
 - `createTransaction(input)`: Create transaction with witnesses
 - `acknowledgeWitness(witnessId, status)`: Acknowledge or decline
+- `resendWitnessInvitation(witnessId)`: Resend invitation email
+- `removeWitness(witnessId)`: Remove a witness (creator only)
 - `myWitnessRequests(status)`: Query pending witness requests
 
 ### Frontend Components

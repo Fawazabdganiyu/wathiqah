@@ -1,9 +1,22 @@
 import { format } from "date-fns";
-import { Calendar, Mail, User, Users } from "lucide-react";
-import type { Witness } from "@/types/__generated__/graphql";
+import { Calendar, Mail, RefreshCw, Trash2, User, Users } from "lucide-react";
+import { WitnessStatus, type Witness } from "@/types/__generated__/graphql";
 import { WitnessStatusBadge } from "../witnesses/WitnessStatusBadge";
+import { Button } from "../ui/button";
 
-export function TransactionWitnessList({ witnesses }: { witnesses: Witness[] }) {
+export function TransactionWitnessList({
+  witnesses,
+  onResend,
+  onRemove,
+  isResendingId,
+  isRemovingId,
+}: {
+  witnesses: Witness[];
+  onResend?: (id: string) => void;
+  onRemove?: (id: string) => void;
+  isResendingId?: string | null;
+  isRemovingId?: string | null;
+}) {
   if (witnesses.length === 0) {
     return (
       <div className="text-center py-12 border-2 border-dashed border-border/50 rounded-3xl bg-muted/5 group">
@@ -49,7 +62,38 @@ export function TransactionWitnessList({ witnesses }: { witnesses: Witness[] }) 
             </div>
 
             <div className="flex flex-col items-end gap-2 relative z-10">
-              <WitnessStatusBadge status={witness.status} />
+              <div className="flex items-center gap-2">
+                {onResend &&
+                  (witness.status === WitnessStatus.Pending ||
+                    witness.status === WitnessStatus.Modified) && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-xl"
+                      onClick={() => onResend(witness.id)}
+                      disabled={isResendingId === witness.id}
+                      title="Resend Invitation"
+                    >
+                      <RefreshCw
+                        size={14}
+                        className={isResendingId === witness.id ? "animate-spin" : ""}
+                      />
+                    </Button>
+                  )}
+                {onRemove && witness.status !== WitnessStatus.Acknowledged && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl"
+                    onClick={() => onRemove(witness.id)}
+                    disabled={isRemovingId === witness.id}
+                    title="Remove Witness"
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                )}
+                <WitnessStatusBadge status={witness.status} />
+              </div>
               {!!witness.acknowledgedAt && (
                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-lg border border-border/20">
                   Actioned on {format(new Date(witness.acknowledgedAt as string), "MMM d")}

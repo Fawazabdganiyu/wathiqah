@@ -6,6 +6,10 @@ import type {
   GetWitnessInvitationQueryVariables,
   MyWitnessRequestsQuery,
   MyWitnessRequestsQueryVariables,
+  ResendWitnessInvitationMutation,
+  ResendWitnessInvitationMutationVariables,
+  RemoveWitnessMutation,
+  RemoveWitnessMutationVariables,
 } from "@/types/__generated__/graphql";
 
 export const MY_WITNESS_REQUESTS: TypedDocumentNode<
@@ -39,6 +43,30 @@ export const MY_WITNESS_REQUESTS: TypedDocumentNode<
           name
         }
       }
+    }
+  }
+`;
+
+export const RESEND_WITNESS_INVITATION: TypedDocumentNode<
+  ResendWitnessInvitationMutation,
+  ResendWitnessInvitationMutationVariables
+> = gql`
+  mutation ResendWitnessInvitation($witnessId: ID!) {
+    resendWitnessInvitation(witnessId: $witnessId) {
+      id
+      status
+      invitedAt
+    }
+  }
+`;
+
+export const REMOVE_WITNESS: TypedDocumentNode<
+  RemoveWitnessMutation,
+  RemoveWitnessMutationVariables
+> = gql`
+  mutation RemoveWitness($witnessId: ID!) {
+    removeWitness(witnessId: $witnessId) {
+      id
     }
   }
 `;

@@ -53,8 +53,33 @@ When a transaction is updated _after_ witnesses have already acknowledged it, th
     - **Status Indicators**: Distinct badges for `PENDING` (never seen), `ACKNOWLEDGED` (seen & verified), and `MODIFIED` (seen old version, needs to verify new).
 
 ---
-
-## Invitation & Contact Linking System
+ 
+ ## Invitation & Witness Lifecycle Management
+ 
+ **Status:** Completed ✅
+ **Priority:** High (UX & Integrity)
+ 
+ ### Description
+ 
+ Enhanced the invitation system to allow resending pending invites and managing witnesses after transaction creation.
+ 
+ ### Implementation Details
+ 
+ 1.  **Resend Invitations**:
+     - Added `resendWitnessInvitation` mutation for witnesses.
+     - Added `resendContactInvitation` mutation for contact platform invites.
+     - Both actions refresh the secure Redis token and trigger a new notification email.
+ 2.  **Witness Removal**:
+     - Added `removeWitness` mutation allowing creators to remove witnesses.
+     - **Safety Rule**: Witnesses who have already `ACKNOWLEDGED` cannot be removed to preserve record integrity.
+     - **Audit Trail**: Witness removal is recorded as a `MODIFIED` change in `TransactionHistory`.
+ 3.  **Frontend Integration**:
+     - Added "Resend" buttons to `ContactCard` and `TransactionWitnessList`.
+     - Added "Remove" button to `TransactionWitnessList` for creators.
+ 
+ ---
+ 
+ ## Invitation & Contact Linking System
 
 **Status:** Completed ✅
 **Priority:** High (Onboarding Experience)
