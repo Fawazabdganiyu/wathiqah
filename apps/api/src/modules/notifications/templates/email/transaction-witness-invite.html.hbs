@@ -2,9 +2,9 @@
     <h2>Hello {{name}},</h2>
     <p><strong>{{creatorName}}</strong> has requested you to witness a transaction between them and <strong>{{contactName}}</strong> on Wathȋqah.</p>
     
-    <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-        <h3 style="margin-top: 0;">Transaction Details:</h3>
-        <ul style="list-style: none; padding-left: 0;">
+    <div class="details-box" style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0; color: #333333;">
+        <h3 class="details-text" style="margin-top: 0; color: #333333;">Transaction Details:</h3>
+        <ul class="details-text" style="list-style: none; padding-left: 0; color: #333333;">
             <li><strong>Type:</strong> {{type}}</li>
             {{#if amount}}
             <li><strong>Amount:</strong> {{amount}}</li>
