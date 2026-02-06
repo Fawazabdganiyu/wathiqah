@@ -23,12 +23,20 @@ export const MY_WITNESS_REQUESTS: TypedDocumentNode<
         amount
         currency
         type
+        category
+        itemName
         description
         date
         returnDirection
         createdBy {
           name
           email
+        }
+        contact {
+          id
+          firstName
+          lastName
+          name
         }
       }
     }
@@ -61,10 +69,18 @@ export const GET_WITNESS_INVITATION: TypedDocumentNode<
         amount
         currency
         type
+        category
+        itemName
         description
         date
         returnDirection
         createdBy {
+          name
+        }
+        contact {
+          id
+          firstName
+          lastName
           name
         }
       }

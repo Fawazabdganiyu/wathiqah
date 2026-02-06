@@ -43,7 +43,35 @@ export class TransactionsService {
     witnessUserIds: string[] | undefined,
     witnessInvites: WitnessInviteInput[] | undefined,
     prisma: Prisma.TransactionClient,
-  ) {
+  ): Promise<any[]> {
+    const notifications: any[] = [];
+
+    // Fetch transaction details for the notification
+    const transaction = await prisma.transaction.findUnique({
+      where: { id: transactionId },
+      include: {
+        createdBy: true,
+        contact: true,
+      },
+    });
+
+    if (!transaction) return notifications;
+
+    const creatorName = `${transaction.createdBy.firstName} ${transaction.createdBy.lastName}`;
+    const contactName = transaction.contact
+      ? `${transaction.contact.firstName} ${transaction.contact.lastName}`
+      : 'N/A';
+
+    const transactionDetails = {
+      creatorName,
+      contactName,
+      amount: transaction.amount?.toString(),
+      itemName: transaction.itemName,
+      currency: transaction.currency,
+      category: transaction.category,
+      type: transaction.type,
+    };
+
     // Handle existing users as witnesses
     if (witnessUserIds && witnessUserIds.length > 0) {
       const witnesses = await prisma.witness.createManyAndReturn({
@@ -75,24 +103,14 @@ export class TransactionsService {
 
       for (const witness of witnessDetails) {
         const rawToken = uuidv4();
-        const hashedToken = hashToken(rawToken);
-
-        await this.cacheManager.set(
-          `invite:${hashedToken}`,
-          witness.id,
-          ms(
-            this.configService.getOrThrow<string>(
-              'auth.inviteTokenExpiry',
-            ) as ms.StringValue,
-          ),
-        );
-
-        await this.notificationService.sendTransactionWitnessInvite(
-          witness.user.email,
-          witness.user.firstName,
+        notifications.push({
+          witnessId: witness.id,
+          email: witness.user.email,
+          firstName: witness.user.firstName,
           rawToken,
-          witness.user.phoneNumber,
-        );
+          phoneNumber: witness.user.phoneNumber,
+          transactionDetails,
+        });
       }
     }
 
@@ -143,34 +161,58 @@ export class TransactionsService {
         } else {
           witnessId = existingWitness.id;
         }
-        // Generate secure token and hash it
+
         const rawToken = uuidv4();
-        const hashedToken = hashToken(rawToken);
-
-        // Store in Redis: `invite:{hashedToken}` -> `witnessId`
-        // TTL: 7 days (604800000 ms) by default
-        await this.cacheManager.set(
-          `invite:${hashedToken}`,
-          witnessId,
-          ms(
-            this.configService.getOrThrow<string>(
-              'auth.inviteTokenExpiry',
-            ) as ms.StringValue,
-          ),
-        );
-
         const targetPhoneNumber = invite.phoneNumber || user.phoneNumber;
         const targetEmail = normalizedEmail || user.email;
         const { firstName } = splitName(invite.name);
         const targetName = firstName || user.firstName;
 
-        await this.notificationService.sendTransactionWitnessInvite(
-          targetEmail,
-          targetName,
+        notifications.push({
+          witnessId,
+          email: targetEmail,
+          firstName: targetName,
           rawToken,
-          targetPhoneNumber,
-        );
+          phoneNumber: targetPhoneNumber,
+          transactionDetails,
+        });
       }
+    }
+
+    return notifications;
+  }
+
+  private async notifyWitnesses(notifications: any[]) {
+    for (const notification of notifications) {
+      const {
+        witnessId,
+        email,
+        firstName,
+        rawToken,
+        phoneNumber,
+        transactionDetails,
+      } = notification;
+      const hashedToken = hashToken(rawToken);
+
+      // Store in Redis: `invite:${hashedToken}` -> `witnessId`
+      await this.cacheManager.set(
+        `invite:${hashedToken}`,
+        witnessId,
+        ms(
+          this.configService.getOrThrow<string>(
+            'auth.inviteTokenExpiry',
+          ) as ms.StringValue,
+        ),
+      );
+
+      // Send notification
+      await this.notificationService.sendTransactionWitnessInvite(
+        email,
+        firstName,
+        rawToken,
+        transactionDetails,
+        phoneNumber,
+      );
     }
   }
 
@@ -199,6 +241,7 @@ export class TransactionsService {
     }
 
     // Start a transaction to ensure all witness records are created or nothing is
+    let notifications: any[] = [];
     const transaction = await this.prisma.$transaction(async (prisma) => {
       let parentTransaction = null;
       // If this is a GIFT conversion, validate parent existence and ownership
@@ -290,7 +333,7 @@ export class TransactionsService {
         });
       }
 
-      await this.processWitnesses(
+      notifications = await this.processWitnesses(
         transaction.id,
         witnessUserIds,
         witnessInvites,
@@ -299,6 +342,13 @@ export class TransactionsService {
 
       return transaction;
     });
+
+    // Send notifications after transaction commits
+    if (notifications.length > 0) {
+      this.notifyWitnesses(notifications).catch((err) => {
+        console.error('Failed to send witness notifications:', err);
+      });
+    }
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (user) {
@@ -316,26 +366,38 @@ export class TransactionsService {
 
     const transaction = await this.findOne(transactionId, userId);
 
-    return this.prisma.$transaction(async (prisma) => {
-      await this.processWitnesses(
-        transaction.id,
-        witnessUserIds,
-        witnessInvites,
-        prisma,
-      );
+    let notifications: any[] = [];
+    const updatedTransaction = await this.prisma.$transaction(
+      async (prisma) => {
+        notifications = await this.processWitnesses(
+          transaction.id,
+          witnessUserIds,
+          witnessInvites,
+          prisma,
+        );
 
-      // Return updated transaction with witnesses
-      return prisma.transaction.findUnique({
-        where: { id: transactionId },
-        include: {
-          witnesses: {
-            include: {
-              user: true,
+        // Return updated transaction with witnesses
+        return prisma.transaction.findUnique({
+          where: { id: transactionId },
+          include: {
+            witnesses: {
+              include: {
+                user: true,
+              },
             },
           },
-        },
+        });
+      },
+    );
+
+    // Send notifications after transaction commits
+    if (notifications.length > 0) {
+      this.notifyWitnesses(notifications).catch((err) => {
+        console.error('Failed to send witness notifications:', err);
       });
-    });
+    }
+
+    return updatedTransaction;
   }
 
   async findAll(userId: string, filter?: FilterTransactionInput) {

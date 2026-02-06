@@ -113,6 +113,7 @@ export class NotificationService {
    * @param email - The witness's email address.
    * @param name - The witness's name.
    * @param token - The invitation token.
+   * @param transactionDetails - Details about the transaction and parties.
    * @param phoneNumber - Optional phone number for SMS notification.
    * @throws BadRequestException if any parameter is missing or empty.
    */
@@ -120,13 +121,39 @@ export class NotificationService {
     email: string,
     name: string,
     token: string,
+    transactionDetails: {
+      creatorName: string;
+      contactName: string;
+      amount?: string;
+      itemName?: string;
+      currency?: string;
+      category: string;
+      type: string;
+    },
     phoneNumber?: string,
   ): Promise<void> {
     this.validateParams({ email, name, token });
 
     const inviteUrl = `${this.configService.get('app.url')}/witnesses/invite/${token}`;
-    const subject =
-      'Witness Request: You have been requested to verify a transaction on Wathȋqah';
+    const subject = `Witness Request: ${transactionDetails.creatorName} requested you to witness a transaction with ${transactionDetails.contactName}`;
+
+    // Format amount for email if category is FUNDS
+    let formattedAmount = transactionDetails.amount;
+    if (transactionDetails.category === 'FUNDS' && transactionDetails.amount) {
+      const amount = parseFloat(transactionDetails.amount);
+      const currency = transactionDetails.currency || 'NGN';
+      formattedAmount = new Intl.NumberFormat('en-NG', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(amount);
+    } else if (
+      transactionDetails.category === 'PHYSICAL_ITEMS' &&
+      transactionDetails.amount
+    ) {
+      formattedAmount = `${transactionDetails.amount} ${transactionDetails.itemName || 'items'}`;
+    }
 
     const appUrl = this.configService.get('app.url')?.replace(/\/$/, '');
     const templateData = {
@@ -136,6 +163,8 @@ export class NotificationService {
       appUrl,
       logoUrl: `${appUrl}/appLogo.png`,
       year: new Date().getFullYear(),
+      ...transactionDetails,
+      amount: formattedAmount,
     };
 
     const emailOptions = {

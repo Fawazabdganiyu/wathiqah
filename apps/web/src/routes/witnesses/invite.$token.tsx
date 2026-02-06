@@ -10,6 +10,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { useAuth } from "@/hooks/use-auth";
 import { useAcknowledgeWitness, useWitnessInvitation } from "@/hooks/useWitnesses";
 import { ReturnDirection, TransactionType, WitnessStatus } from "@/types/__generated__/graphql";
+import { formatDate, formatCurrency } from "@/lib/utils/formatters";
 
 export const Route = createFileRoute("/witnesses/invite/$token")({
   component: InviteComponent,
@@ -144,16 +145,22 @@ function InviteComponent() {
             Witness Invitation
           </h2>
           <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-            {transaction.createdBy?.name} has invited you to witness a transaction.
+            <strong>{transaction.createdBy?.name}</strong> has invited you to witness a transaction between them and <strong>{(transaction as any).contact?.name || "N/A"}</strong>.
           </p>
         </div>
 
         {/* Transaction Details Card */}
         <div className="bg-neutral-100 dark:bg-neutral-800 p-6 rounded-md space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-neutral-500">Amount</span>
+            <span className="text-sm font-medium text-neutral-500">
+              {(transaction as any).category === "PHYSICAL_ITEMS" ? "Quantity" : "Amount"}
+            </span>
             <span className="font-bold text-lg text-neutral-900 dark:text-neutral-50">
-              {transaction.amount ? `₦${transaction.amount}` : "N/A"}
+              {transaction.amount 
+                ? ((transaction as any).category === "PHYSICAL_ITEMS" 
+                    ? `${transaction.amount} ${(transaction as any).itemName || "items"}` 
+                    : formatCurrency(transaction.amount, transaction.currency))
+                : "N/A"}
             </span>
           </div>
           <div className="flex justify-between items-center">
@@ -165,7 +172,7 @@ function InviteComponent() {
           <div className="flex justify-between">
             <span className="text-sm font-medium text-neutral-500">Date</span>
             <span className="font-medium text-neutral-900 dark:text-neutral-50">
-              {new Date(transaction.date as string).toLocaleDateString()}
+              {formatDate(transaction.date)}
             </span>
           </div>
           {transaction.description && (
@@ -196,11 +203,11 @@ function InviteComponent() {
           ) : isExistingUser ? (
             /* Existing User Flow */
             isCurrentUserInvited ? (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button
                   onClick={() => handleAcknowledge(WitnessStatus.Acknowledged)}
                   isLoading={ackLoading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white w-full"
                 >
                   Acknowledge
                 </Button>
@@ -208,6 +215,7 @@ function InviteComponent() {
                   onClick={() => handleAcknowledge(WitnessStatus.Declined)}
                   isLoading={ackLoading}
                   variant="destructive"
+                  className="w-full"
                 >
                   Decline
                 </Button>

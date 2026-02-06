@@ -27,17 +27,52 @@ export class WitnessesService {
       );
     }
 
-    return this.prisma.witness.update({
-      where: { id: witnessId },
-      data: {
-        status,
-        acknowledgedAt:
-          status === WitnessStatus.ACKNOWLEDGED ? new Date() : null,
-      },
-      include: {
-        transaction: true,
-        user: true,
-      },
+    return this.prisma.$transaction(async (prisma) => {
+      const updatedWitness = await prisma.witness.update({
+        where: { id: witnessId },
+        data: {
+          status,
+          acknowledgedAt:
+            status === WitnessStatus.ACKNOWLEDGED ? new Date() : null,
+        },
+        include: {
+          transaction: {
+            include: {
+              createdBy: true,
+              contact: true,
+            },
+          },
+          user: true,
+        },
+      });
+
+      // Create history record for the transaction
+      await prisma.transactionHistory.create({
+        data: {
+          transactionId: updatedWitness.transactionId,
+          userId,
+          changeType: `WITNESS_${status}`,
+          previousState: {
+            witnessStatus: witness.status,
+            witnessName: `${updatedWitness.user.firstName} ${updatedWitness.user.lastName}`,
+          },
+          newState: {
+            witnessStatus: status,
+            witnessName: `${updatedWitness.user.firstName} ${updatedWitness.user.lastName}`,
+            transactionDetails: {
+              creator: `${updatedWitness.transaction.createdBy.firstName} ${updatedWitness.transaction.createdBy.lastName}`,
+              contact: updatedWitness.transaction.contact
+                ? `${updatedWitness.transaction.contact.firstName} ${updatedWitness.transaction.contact.lastName}`
+                : 'N/A',
+              amount: updatedWitness.transaction.amount,
+              currency: updatedWitness.transaction.currency,
+              category: updatedWitness.transaction.category,
+            },
+          },
+        },
+      });
+
+      return updatedWitness;
     });
   }
 

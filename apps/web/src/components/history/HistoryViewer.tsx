@@ -55,6 +55,20 @@ const formatValue = (
     const currency = (snapshot?.currency as string) || "NGN";
     return formatCurrency(Number(value), currency);
   }
+  if (key === "transactionDetails" && typeof value === "object" && value !== null) {
+    const details = value as {
+      creator: string;
+      contact: string;
+      amount?: number | string;
+      currency?: string;
+      category?: string;
+    };
+    const parts = [`Between ${details.creator} and ${details.contact}`];
+    if (details.category === "FUNDS" && details.amount) {
+      parts.push(`(${details.currency} ${details.amount})`);
+    }
+    return parts.join(" ");
+  }
   if (typeof value === "object") return JSON.stringify(value);
   return String(value);
 };

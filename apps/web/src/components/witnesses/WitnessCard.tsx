@@ -53,7 +53,7 @@ export function WitnessCard({ request, onAcknowledge, onDecline, isLoading }: Wi
                 </h3>
               </div>
               <p className="text-[11px] text-muted-foreground font-medium opacity-70 leading-tight">
-                Requested verification
+                Invited you to witness a transaction with <strong>{(transaction as any).contact?.name || "N/A"}</strong>
               </p>
             </div>
           </div>
@@ -81,7 +81,9 @@ export function WitnessCard({ request, onAcknowledge, onDecline, isLoading }: Wi
                 )}
               </div>
               <span className="text-base font-bold tracking-tight text-foreground">
-                {formatCurrency(transaction.amount || 0, transaction.currency)}
+                {(transaction as any).category === "PHYSICAL_ITEMS" 
+                  ? `${transaction.amount} ${(transaction as any).itemName || "items"}`
+                  : formatCurrency(transaction.amount || 0, transaction.currency)}
               </span>
             </div>
           </div>

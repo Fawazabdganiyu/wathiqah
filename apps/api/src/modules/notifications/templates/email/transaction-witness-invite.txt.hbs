@@ -1,6 +1,15 @@
 
 Hello {{name}},
 
-You have been requested to witness a transaction on Wathȋqah.
-Please click the link below to review and acknowledge the transaction:
+{{creatorName}} has requested you to witness a transaction between them and {{contactName}} on Wathȋqah.
+
+Transaction Details:
+- Type: {{type}}
+{{#if amount}}- Amount: {{currency}} {{amount}}{{/if}}
+{{#if itemName}}- Item: {{itemName}}{{/if}}
+
+Please review and acknowledge the transaction by clicking the link below:
 {{inviteUrl}}
+
+Thank you,
+The Wathȋqah Team
