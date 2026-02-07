@@ -148,7 +148,7 @@ export function WitnessSelector({ selectedWitnesses, onChange, className }: Witn
       </div>
 
       {!showInviteForm && !searchResult && (
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <Search
               size={16}
@@ -164,7 +164,7 @@ export function WitnessSelector({ selectedWitnesses, onChange, className }: Witn
                   handleSearch();
                 }
               }}
-              className="pl-9"
+              className="pl-9 h-11 sm:h-10"
             />
           </div>
           <Button
@@ -172,6 +172,7 @@ export function WitnessSelector({ selectedWitnesses, onChange, className }: Witn
             variant="outline"
             onClick={handleSearch}
             disabled={searching || !searchQuery.trim()}
+            className="h-11 sm:h-10"
           >
             {searching ? "Searching..." : "Search"}
           </Button>
@@ -179,7 +180,7 @@ export function WitnessSelector({ selectedWitnesses, onChange, className }: Witn
       )}
 
       {searchResult && (
-        <div className="flex items-center justify-between p-3 rounded-lg border border-emerald-100 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-lg border border-emerald-100 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/10">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
               <UserPlus size={16} />
@@ -191,11 +192,22 @@ export function WitnessSelector({ selectedWitnesses, onChange, className }: Witn
               <p className="text-xs text-neutral-500">Existing User Found</p>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button type="button" size="sm" onClick={addExistingUser}>
+          <div className="flex gap-2 sm:shrink-0">
+            <Button
+              type="button"
+              size="sm"
+              onClick={addExistingUser}
+              className="flex-1 sm:flex-none"
+            >
               Add Witness
             </Button>
-            <Button type="button" size="sm" variant="ghost" onClick={() => setSearchResult(null)}>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => setSearchResult(null)}
+              className="flex-1 sm:flex-none"
+            >
               Cancel
             </Button>
           </div>
@@ -245,7 +257,12 @@ export function WitnessSelector({ selectedWitnesses, onChange, className }: Witn
                 placeholder="+234..."
               />
             </div>
-            <Button type="button" onClick={addInvite} disabled={!inviteName || !inviteEmail}>
+            <Button
+              type="button"
+              onClick={addInvite}
+              disabled={!inviteName || !inviteEmail}
+              className="w-full h-11 sm:h-10 mt-2"
+            >
               Add to List
             </Button>
           </div>

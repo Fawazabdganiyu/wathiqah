@@ -195,15 +195,15 @@ function NewTransactionPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Create New Transaction</CardTitle>
+    <div className="container mx-auto py-6 sm:py-10 px-4 sm:px-0 max-w-2xl">
+      <Card className="border-none sm:border shadow-none sm:shadow-sm">
+        <CardHeader className="px-0 sm:px-6">
+          <CardTitle className="text-xl sm:text-2xl font-bold">Create New Transaction</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                 <FormField
                   control={form.control}
                   name="category"
@@ -212,7 +212,7 @@ function NewTransactionPage() {
                       <FormLabel>Category</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10 text-sm">
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                         </FormControl>
@@ -257,7 +257,7 @@ function NewTransactionPage() {
                         value={field.value ?? "none"}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10 text-sm">
                             <SelectValue placeholder="Select a contact (Optional)" />
                           </SelectTrigger>
                         </FormControl>
@@ -284,7 +284,7 @@ function NewTransactionPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                 <FormField
                   control={form.control}
                   name="type"
@@ -296,7 +296,7 @@ function NewTransactionPage() {
                       </FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10 text-sm">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                         </FormControl>
@@ -322,16 +322,16 @@ function NewTransactionPage() {
                 />
 
                 {category === AssetCategory.Funds ? (
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="flex items-start gap-4 sm:gap-6">
                     <FormField
                       control={form.control}
                       name="currency"
                       render={({ field }) => (
-                        <FormItem className="col-span-1">
+                        <FormItem className="w-24 sm:w-32 shrink-0">
                           <FormLabel>Currency</FormLabel>
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="w-full px-2 sm:px-3 h-11 sm:h-10">
                                 <SelectValue placeholder="NGN" />
                               </SelectTrigger>
                             </FormControl>
@@ -353,10 +353,16 @@ function NewTransactionPage() {
                       control={form.control}
                       name="amount"
                       render={({ field }) => (
-                        <FormItem className="col-span-2">
+                        <FormItem className="flex-1 min-w-0">
                           <FormLabel>Amount</FormLabel>
                           <FormControl>
-                            <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder="0.00"
+                              {...field}
+                              className="w-full h-10 px-3 text-sm"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -371,7 +377,13 @@ function NewTransactionPage() {
                       <FormItem>
                         <FormLabel>Quantity</FormLabel>
                         <FormControl>
-                          <Input type="number" step="1" placeholder="1" {...field} />
+                          <Input
+                            type="number"
+                            step="1"
+                            placeholder="1"
+                            {...field}
+                            className="h-10 text-sm"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -388,7 +400,11 @@ function NewTransactionPage() {
                     <FormItem>
                       <FormLabel>Item Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Hammer, Laptop, Book" {...field} />
+                        <Input
+                          placeholder="e.g. Hammer, Laptop, Book"
+                          {...field}
+                          className="h-10 text-sm"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -406,7 +422,7 @@ function NewTransactionPage() {
                         <FormLabel>Direction</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="h-10 text-sm">
                               <SelectValue placeholder="Select direction" />
                             </SelectTrigger>
                           </FormControl>
@@ -428,7 +444,7 @@ function NewTransactionPage() {
                   <FormItem>
                     <FormLabel>Date</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input type="date" {...field} className="h-10 text-sm" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -444,7 +460,7 @@ function NewTransactionPage() {
                     <FormControl>
                       <Textarea
                         placeholder="Add some details about this transaction..."
-                        className="resize-none"
+                        className="resize-none min-h-[100px] sm:min-h-[120px] rounded-xl sm:rounded-lg border-muted-foreground/20 focus:border-primary/50 transition-colors"
                         {...field}
                       />
                     </FormControl>
@@ -453,21 +469,26 @@ function NewTransactionPage() {
                 )}
               />
 
-              <div className="space-y-4">
+              <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between">
-                  <FormLabel className="text-base font-semibold">Witnesses (Optional)</FormLabel>
+                  <FormLabel className="text-base font-bold">Witnesses (Optional)</FormLabel>
                 </div>
-                <p className="text-sm text-neutral-500">
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed">
                   Add people to witness this transaction. They will receive an invitation to
                   acknowledge it.
                 </p>
                 <WitnessSelector
                   selectedWitnesses={selectedWitnesses}
                   onChange={setSelectedWitnesses}
+                  className="mt-2"
                 />
               </div>
 
-              <Button type="submit" className="w-full h-12 rounded-full" isLoading={creating}>
+              <Button
+                type="submit"
+                className="w-full h-12 sm:h-11 rounded-full text-base font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-[0.98]"
+                isLoading={creating}
+              >
                 Create Transaction
               </Button>
             </form>

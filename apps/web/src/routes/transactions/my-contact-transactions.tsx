@@ -37,7 +37,7 @@ function MyContactTransactionsPage() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Transactions Involving Me
           </h1>
           <p className="text-sm text-muted-foreground font-medium opacity-70">
@@ -46,16 +46,16 @@ function MyContactTransactionsPage() {
         </div>
       </div>
 
-      <div className="rounded-[24px] border border-blue-100 bg-blue-50/50 p-5 dark:border-blue-900/30 dark:bg-blue-900/10">
-        <div className="flex gap-4">
-          <div className="p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shrink-0">
-            <Info className="h-5 w-5" />
+      <div className="rounded-[24px] border border-blue-100 bg-blue-50/50 p-4 sm:p-5 dark:border-blue-900/30 dark:bg-blue-900/10">
+        <div className="flex gap-3 sm:gap-4 items-start sm:items-center">
+          <div className="p-2 sm:p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shrink-0">
+            <Info className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-bold text-blue-800 dark:text-blue-300 leading-relaxed">
+          <div className="space-y-1.5 sm:space-y-2">
+            <p className="text-xs sm:text-sm font-bold text-blue-800 dark:text-blue-300 leading-relaxed">
               These are transactions documented by others involving you.
             </p>
-            <p className="text-[11px] font-black text-blue-600/70 dark:text-blue-400/70 italic uppercase tracking-widest">
+            <p className="text-[10px] sm:text-[11px] font-bold text-blue-600/70 dark:text-blue-400/70 italic uppercase tracking-wider">
               Note: Colors and signs (+/-) are shown from your perspective.
             </p>
           </div>
@@ -63,8 +63,8 @@ function MyContactTransactionsPage() {
       </div>
 
       <Card className="rounded-[32px] border-border/50 overflow-hidden shadow-sm">
-        <CardHeader className="p-6 border-b border-border/30">
-          <CardTitle className="text-lg font-black tracking-tight uppercase opacity-60">
+        <CardHeader className="p-4 sm:p-6 border-b border-border/30">
+          <CardTitle className="text-base sm:text-lg font-bold tracking-tight uppercase opacity-60">
             Transaction History
           </CardTitle>
         </CardHeader>
@@ -85,22 +85,22 @@ function MyContactTransactionsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/30 border-b border-border/30">
-                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 h-12 pl-6">
+                      <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 h-12 pl-6">
                         Date
                       </TableHead>
-                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 h-12">
+                      <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 h-12">
                         Created By
                       </TableHead>
-                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 h-12">
+                      <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 h-12">
                         Type
                       </TableHead>
-                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 h-12">
+                      <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 h-12">
                         Description
                       </TableHead>
-                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 h-12 text-right">
+                      <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 h-12 text-right">
                         Amount/Item
                       </TableHead>
-                      <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 h-12 pr-6">
+                      <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 h-12 pr-6">
                         Witnesses
                       </TableHead>
                     </TableRow>
@@ -167,7 +167,7 @@ function MyContactTransactionsPage() {
                           {tx.category === AssetCategory.Funds ? (
                             <span
                               className={cn(
-                                "text-sm font-black",
+                                "text-sm font-bold",
                                 tx.type === "RECEIVED" || tx.type === "EXPENSE"
                                   ? "text-red-600"
                                   : tx.type === "GIVEN"
@@ -194,7 +194,7 @@ function MyContactTransactionsPage() {
                               {formatCurrency(tx.amount || 0, tx.currency)}
                             </span>
                           ) : (
-                            <div className="flex items-center justify-end gap-1.5 font-black text-sm text-foreground">
+                            <div className="flex items-center justify-end gap-1.5 font-bold text-sm text-foreground">
                               <Package size={14} className="text-muted-foreground opacity-50" />
                               <span>
                                 {tx.quantity}x {tx.itemName}
@@ -209,7 +209,7 @@ function MyContactTransactionsPage() {
                                 <div
                                   key={witness?.id}
                                   className={cn(
-                                    "w-6 h-6 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-black text-white",
+                                    "w-6 h-6 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white",
                                     witness?.status === "ACKNOWLEDGED"
                                       ? "bg-green-500"
                                       : witness?.status === "DECLINED"
@@ -224,7 +224,7 @@ function MyContactTransactionsPage() {
                               ))}
                             </div>
                           ) : (
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 italic">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 italic">
                               None
                             </span>
                           )}
@@ -299,7 +299,7 @@ function MyContactTransactionsPage() {
                           {tx.category === AssetCategory.Funds ? (
                             <span
                               className={cn(
-                                "text-sm font-black",
+                                "text-sm font-bold",
                                 tx.type === "RECEIVED" || tx.type === "EXPENSE"
                                   ? "text-red-600"
                                   : tx.type === "GIVEN"
@@ -326,7 +326,7 @@ function MyContactTransactionsPage() {
                               {formatCurrency(tx.amount || 0, tx.currency)}
                             </span>
                           ) : (
-                            <div className="flex items-center gap-1.5 font-black text-sm text-foreground">
+                            <div className="flex items-center gap-1.5 font-bold text-sm text-foreground">
                               <Package size={14} className="text-muted-foreground opacity-50" />
                               <span>
                                 {tx.quantity}x {tx.itemName}
